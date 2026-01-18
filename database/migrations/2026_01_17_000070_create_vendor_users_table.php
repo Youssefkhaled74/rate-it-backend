@@ -29,7 +29,9 @@ class CreateVendorUsersTable extends Migration
         });
 
         // Add check constraint: BRANCH_STAFF must have branch_id not null
-        DB::statement("ALTER TABLE vendor_users ADD CONSTRAINT vendor_users_branch_required CHECK (role != 'BRANCH_STAFF' OR branch_id IS NOT NULL);");
+        if (Schema::getConnection()->getDriverName() === 'pgsql') {
+            DB::statement("ALTER TABLE vendor_users ADD CONSTRAINT vendor_users_branch_required CHECK (role != 'BRANCH_STAFF' OR branch_id IS NOT NULL);");
+        }
     }
 
     public function down()

@@ -30,8 +30,10 @@ class CreateActivityLogsTable extends Migration
             $table->index('actor_vendor_user_id');
         });
 
-        // Enforce exactly one actor id is not null
-        DB::statement("ALTER TABLE activity_logs ADD CONSTRAINT activity_actor_one_not_null CHECK ( (CASE WHEN actor_user_id IS NOT NULL THEN 1 ELSE 0 END) + (CASE WHEN actor_admin_id IS NOT NULL THEN 1 ELSE 0 END) + (CASE WHEN actor_vendor_user_id IS NOT NULL THEN 1 ELSE 0 END) = 1 );");
+        // Enforce exactly one actor id is not null (Postgres only)
+        if (Schema::getConnection()->getDriverName() === 'pgsql') {
+            DB::statement("ALTER TABLE activity_logs ADD CONSTRAINT activity_actor_one_not_null CHECK ( (CASE WHEN actor_user_id IS NOT NULL THEN 1 ELSE 0 END) + (CASE WHEN actor_admin_id IS NOT NULL THEN 1 ELSE 0 END) + (CASE WHEN actor_vendor_user_id IS NOT NULL THEN 1 ELSE 0 END) = 1 );");
+        }
     }
 
     public function down()
