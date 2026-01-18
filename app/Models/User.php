@@ -26,8 +26,12 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'full_name',
         'email',
         'phone',
+        'birth_date',
+        'gender_id',
+        'nationality_id',
         'password',
     ];
 
@@ -49,6 +53,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'birth_date' => 'date',
     ];
 
     public function gender()

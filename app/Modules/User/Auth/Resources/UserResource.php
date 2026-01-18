@@ -3,6 +3,8 @@
 namespace App\Modules\User\Auth\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Modules\User\Lookups\Resources\GenderResource;
+use App\Modules\User\Lookups\Resources\NationalityResource;
 
 class UserResource extends JsonResource
 {
@@ -13,23 +15,13 @@ class UserResource extends JsonResource
             'full_name' => $this->full_name ?? $this->name,
             'phone' => $this->phone,
             'email' => $this->email,
-            'birth_date' => $this->birth_date,
+            'birth_date' => $this->birth_date ? $this->birth_date->toDateString() : null,
             'gender' => $this->when($this->gender, function () use ($request) {
-                return [
-                    'id' => $this->gender->id,
-                    'name' => app()->getLocale() === 'ar' ? $this->gender->name_ar : $this->gender->name_en,
-                ];
+                return new GenderResource($this->gender);
             }),
             'nationality' => $this->when($this->nationality, function () use ($request) {
-                return [
-                    'id' => $this->nationality->id,
-                    'name' => app()->getLocale() === 'ar' ? $this->nationality->name_ar : $this->nationality->name_en,
-                    'country_code' => strtoupper($this->nationality->country_code ?? ''),
-                    'flag_url' => $this->nationality->flag_url ?? null,
-                ];
+                return new NationalityResource($this->nationality);
             }),
-            'governorate' => $this->governorate,
-            'area' => $this->area,
             'created_at' => $this->created_at,
         ];
     }
