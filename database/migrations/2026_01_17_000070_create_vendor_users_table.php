@@ -24,8 +24,6 @@ class CreateVendorUsersTable extends Migration
 
             $table->index('brand_id');
             $table->index('branch_id');
-            $table->foreign('brand_id')->references('id')->on('brands')->onDelete('set null');
-            $table->foreign('branch_id')->references('id')->on('branches')->onDelete('set null');
         });
 
         // Add check constraint: BRANCH_STAFF must have branch_id not null
