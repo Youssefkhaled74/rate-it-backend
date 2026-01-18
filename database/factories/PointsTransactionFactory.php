@@ -13,7 +13,7 @@ class PointsTransactionFactory extends Factory
     public function definition()
     {
         return [
-            'id' => (string) Str::uuid(),
+            // 'id' => (string) Str::uuid(),
             'user_id' => null,
             'brand_id' => null,
             'type' => 'EARN_REVIEW',

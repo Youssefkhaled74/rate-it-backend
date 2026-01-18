@@ -13,7 +13,6 @@ class BranchFactory extends Factory
     public function definition()
     {
         return [
-            'id' => (string) Str::uuid(),
             'place_id' => null,
             'name' => $this->faker->company . ' Branch',
             'address' => $this->faker->address,

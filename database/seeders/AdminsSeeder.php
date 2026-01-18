@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
+
 
 class AdminsSeeder extends Seeder
 {
@@ -21,7 +21,6 @@ class AdminsSeeder extends Seeder
             ]);
         } else {
             DB::table('admins')->insert([
-                'id' => (string) Str::uuid(),
                 'name' => 'Super Admin',
                 'email' => 'admin@example.com',
                 'phone' => null,

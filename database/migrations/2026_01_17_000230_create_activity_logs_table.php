@@ -9,30 +9,15 @@ class CreateActivityLogsTable extends Migration
 {
     public function up()
     {
-        // determine users.id type
-        $userIdIsUuid = false;
-        try {
-            $col = DB::selectOne("SELECT DATA_TYPE, COLUMN_TYPE FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = ? AND column_name = ?", ['users','id']);
-            if ($col && (stripos($col->COLUMN_TYPE, 'char') !== false || in_array(strtolower($col->DATA_TYPE), ['char','varchar']))) {
-                $userIdIsUuid = true;
-            }
-        } catch (\Exception $e) {
-            $userIdIsUuid = true;
-        }
-
-        Schema::create('activity_logs', function (Blueprint $table) use ($userIdIsUuid) {
-            $table->uuid('id')->primary();
+        Schema::create('activity_logs', function (Blueprint $table) {
+            $table->id();
             $table->enum('actor_type', ['USER','ADMIN','VENDOR_USER']);
-            if ($userIdIsUuid) {
-                $table->uuid('actor_user_id')->nullable();
-            } else {
-                $table->unsignedBigInteger('actor_user_id')->nullable();
-            }
-            $table->uuid('actor_admin_id')->nullable();
-            $table->uuid('actor_vendor_user_id')->nullable();
+            $table->foreignId('actor_user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('actor_admin_id')->nullable()->constrained('admins')->nullOnDelete();
+            $table->foreignId('actor_vendor_user_id')->nullable()->constrained('vendor_users')->nullOnDelete();
             $table->string('action');
             $table->string('entity_type')->nullable();
-            $table->uuid('entity_id')->nullable();
+            $table->unsignedBigInteger('entity_id')->nullable();
             $table->string('ip_address')->nullable();
             $table->text('user_agent')->nullable();
             $table->json('meta')->nullable();

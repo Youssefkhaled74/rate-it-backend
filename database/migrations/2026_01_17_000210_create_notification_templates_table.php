@@ -9,7 +9,7 @@ class CreateNotificationTemplatesTable extends Migration
     public function up()
     {
         Schema::create('notification_templates', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->id();
             $table->string('type');
             $table->string('title_tpl');
             $table->text('body_tpl')->nullable();

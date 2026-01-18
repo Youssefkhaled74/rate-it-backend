@@ -4,8 +4,6 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-
 class CategoriesSeeder extends Seeder
 {
     public function run()
@@ -26,9 +24,7 @@ class CategoriesSeeder extends Seeder
                 ]);
                 $catId = $existing->id;
             } else {
-                $catId = (string) Str::uuid();
-                DB::table('categories')->insert([
-                    'id' => $catId,
+                $catId = DB::table('categories')->insertGetId([
                     'name_en' => $cat['name_en'],
                     'name_ar' => $cat['name_ar'],
                     'is_active' => true,
@@ -46,7 +42,6 @@ class CategoriesSeeder extends Seeder
                     ]);
                 } else {
                     DB::table('subcategories')->insert([
-                        'id' => (string) Str::uuid(),
                         'category_id' => $catId,
                         'name_en' => $sub,
                         'name_ar' => null,

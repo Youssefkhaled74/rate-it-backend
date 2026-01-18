@@ -9,7 +9,7 @@ class CreateBannerOffersTable extends Migration
     public function up()
     {
         Schema::create('banner_offers', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->id();
             $table->string('image_path');
             $table->string('link_url')->nullable();
             $table->integer('sort_order')->default(0);

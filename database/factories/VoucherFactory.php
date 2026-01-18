@@ -13,7 +13,7 @@ class VoucherFactory extends Factory
     public function definition()
     {
         return [
-            'id' => (string) Str::uuid(),
+            // 'id' => (string) Str::uuid(), // Removed ID generation
             'user_id' => null,
             'brand_id' => null,
             'code' => strtoupper(Str::random(10)),

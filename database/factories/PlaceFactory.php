@@ -4,7 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Place;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
+ 
 
 class PlaceFactory extends Factory
 {
@@ -13,7 +13,7 @@ class PlaceFactory extends Factory
     public function definition()
     {
         return [
-            'id' => (string) Str::uuid(),
+            // 'id' => (string) Str::uuid(), // Removed id generation
             'brand_id' => null,
             'subcategory_id' => null,
             'name' => $this->faker->company . ' ' . $this->faker->word,

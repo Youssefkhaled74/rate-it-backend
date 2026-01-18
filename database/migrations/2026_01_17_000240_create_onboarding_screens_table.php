@@ -9,7 +9,7 @@ class CreateOnboardingScreensTable extends Migration
     public function up()
     {
         Schema::create('onboarding_screens', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->id();
             $table->string('title');
             $table->text('body')->nullable();
             $table->integer('sort_order')->default(0);

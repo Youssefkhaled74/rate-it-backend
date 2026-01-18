@@ -9,10 +9,10 @@ class CreateNotificationLogsTable extends Migration
     public function up()
     {
         Schema::create('notification_logs', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->id();
             $table->string('channel');
             $table->string('target_table');
-            $table->uuid('target_id');
+            $table->unsignedBigInteger('target_id');
             $table->string('type');
             $table->json('payload')->nullable();
             $table->json('provider_response')->nullable();

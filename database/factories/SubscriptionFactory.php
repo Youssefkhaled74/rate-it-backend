@@ -17,7 +17,7 @@ class SubscriptionFactory extends Factory
         $freeUntil = ($status === 'FREE') ? $this->faker->dateTimeBetween($started,'+6 months') : null;
 
         return [
-            'id' => (string) Str::uuid(),
+            // 'id' => (string) Str::uuid(),
             'user_id' => null,
             'status' => $status,
             'started_at' => $started,

@@ -13,7 +13,6 @@ class VendorUserFactory extends Factory
     public function definition()
     {
         return [
-            'id' => (string) Str::uuid(),
             'brand_id' => null,
             'branch_id' => null,
             'name' => $this->faker->name,

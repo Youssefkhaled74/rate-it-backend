@@ -13,7 +13,6 @@ class ReviewAnswerFactory extends Factory
     public function definition()
     {
         return [
-            'id' => (string) Str::uuid(),
             'review_id' => null,
             'criteria_id' => null,
             'rating_value' => null,
@@ -23,4 +22,5 @@ class ReviewAnswerFactory extends Factory
             'updated_at' => now(),
         ];
     }
+        // 'id' => (string) Str::uuid(),
 }

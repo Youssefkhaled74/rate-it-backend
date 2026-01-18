@@ -9,8 +9,8 @@ class CreateAdminNotificationsTable extends Migration
     public function up()
     {
         Schema::create('admin_notifications', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid('admin_id');
+            $table->id();
+            $table->foreignId('admin_id')->constrained('admins')->cascadeOnDelete();
             $table->string('type');
             $table->string('title');
             $table->text('body')->nullable();

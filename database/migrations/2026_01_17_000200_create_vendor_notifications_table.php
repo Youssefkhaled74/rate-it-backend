@@ -9,8 +9,8 @@ class CreateVendorNotificationsTable extends Migration
     public function up()
     {
         Schema::create('vendor_notifications', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid('vendor_user_id');
+            $table->id();
+            $table->foreignId('vendor_user_id')->constrained('vendor_users')->cascadeOnDelete();
             $table->string('type');
             $table->string('title');
             $table->text('body')->nullable();

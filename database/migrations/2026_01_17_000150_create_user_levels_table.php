@@ -9,7 +9,7 @@ class CreateUserLevelsTable extends Migration
     public function up()
     {
         Schema::create('user_levels', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->id();
             $table->string('name');
             $table->integer('min_reviews')->default(0);
             $table->json('benefits')->nullable();
