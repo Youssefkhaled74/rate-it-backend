@@ -18,7 +18,7 @@ class VendorUserFactory extends Factory
             'branch_id' => null,
             'name' => $this->faker->name,
             'phone' => $this->faker->unique()->numerify('05########'),
-            'email' => $this->faker->optional()->unique()->safeEmail,
+            'email' => $this->faker->boolean(85) ? $this->faker->unique()->safeEmail : null,
             'password_hash' => bcrypt('secret'),
             'role' => 'VENDOR_ADMIN',
             'is_active' => true,
