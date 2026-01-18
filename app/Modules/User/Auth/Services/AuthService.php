@@ -32,6 +32,12 @@ class AuthService
 
     public function logout(User $user): void
     {
+        /**
+         * Revoke current access token issued to the user.
+         *
+         * @param \App\Models\User $user
+         * @return void
+         */
         // revoke current token
         $user->currentAccessToken()?->delete();
     }

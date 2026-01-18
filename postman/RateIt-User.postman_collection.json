@@ -3,18 +3,31 @@
     "_postman_id": "rateit-user-collection",
     "name": "Rate It - User APIs",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "description": "Postman collection for USER APIs (Rate It). Organized into implemented and planned endpoints."
+    "description": "Official Postman collection for Rate It - USER APIs. Includes Onboarding and Auth endpoints."
   },
   "variable": [
     { "key": "base_url", "value": "http://127.0.0.1:8000" },
     { "key": "api_version", "value": "v1" },
     { "key": "user_token", "value": "" },
-    { "key": "branch_qr", "value": "" },
-    { "key": "voucher_code", "value": "" }
+    { "key": "user_base", "value": "{{base_url}}/api/{{api_version}}/user" }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "exec": [
+          "// Collection pre-request: ensure base_url is set",
+          "if (!pm.variables.get('base_url')) {",
+          "    throw new Error('base_url is not set in environment or collection variables. Set {{base_url}} to continue.');",
+          "}"
+        ],
+        "type": "text/javascript"
+      }
+    }
   ],
   "item": [
     {
-      "name": "Public / Guest",
+      "name": "User - Onboarding",
       "item": [
         {
           "name": "GET Onboarding Screens",
@@ -22,141 +35,221 @@
             "method": "GET",
             "header": [
               { "key": "Accept", "value": "application/json" },
-              { "key": "X-Lang", "value": "en", "description": "ar or en" }
+              { "key": "X-Lang", "value": "en" }
             ],
             "url": {
-              "raw": "{{base_url}}/api/{{api_version}}/user/onboarding-screens",
-              "host": ["{{base_url}}"],
-              "path": ["api", "{{api_version}}", "user", "onboarding-screens"]
+              "raw": "{{user_base}}/onboarding-screens",
+              "host": ["{{user_base}}"],
+              "path": ["onboarding-screens"]
             }
           },
-          "response": [
+          "response": [],
+          "event": [
             {
-              "name": "Success - 200",
-              "originalRequest": {},
-              "status": "OK",
-              "code": 200,
-              "body": "{\n  \"success\": true,\n  \"message\": \"Onboarding screens\",\n  \"data\": [\n    { \"id\": 1, \"title\": \"Now... Rate the World from Your Phone\", \"body\": \"You have the chance...\", \"sort_order\": 1 },\n    { \"id\": 2, \"title\": \"First 100% Specialized Rating App\", \"body\": \"The 21st century...\", \"sort_order\": 2 },\n    { \"id\": 3, \"title\": \"Your Participation Makes the Difference\", \"body\": \"Your opinion matters...\", \"sort_order\": 3 }\n  ],\n  \"meta\": null\n}"
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status is 200', function(){ pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });",
+                  "pm.test('data is array and <=3', function(){ pm.expect(json.data).to.be.an('array'); pm.expect(json.data.length).to.be.at.most(3); });"
+                ],
+                "type": "text/javascript"
+              }
             }
-          ],
-          "description": "Returns active onboarding screens (max 3)."
+          ]
         }
       ]
     },
     {
-      "name": "Auth (OTP)",
+      "name": "User - Auth",
       "item": [
         {
-          "name": "POST Request OTP (Planned)",
+          "name": "Register",
           "request": {
             "method": "POST",
             "header": [
               { "key": "Accept", "value": "application/json" },
+              { "key": "X-Lang", "value": "en" },
               { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"phone\": \"+201234567890\"\n}"
+              "raw": "{\n  \"full_name\": \"Test User\",\n  \"phone\": \"+201000000000\",\n  \"email\": \"test@example.com\",\n  \"birth_date\": \"1998-01-01\",\n  \"gender\": \"male\",\n  \"nationality\": \"Egyptian\",\n  \"password\": \"Password123!\",\n  \"password_confirmation\": \"Password123!\"\n}"
             },
-            "url": { "raw": "{{base_url}}/api/{{api_version}}/user/auth/request-otp" }
+            "url": { "raw": "{{user_base}}/auth/register", "host": ["{{user_base}}"], "path": ["auth","register"] }
           },
-          "response": [
+          "event": [
             {
-              "name": "Success - 200",
-              "code": 200,
-              "body": "{ \"success\": true, \"message\": \"OTP sent\", \"data\": null, \"meta\": null }"
-            },
-            {
-              "name": "Validation - 422",
-              "code": 422,
-              "body": "{ \"success\": false, \"message\": \"Validation error\", \"data\": {\"phone\":[\"The phone field is required.\"]}, \"meta\": null }"
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status is 200', function(){ pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });",
+                  "if (json.data && json.data.token) { pm.environment.set('user_token', json.data.token); }"
+                ],
+                "type": "text/javascript"
+              }
             }
-          ],
-          "description": "Planned: request OTP to phone number."
+          ]
         },
         {
-          "name": "POST Verify OTP (Planned)",
+          "name": "Login",
           "request": {
             "method": "POST",
             "header": [
               { "key": "Accept", "value": "application/json" },
+              { "key": "X-Lang", "value": "en" },
               { "key": "Content-Type", "value": "application/json" }
             ],
-            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"+201234567890\",\n  \"otp\": \"123456\"\n}" },
-            "url": { "raw": "{{base_url}}/api/{{api_version}}/user/auth/verify-otp" }
+            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"+201000000000\",\n  \"password\": \"Password123!\"\n}" },
+            "url": { "raw": "{{user_base}}/auth/login", "host": ["{{user_base}}"], "path": ["auth","login"] }
           },
-          "description": "Planned: verify OTP and return token."
-        }
-      ]
-    },
-    {
-      "name": "Reviews",
-      "item": [
-        {
-          "name": "POST Create Review (Planned)",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{user_token}}" }
-            ],
-            "body": { "mode": "raw", "raw": "{\n  \"branch_id\": 12,\n  \"overall_rating\": 4.5,\n  \"comment\": \"Great!\"\n}" },
-            "url": { "raw": "{{base_url}}/api/{{api_version}}/user/reviews" }
-          },
-          "description": "Planned: create a review (authenticated)."
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status is 200', function(){ pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });",
+                  "if (json.data && json.data.token) { pm.environment.set('user_token', json.data.token); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
-          "name": "POST Upload Review Photos (Planned)",
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "X-Lang", "value": "en" },
+              { "key": "Authorization", "value": "Bearer {{user_token}}" }
+            ],
+            "url": { "raw": "{{user_base}}/auth/me", "host": ["{{user_base}}"], "path": ["auth","me"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status is 200', function(){ pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Logout",
           "request": {
             "method": "POST",
             "header": [
               { "key": "Accept", "value": "application/json" },
-              { "key": "Content-Type", "value": "multipart/form-data" },
+              { "key": "X-Lang", "value": "en" },
               { "key": "Authorization", "value": "Bearer {{user_token}}" }
             ],
-            "body": { "mode": "formdata", "formdata": [ { "key": "photos[]", "type": "file" } ] },
-            "url": { "raw": "{{base_url}}/api/{{api_version}}/user/reviews/upload-photos" }
+            "url": { "raw": "{{user_base}}/auth/logout", "host": ["{{user_base}}"], "path": ["auth","logout"] }
           },
-          "description": "Planned: upload photos for a review (max 3)."
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status is 200', function(){ pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Forgot Password - Send OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "X-Lang", "value": "en" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"+201000000000\"\n}" },
+            "url": { "raw": "{{user_base}}/auth/forgot-password/send-otp", "host": ["{{user_base}}"], "path": ["auth","forgot-password","send-otp"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status is 200', function(){ pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Forgot Password - Verify OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "X-Lang", "value": "en" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"+201000000000\",\n  \"otp\": \"1234\"\n}" },
+            "url": { "raw": "{{user_base}}/auth/forgot-password/verify-otp", "host": ["{{user_base}}"], "path": ["auth","forgot-password","verify-otp"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status is 200', function(){ pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });",
+                  "if (json.data && json.data.reset_token) { pm.environment.set('reset_token', json.data.reset_token); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Forgot Password - Reset",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "X-Lang", "value": "en" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"+201000000000\",\n  \"reset_token\": \"{{reset_token}}\",\n  \"new_password\": \"NewPassword123!\",\n  \"new_password_confirmation\": \"NewPassword123!\"\n}" },
+            "url": { "raw": "{{user_base}}/auth/forgot-password/reset", "host": ["{{user_base}}"], "path": ["auth","forgot-password","reset"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status is 200', function(){ pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         }
-      ]
-    },
-    {
-      "name": "Loyalty Points",
-      "item": [
-        { "name": "GET Points Balance (Planned)", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/{{api_version}}/user/points" } } },
-        { "name": "GET Points Transactions (Planned)", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/{{api_version}}/user/points/transactions" } } }
-      ]
-    },
-    {
-      "name": "Vouchers",
-      "item": [
-        { "name": "GET My Vouchers (Planned)", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/{{api_version}}/user/vouchers" } } },
-        { "name": "GET Voucher Details by Code (Planned)", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/{{api_version}}/user/vouchers/{{voucher_code}}" } } }
-      ]
-    },
-    {
-      "name": "Notifications",
-      "item": [
-        { "name": "GET My Notifications (Planned)", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/{{api_version}}/user/notifications" } } },
-        { "name": "PATCH Mark As Read (Planned)", "request": { "method": "PATCH", "url": { "raw": "{{base_url}}/api/{{api_version}}/user/notifications/mark-read" } } }
-      ]
-    },
-    {
-      "name": "Subscription",
-      "item": [
-        { "name": "GET Subscription Status (Planned)", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/{{api_version}}/user/subscription" } } },
-        { "name": "POST Subscribe / Renew (Planned)", "request": { "method": "POST", "url": { "raw": "{{base_url}}/api/{{api_version}}/user/subscription" } } }
-      ]
-    },
-    {
-      "name": "Planned Endpoints (Misc)",
-      "item": [
-        { "name": "GET Categories (Planned)", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/{{api_version}}/user/categories" } } },
-        { "name": "GET Featured Places (Planned)", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/{{api_version}}/user/places/featured" } } },
-        { "name": "GET Place Details (Planned)", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/{{api_version}}/user/places/{place_id}" } } },
-        { "name": "GET Search Suggestions (Planned)", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/{{api_version}}/user/search" } } }
       ]
     }
   ]
