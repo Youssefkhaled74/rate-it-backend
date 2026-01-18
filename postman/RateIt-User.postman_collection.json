@@ -9,16 +9,26 @@
     { "key": "base_url", "value": "http://127.0.0.1:8000" },
     { "key": "api_version", "value": "v1" },
     { "key": "user_token", "value": "" },
-    { "key": "user_base", "value": "{{base_url}}/api/{{api_version}}/user" }
+    { "key": "reset_token", "value": "" }
   ],
   "event": [
     {
       "listen": "prerequest",
       "script": {
         "exec": [
-          "// Collection pre-request: ensure base_url is set",
+          "// Ensure base_url is configured in environment or collection variables",
           "if (!pm.variables.get('base_url')) {",
-          "    throw new Error('base_url is not set in environment or collection variables. Set {{base_url}} to continue.');",
+          "  throw new Error('base_url is not set in environment or collection variables. Set {{base_url}} to continue.');",
+          "}",
+          "// Ensure default headers exist for each request: Accept and X-Lang",
+          "function ensureHeader(key, value){",
+          "  pm.request.headers.upsert({ key: key, value: value });",
+          "}",
+          "ensureHeader('Accept','application/json');",
+          "ensureHeader('X-Lang','en');",
+          "// For POST/PUT/PATCH ensure Content-Type if absent",
+          "if (pm.request.method === 'POST' || pm.request.method === 'PUT' || pm.request.method === 'PATCH') {",
+          "  ensureHeader('Content-Type','application/json');",
           "}"
         ],
         "type": "text/javascript"
@@ -28,6 +38,7 @@
   "item": [
     {
       "name": "User - Onboarding",
+      "description": "Public endpoints for onboarding screens.",
       "item": [
         {
           "name": "GET Onboarding Screens",
@@ -38,12 +49,27 @@
               { "key": "X-Lang", "value": "en" }
             ],
             "url": {
-              "raw": "{{user_base}}/onboarding-screens",
-              "host": ["{{user_base}}"],
-              "path": ["onboarding-screens"]
+              "raw": "{{base_url}}/api/{{api_version}}/user/onboarding-screens",
+              "host": ["{{base_url}}"],
+              "path": ["api","{{api_version}}","user","onboarding-screens"]
             }
           },
-          "response": [],
+          "response": [
+            {
+              "name": "Success 200",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Onboarding screens\",\n  \"data\": [ { \"id\":1,\"title\":\"Welcome\" } ],\n  \"meta\": null\n}"
+            },
+            {
+              "name": "Error 500",
+              "originalRequest": {},
+              "status": "Internal Server Error",
+              "code": 500,
+              "body": "{\n  \"success\": false,\n  \"message\": \"Server error\",\n  \"data\": null,\n  \"meta\": null\n}"
+            }
+          ],
           "event": [
             {
               "listen": "test",
@@ -52,7 +78,7 @@
                   "pm.test('status is 200', function(){ pm.response.to.have.status(200); });",
                   "var json = pm.response.json();",
                   "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });",
-                  "pm.test('data is array and <=3', function(){ pm.expect(json.data).to.be.an('array'); pm.expect(json.data.length).to.be.at.most(3); });"
+                  "pm.test('data array <=3', function(){ pm.expect(json.data).to.be.an('array'); pm.expect(json.data.length).to.be.at.most(3); });"
                 ],
                 "type": "text/javascript"
               }
@@ -63,190 +89,195 @@
     },
     {
       "name": "User - Auth",
+      "description": "Authentication endpoints (register/login/public + protected endpoints in subfolder).",
       "item": [
         {
-          "name": "Register",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "X-Lang", "value": "en" },
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"full_name\": \"Test User\",\n  \"phone\": \"+201000000000\",\n  \"email\": \"test@example.com\",\n  \"birth_date\": \"1998-01-01\",\n  \"gender\": \"male\",\n  \"nationality\": \"Egyptian\",\n  \"password\": \"Password123!\",\n  \"password_confirmation\": \"Password123!\"\n}"
+          "name": "Public",
+          "description": "Public auth endpoints: register, login, forgot-password flows.",
+          "item": [
+            {
+              "name": "Register",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Accept", "value": "application/json" },
+                  { "key": "X-Lang", "value": "en" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"full_name\": \"Test User\",\n  \"phone\": \"+201000000000\",\n  \"email\": \"test@example.com\",\n  \"password\": \"Password123!\",\n  \"password_confirmation\": \"Password123!\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/{{api_version}}/user/auth/register",
+                  "host": ["{{base_url}}"],
+                  "path": ["api","{{api_version}}","user","auth","register"]
+                }
+              },
+              "response": [
+                { "name": "Success 200", "status": "OK", "code": 200, "body": "{ \"success\": true, \"data\": { \"token\": \"abc...\" } }" },
+                { "name": "Validation 422", "status": "Unprocessable Entity", "code": 422, "body": "{ \"success\": false, \"data\": { \"phone\": [\"The phone field is required.\"] } }" }
+              ],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('status is 200', function(){ pm.response.to.have.status(200); });",
+                      "var json = pm.response.json();",
+                      "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });",
+                      "if (json.data && json.data.token) { pm.environment.set('user_token', json.data.token); }"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ]
             },
-            "url": { "raw": "{{user_base}}/auth/register", "host": ["{{user_base}}"], "path": ["auth","register"] }
-          },
-          "event": [
             {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('status is 200', function(){ pm.response.to.have.status(200); });",
-                  "var json = pm.response.json();",
-                  "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });",
-                  "if (json.data && json.data.token) { pm.environment.set('user_token', json.data.token); }"
+              "name": "Login",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Accept", "value": "application/json" },
+                  { "key": "X-Lang", "value": "en" },
+                  { "key": "Content-Type", "value": "application/json" }
                 ],
-                "type": "text/javascript"
-              }
+                "body": { "mode": "raw", "raw": "{\n  \"phone\": \"+201000000000\",\n  \"password\": \"Password123!\"\n}" },
+                "url": {
+                  "raw": "{{base_url}}/api/{{api_version}}/user/auth/login",
+                  "host": ["{{base_url}}"],
+                  "path": ["api","{{api_version}}","user","auth","login"]
+                }
+              },
+              "response": [
+                { "name": "Success 200", "status": "OK", "code": 200, "body": "{ \"success\": true, \"data\": { \"token\": \"abc...\" } }" },
+                { "name": "Invalid 401", "status": "Unauthorized", "code": 401, "body": "{ \"success\": false, \"message\": \"Invalid credentials\" }" }
+              ],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('status is 200', function(){ pm.response.to.have.status(200); });",
+                      "var json = pm.response.json();",
+                      "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });",
+                      "if (json.data && json.data.token) { pm.environment.set('user_token', json.data.token); }"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Forgot Password - Send OTP",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Accept", "value": "application/json" },
+                  { "key": "X-Lang", "value": "en" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": { "mode": "raw", "raw": "{\n  \"phone\": \"+201000000000\"\n}" },
+                "url": {
+                  "raw": "{{base_url}}/api/{{api_version}}/user/auth/forgot-password/send-otp",
+                  "host": ["{{base_url}}"],
+                  "path": ["api","{{api_version}}","user","auth","forgot-password","send-otp"]
+                }
+              },
+              "response": [ { "name": "Success 200", "status": "OK", "code": 200, "body": "{ \"success\": true }" } ],
+              "event": [ { "listen": "test", "script": { "exec": [ "pm.test('status is 200', function(){ pm.response.to.have.status(200); });", "var json = pm.response.json();", "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });" ], "type": "text/javascript" } } ]
+            },
+            {
+              "name": "Forgot Password - Verify OTP",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Accept", "value": "application/json" },
+                  { "key": "X-Lang", "value": "en" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": { "mode": "raw", "raw": "{\n  \"phone\": \"+201000000000\",\n  \"otp\": \"1234\"\n}" },
+                "url": {
+                  "raw": "{{base_url}}/api/{{api_version}}/user/auth/forgot-password/verify-otp",
+                  "host": ["{{base_url}}"],
+                  "path": ["api","{{api_version}}","user","auth","forgot-password","verify-otp"]
+                }
+              },
+              "response": [ { "name": "Success 200", "status": "OK", "code": 200, "body": "{ \"success\": true, \"data\": { \"reset_token\": \"r-token\" } }" } ],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('status is 200', function(){ pm.response.to.have.status(200); });",
+                      "var json = pm.response.json();",
+                      "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });",
+                      "if (json.data && json.data.reset_token) { pm.environment.set('reset_token', json.data.reset_token); }"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Forgot Password - Reset",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Accept", "value": "application/json" },
+                  { "key": "X-Lang", "value": "en" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": { "mode": "raw", "raw": "{\n  \"phone\": \"+201000000000\",\n  \"reset_token\": \"{{reset_token}}\",\n  \"new_password\": \"NewPassword123!\",\n  \"new_password_confirmation\": \"NewPassword123!\"\n}" },
+                "url": {
+                  "raw": "{{base_url}}/api/{{api_version}}/user/auth/forgot-password/reset",
+                  "host": ["{{base_url}}"],
+                  "path": ["api","{{api_version}}","user","auth","forgot-password","reset"]
+                }
+              },
+              "response": [ { "name": "Success 200", "status": "OK", "code": 200, "body": "{ \"success\": true }" } ],
+              "event": [ { "listen": "test", "script": { "exec": [ "pm.test('status is 200', function(){ pm.response.to.have.status(200); });", "var json = pm.response.json();", "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });" ], "type": "text/javascript" } } ]
             }
           ]
         },
         {
-          "name": "Login",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "X-Lang", "value": "en" },
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"+201000000000\",\n  \"password\": \"Password123!\"\n}" },
-            "url": { "raw": "{{user_base}}/auth/login", "host": ["{{user_base}}"], "path": ["auth","login"] }
-          },
-          "event": [
+          "name": "Protected",
+          "description": "Protected auth endpoints that require Bearer token.",
+          "auth": { "type": "bearer", "bearer": [ { "key": "token", "value": "{{user_token}}", "type": "string" } ] },
+          "item": [
             {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('status is 200', function(){ pm.response.to.have.status(200); });",
-                  "var json = pm.response.json();",
-                  "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });",
-                  "if (json.data && json.data.token) { pm.environment.set('user_token', json.data.token); }"
+              "name": "Me",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "Accept", "value": "application/json" },
+                  { "key": "X-Lang", "value": "en" }
                 ],
-                "type": "text/javascript"
-              }
-            }
-          ]
-        },
-        {
-          "name": "Me",
-          "request": {
-            "method": "GET",
-            "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "X-Lang", "value": "en" },
-              { "key": "Authorization", "value": "Bearer {{user_token}}" }
-            ],
-            "url": { "raw": "{{user_base}}/auth/me", "host": ["{{user_base}}"], "path": ["auth","me"] }
-          },
-          "event": [
+                "url": {
+                  "raw": "{{base_url}}/api/{{api_version}}/user/auth/me",
+                  "host": ["{{base_url}}"],
+                  "path": ["api","{{api_version}}","user","auth","me"]
+                }
+              },
+              "response": [ { "name": "Success 200", "status": "OK", "code": 200, "body": "{ \"success\": true, \"data\": { \"id\": 1 } }" }, { "name": "Unauthorized 401", "status": "Unauthorized", "code": 401, "body": "{ \"success\": false, \"message\": \"Unauthenticated.\" }" } ],
+              "event": [ { "listen": "test", "script": { "exec": [ "pm.test('status is 200', function(){ pm.response.to.have.status(200); });", "var json = pm.response.json();", "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });" ], "type": "text/javascript" } } ]
+            },
             {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('status is 200', function(){ pm.response.to.have.status(200); });",
-                  "var json = pm.response.json();",
-                  "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });"
+              "name": "Logout",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Accept", "value": "application/json" },
+                  { "key": "X-Lang", "value": "en" }
                 ],
-                "type": "text/javascript"
-              }
-            }
-          ]
-        },
-        {
-          "name": "Logout",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "X-Lang", "value": "en" },
-              { "key": "Authorization", "value": "Bearer {{user_token}}" }
-            ],
-            "url": { "raw": "{{user_base}}/auth/logout", "host": ["{{user_base}}"], "path": ["auth","logout"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('status is 200', function(){ pm.response.to.have.status(200); });",
-                  "var json = pm.response.json();",
-                  "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ]
-        },
-        {
-          "name": "Forgot Password - Send OTP",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "X-Lang", "value": "en" },
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"+201000000000\"\n}" },
-            "url": { "raw": "{{user_base}}/auth/forgot-password/send-otp", "host": ["{{user_base}}"], "path": ["auth","forgot-password","send-otp"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('status is 200', function(){ pm.response.to.have.status(200); });",
-                  "var json = pm.response.json();",
-                  "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ]
-        },
-        {
-          "name": "Forgot Password - Verify OTP",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "X-Lang", "value": "en" },
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"+201000000000\",\n  \"otp\": \"1234\"\n}" },
-            "url": { "raw": "{{user_base}}/auth/forgot-password/verify-otp", "host": ["{{user_base}}"], "path": ["auth","forgot-password","verify-otp"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('status is 200', function(){ pm.response.to.have.status(200); });",
-                  "var json = pm.response.json();",
-                  "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });",
-                  "if (json.data && json.data.reset_token) { pm.environment.set('reset_token', json.data.reset_token); }"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ]
-        },
-        {
-          "name": "Forgot Password - Reset",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "X-Lang", "value": "en" },
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"+201000000000\",\n  \"reset_token\": \"{{reset_token}}\",\n  \"new_password\": \"NewPassword123!\",\n  \"new_password_confirmation\": \"NewPassword123!\"\n}" },
-            "url": { "raw": "{{user_base}}/auth/forgot-password/reset", "host": ["{{user_base}}"], "path": ["auth","forgot-password","reset"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('status is 200', function(){ pm.response.to.have.status(200); });",
-                  "var json = pm.response.json();",
-                  "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });"
-                ],
-                "type": "text/javascript"
-              }
+                "url": {
+                  "raw": "{{base_url}}/api/{{api_version}}/user/auth/logout",
+                  "host": ["{{base_url}}"],
+                  "path": ["api","{{api_version}}","user","auth","logout"]
+                }
+              },
+              "response": [ { "name": "Success 200", "status": "OK", "code": 200, "body": "{ \"success\": true }" } ],
+              "event": [ { "listen": "test", "script": { "exec": [ "pm.test('status is 200', function(){ pm.response.to.have.status(200); });", "var json = pm.response.json();", "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });" ], "type": "text/javascript" } } ]
             }
           ]
         }
