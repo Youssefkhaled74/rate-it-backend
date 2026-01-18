@@ -10,6 +10,7 @@
     { "key": "api_version", "value": "v1" },
     { "key": "user_token", "value": "" },
     { "key": "reset_token", "value": "" },
+    { "key": "category_id", "value": "1" },
     { "key": "phone", "value": "+201000000000" },
     { "key": "otp", "value": "" }
   ],
@@ -270,6 +271,82 @@
               }
             }
           ]
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "description": "Category screens: categories, subcategories and search",
+      "item": [
+        {
+          "name": "GET Categories",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "X-Lang", "value": "en" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/{{api_version}}/user/categories",
+              "host": ["{{base_url}}"],
+              "path": ["api","{{api_version}}","user","categories"]
+            }
+          },
+          "response": [],
+          "event": [ { "listen": "test", "script": { "exec": [ "pm.test('status is 200', function(){ pm.response.to.have.status(200); });", "var json = pm.response.json();", "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });", "pm.test('data is array', function(){ pm.expect(json.data).to.be.an('array'); });" ], "type": "text/javascript" } } ]
+        },
+        {
+          "name": "GET Subcategories of Category",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "X-Lang", "value": "en" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/{{api_version}}/user/categories/{{category_id}}/subcategories",
+              "host": ["{{base_url}}"],
+              "path": ["api","{{api_version}}","user","categories","{{category_id}}","subcategories"]
+            }
+          },
+          "response": [],
+          "event": [ { "listen": "test", "script": { "exec": [ "pm.test('status is 200', function(){ pm.response.to.have.status(200); });", "var json = pm.response.json();", "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });", "pm.test('data is array', function(){ pm.expect(json.data).to.be.an('array'); });" ], "type": "text/javascript" } } ]
+        },
+        {
+          "name": "GET Categories Search",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "X-Lang", "value": "en" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/{{api_version}}/user/categories/search?q=med&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["api","{{api_version}}","user","categories","search"],
+              "query": [ { "key": "q", "value": "med" }, { "key": "limit", "value": "20" } ]
+            }
+          },
+          "response": [],
+          "event": [ { "listen": "test", "script": { "exec": [ "pm.test('status is 200', function(){ pm.response.to.have.status(200); });", "var json = pm.response.json();", "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });", "pm.test('data.query exists', function(){ pm.expect(json.data.query).to.be.a('string'); });", "pm.test('results array', function(){ pm.expect(json.data.results).to.be.an('array'); });" ], "type": "text/javascript" } } ]
+        },
+        {
+          "name": "GET Categories Search within category",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "X-Lang", "value": "en" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/{{api_version}}/user/categories/search?q=cli&category_id={{category_id}}&types=subcategories",
+              "host": ["{{base_url}}"],
+              "path": ["api","{{api_version}}","user","categories","search"],
+              "query": [ { "key": "q", "value": "cli" }, { "key": "category_id", "value": "{{category_id}}" }, { "key": "types", "value": "subcategories" } ]
+            }
+          },
+          "response": [],
+          "event": [ { "listen": "test", "script": { "exec": [ "pm.test('status is 200', function(){ pm.response.to.have.status(200); });", "var json = pm.response.json();", "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });", "pm.test('data.query exists', function(){ pm.expect(json.data.query).to.be.a('string'); });", "pm.test('results array', function(){ pm.expect(json.data.results).to.be.an('array'); });" ], "type": "text/javascript" } } ]
         }
       ]
     },

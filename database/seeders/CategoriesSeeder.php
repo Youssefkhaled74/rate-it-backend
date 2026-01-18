@@ -14,6 +14,14 @@ class CategoriesSeeder extends Seeder
 
         $rows = [
             [
+                'name_en' => 'Medical & Healthcare',
+                'name_ar' => 'الطب والرعاية الصحية',
+                'logo' => 'uploads/categories/medical_healthcare.png',
+                'is_active' => true,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+            [
                 'name_en' => 'Hospitals',
                 'name_ar' => 'مستشفيات',
                 'logo' => 'uploads/categories/hospitals.png',
