@@ -23,7 +23,6 @@ class CreateBranchesTable extends Migration
             $table->softDeletesTz();
 
             $table->index('place_id');
-            $table->foreign('place_id')->references('id')->on('places')->onDelete('cascade');
         });
     }
 
