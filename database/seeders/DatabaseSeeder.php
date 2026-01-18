@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             UserLevelsSeeder::class,
             NotificationTemplatesSeeder::class,
             ContentSeeder::class,
+            \Database\Seeders\OnboardingScreensSeeder::class,
         ]);
 
         // Optionally run demo data only in local or when DB_SEED_DEMO=true
