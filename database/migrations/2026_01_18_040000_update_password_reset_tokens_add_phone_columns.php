@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class UpdatePasswordResetTokensAddPhoneColumns extends Migration
 {
@@ -17,6 +18,22 @@ class UpdatePasswordResetTokensAddPhoneColumns extends Migration
                 $table->timestamps();
             });
             return;
+        }
+        // If a legacy 'email' primary column exists (from older migrations), remove it
+        if (Schema::hasColumn('password_reset_tokens', 'email')) {
+            // Drop primary key if it's set on email
+            try {
+                DB::statement('ALTER TABLE password_reset_tokens DROP PRIMARY KEY');
+            } catch (\Exception $e) {
+                // ignore if cannot drop primary (DB engine may vary)
+            }
+
+            // Now drop the legacy email column
+            Schema::table('password_reset_tokens', function (Blueprint $table) {
+                if (Schema::hasColumn('password_reset_tokens', 'email')) {
+                    $table->dropColumn('email');
+                }
+            });
         }
 
         Schema::table('password_reset_tokens', function (Blueprint $table) {
