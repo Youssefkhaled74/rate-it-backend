@@ -7,8 +7,13 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 trait ApiResponseTrait
 {
-    public function success($data = null, ?string $message = null, $meta = null, int $status = 200): JsonResponse
+    /**
+     * @param string|null $messageKey translation key, e.g. 'onboarding.list'
+     */
+    public function success($data = null, ?string $messageKey = null, $meta = null, int $status = 200): JsonResponse
     {
+        $message = $messageKey ? __($messageKey) : null;
+
         return response()->json([
             'success' => true,
             'message' => $message,
@@ -17,8 +22,13 @@ trait ApiResponseTrait
         ], $status);
     }
 
-    public function error(?string $message = null, $data = null, int $status = 400): JsonResponse
+    /**
+     * @param string|null $messageKey translation key
+     */
+    public function error(?string $messageKey = null, $data = null, int $status = 400): JsonResponse
     {
+        $message = $messageKey ? __($messageKey) : null;
+
         return response()->json([
             'success' => false,
             'message' => $message,

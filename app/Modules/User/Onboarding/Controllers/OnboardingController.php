@@ -4,6 +4,7 @@ namespace App\Modules\User\Onboarding\Controllers;
 
 use App\Support\Api\BaseApiController;
 use App\Modules\User\Onboarding\Models\OnboardingScreen;
+use App\Modules\User\Onboarding\Resources\OnboardingScreenResource;
 
 class OnboardingController extends BaseApiController
 {
@@ -13,8 +14,8 @@ class OnboardingController extends BaseApiController
             ->where('is_active', true)
             ->orderBy('sort_order', 'asc')
             ->limit(3)
-            ->get(['id','title','body','sort_order']);
+            ->get();
 
-        return $this->success($screens, null, null);
+        return $this->success(OnboardingScreenResource::collection($screens), 'onboarding.list');
     }
 }
