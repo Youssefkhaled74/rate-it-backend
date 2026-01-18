@@ -10,9 +10,9 @@ class CreateVendorUsersTable extends Migration
     public function up()
     {
         Schema::create('vendor_users', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid('brand_id')->nullable();
-            $table->uuid('branch_id')->nullable();
+            $table->id();
+            $table->foreignId('brand_id')->nullable()->constrained('brands')->nullOnDelete();
+            $table->foreignId('branch_id')->nullable()->constrained('branches')->nullOnDelete();
             $table->string('name');
             $table->string('phone')->unique();
             $table->string('email')->nullable()->unique();

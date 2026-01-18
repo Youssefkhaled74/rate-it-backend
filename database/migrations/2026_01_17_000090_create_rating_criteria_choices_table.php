@@ -9,8 +9,8 @@ class CreateRatingCriteriaChoicesTable extends Migration
     public function up()
     {
         Schema::create('rating_criteria_choices', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid('criteria_id');
+            $table->id();
+            $table->foreignId('criteria_id')->constrained('rating_criteria')->cascadeOnDelete();
             $table->string('choice_text');
             $table->integer('value')->nullable();
             $table->integer('sort_order')->default(0);

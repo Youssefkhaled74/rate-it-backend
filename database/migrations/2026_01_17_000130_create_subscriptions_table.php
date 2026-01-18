@@ -20,12 +20,8 @@ class CreateSubscriptionsTable extends Migration
         }
 
         Schema::create('subscriptions', function (Blueprint $table) use ($userIdIsUuid) {
-            $table->uuid('id')->primary();
-            if ($userIdIsUuid) {
-                $table->uuid('user_id');
-            } else {
-                $table->unsignedBigInteger('user_id');
-            }
+                $table->id();
+                $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->enum('status', ['FREE','ACTIVE','EXPIRED'])->default('FREE');
             $table->timestampTz('started_at')->nullable();
             $table->timestampTz('free_until')->nullable();

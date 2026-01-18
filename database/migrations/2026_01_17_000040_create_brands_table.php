@@ -9,7 +9,7 @@ class CreateBrandsTable extends Migration
     public function up()
     {
         Schema::create('brands', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->id();
             $table->string('name');
             $table->string('logo_url')->nullable();
             $table->integer('points_expiry_days')->nullable();

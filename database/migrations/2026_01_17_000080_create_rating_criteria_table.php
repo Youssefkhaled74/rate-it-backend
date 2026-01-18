@@ -9,8 +9,8 @@ class CreateRatingCriteriaTable extends Migration
     public function up()
     {
         Schema::create('rating_criteria', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid('subcategory_id');
+            $table->id();
+            $table->foreignId('subcategory_id')->constrained('subcategories')->cascadeOnDelete();
             $table->text('question_text');
             $table->enum('type', ['RATING','YES_NO','MULTIPLE_CHOICE']);
             $table->boolean('is_required')->default(false);

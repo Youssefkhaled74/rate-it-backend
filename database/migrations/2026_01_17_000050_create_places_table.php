@@ -9,9 +9,9 @@ class CreatePlacesTable extends Migration
     public function up()
     {
         Schema::create('places', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid('brand_id')->nullable();
-            $table->uuid('subcategory_id')->nullable();
+            $table->id();
+            $table->foreignId('brand_id')->nullable()->constrained('brands')->nullOnDelete();
+            $table->foreignId('subcategory_id')->nullable()->constrained('subcategories')->nullOnDelete();
             $table->string('name');
             $table->text('description')->nullable();
             $table->boolean('is_featured')->default(false);

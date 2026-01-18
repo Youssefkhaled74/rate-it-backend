@@ -9,8 +9,8 @@ class CreateBranchesTable extends Migration
     public function up()
     {
         Schema::create('branches', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid('place_id');
+            $table->id();
+            $table->foreignId('place_id')->constrained('places')->cascadeOnDelete();
             $table->string('name')->nullable();
             $table->text('address');
             $table->decimal('lat', 10, 7)->nullable();

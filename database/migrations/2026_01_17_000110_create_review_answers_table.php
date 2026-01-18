@@ -9,20 +9,17 @@ class CreateReviewAnswersTable extends Migration
     public function up()
     {
         Schema::create('review_answers', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid('review_id');
-            $table->uuid('criteria_id');
+              $table->id();
+              $table->foreignId('review_id')->constrained('reviews')->cascadeOnDelete();
+              $table->foreignId('criteria_id')->constrained('rating_criteria')->cascadeOnDelete();
             $table->smallInteger('rating_value')->nullable();
             $table->boolean('yes_no_value')->nullable();
-            $table->uuid('choice_id')->nullable();
+              $table->foreignId('choice_id')->nullable()->constrained('rating_criteria_choices')->nullOnDelete();
             $table->timestampsTz();
 
             $table->unique(['review_id','criteria_id']);
             $table->index('review_id');
             $table->index('criteria_id');
-            $table->foreign('review_id')->references('id')->on('reviews')->onDelete('cascade');
-            $table->foreign('criteria_id')->references('id')->on('rating_criteria')->onDelete('cascade');
-            $table->foreign('choice_id')->references('id')->on('rating_criteria_choices')->onDelete('set null');
         });
     }
 

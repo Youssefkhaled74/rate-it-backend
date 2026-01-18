@@ -9,8 +9,8 @@ class CreateReviewPhotosTable extends Migration
     public function up()
     {
         Schema::create('review_photos', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid('review_id');
+            $table->id();
+            $table->foreignId('review_id')->constrained('reviews')->cascadeOnDelete();
             $table->string('storage_path');
             $table->boolean('encrypted')->default(true);
             $table->timestampsTz();
