@@ -1,0 +1,44 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class RatingCriteria extends Model
+{
+    use HasFactory;
+
+    protected $table = 'rating_criteria';
+
+    protected $fillable = [
+        'subcategory_id',
+        'question_text',
+        'type',
+        'is_required',
+        'sort_order',
+    ];
+
+    protected $casts = [
+        'is_required' => 'boolean',
+        'sort_order' => 'integer',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    // Relations
+    public function subcategory()
+    {
+        return $this->belongsTo(Subcategory::class, 'subcategory_id');
+    }
+
+    public function choices()
+    {
+        return $this->hasMany(RatingCriteriaChoice::class, 'criteria_id');
+    }
+
+    public function reviewAnswers()
+    {
+        return $this->hasMany(ReviewAnswer::class, 'criteria_id');
+    }
+}
