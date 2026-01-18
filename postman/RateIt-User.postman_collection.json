@@ -105,8 +105,8 @@
                   { "key": "Content-Type", "value": "application/json" }
                 ],
                 "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"full_name\": \"Test User\",\n  \"phone\": \"+201000000000\",\n  \"email\": \"test@example.com\",\n  \"password\": \"Password123!\",\n  \"password_confirmation\": \"Password123!\"\n}"
+                    "mode": "raw",
+                    "raw": "{\n  \"full_name\": \"Test User\",\n  \"phone\": \"+201000000000\",\n  \"email\": \"{{test_email}}\",\n  \"password\": \"Password123!\",\n  \"password_confirmation\": \"Password123!\"\n}"
                 },
                 "url": {
                   "raw": "{{base_url}}/api/{{api_version}}/user/auth/register",
@@ -119,6 +119,18 @@
                 { "name": "Validation 422", "status": "Unprocessable Entity", "code": 422, "body": "{ \"success\": false, \"data\": { \"phone\": [\"The phone field is required.\"] } }" }
               ],
               "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "// Generate a unique test email for register to avoid duplicate email errors",
+                      "var now = Date.now();",
+                      "var email = 'test+' + now + '@example.com';",
+                      "pm.environment.set('test_email', email);"
+                    ],
+                    "type": "text/javascript"
+                  }
+                },
                 {
                   "listen": "test",
                   "script": {

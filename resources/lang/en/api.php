@@ -12,5 +12,6 @@ return [
     'errors' => [
         'validation' => 'Validation error',
         'unauthorized' => 'Unauthorized',
+        'database' => 'Database error',
     ],
 ];

@@ -12,5 +12,6 @@ return [
     'errors' => [
         'validation' => 'خطأ في التحقق',
         'unauthorized' => 'غير مصرح',
+        'database' => 'خطأ في قاعدة البيانات',
     ],
 ];

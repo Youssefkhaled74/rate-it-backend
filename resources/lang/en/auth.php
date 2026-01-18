@@ -12,4 +12,7 @@ return [
     'invalid_otp' => 'Invalid OTP',
     'otp_expired' => 'OTP expired',
     'too_many_attempts' => 'Too many attempts',
+    'email_taken' => 'Email is already in use.',
+    'phone_taken' => 'Phone number is already in use.',
+    'registered' => 'Registration successful',
 ];
