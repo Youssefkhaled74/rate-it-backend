@@ -24,6 +24,8 @@ class UserResource extends JsonResource
                 return [
                     'id' => $this->nationality->id,
                     'name' => app()->getLocale() === 'ar' ? $this->nationality->name_ar : $this->nationality->name_en,
+                    'country_code' => strtoupper($this->nationality->country_code ?? ''),
+                    'flag_url' => $this->nationality->flag_url ?? null,
                 ];
             }),
             'governorate' => $this->governorate,

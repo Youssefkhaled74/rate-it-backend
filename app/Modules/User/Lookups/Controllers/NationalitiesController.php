@@ -4,6 +4,7 @@ namespace App\Modules\User\Lookups\Controllers;
 
 use App\Support\Api\BaseApiController;
 use App\Modules\User\Lookups\Models\Nationality;
+use App\Modules\User\Lookups\Resources\NationalityResource;
 use Illuminate\Http\Request;
 
 class NationalitiesController extends BaseApiController
@@ -13,15 +14,8 @@ class NationalitiesController extends BaseApiController
         $locale = app()->getLocale();
         $items = Nationality::where('is_active', true)
             ->orderBy('name_' . ($locale === 'ar' ? 'ar' : 'en'))
-            ->get()
-            ->map(function ($n) use ($locale) {
-                return [
-                    'id' => $n->id,
-                    'iso_code' => $n->iso_code,
-                    'name' => $locale === 'ar' ? $n->name_ar : $n->name_en,
-                ];
-            });
+            ->get();
 
-        return $this->success($items, 'lookups.nationalities');
+        return $this->success(NationalityResource::collection($items), 'lookups.nationalities');
     }
 }

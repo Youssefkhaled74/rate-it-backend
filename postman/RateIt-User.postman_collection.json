@@ -88,6 +88,46 @@
       ]
     },
     {
+      "name": "User - Lookups",
+      "description": "Public lookup endpoints (genders, nationalities)",
+      "item": [
+        {
+          "name": "GET Nationalities",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "X-Lang", "value": "en" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/{{api_version}}/user/lookups/nationalities",
+              "host": ["{{base_url}}"],
+              "path": ["api","{{api_version}}","user","lookups","nationalities"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status is 200', function(){ pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });",
+                  "pm.test('data is array', function(){ pm.expect(json.data).to.be.an('array'); });",
+                  "pm.test('items contain flag_url', function(){",
+                  "  pm.expect(json.data.length).to.be.at.least(1);",
+                  "  json.data.forEach(function(item){ pm.expect(item.flag_url).to.be.a('string'); pm.expect(item.country_code).to.match(/^[A-Z]{2}$/); pm.expect(item.flag_url).to.match(/^https:\\/\\/flagsapi\\.com\\\/[A-Z]{2}\\\/[a-z]+\\\/[0-9]+\\.png$/); });",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "User - Auth",
       "description": "Authentication endpoints (register/login/public + protected endpoints in subfolder).",
       "item": [
