@@ -12,7 +12,8 @@ class AuthService
     public function register(array $data): User
     {
         $user = User::create([
-            'full_name' => $data['full_name'] ?? ($data['first_name'] ?? null),
+            // Some apps store `name` column; ensure we set it to avoid SQL errors when 'name' is required
+            'name' => $data['full_name'] ?? ($data['first_name'] ?? null),
             'email' => $data['email'] ?? null,
             'phone' => $data['phone'] ?? null,
             'birth_date' => $data['birth_date'] ?? null,
