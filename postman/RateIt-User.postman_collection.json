@@ -360,8 +360,7 @@
               },
               "response": [ { "name": "Success 200", "status": "OK", "code": 200, "body": "{ \"success\": true }" } ],
               "event": [ { "listen": "test", "script": { "exec": [ "pm.test('status is 200', function(){ pm.response.to.have.status(200); });", "var json = pm.response.json();", "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });" ], "type": "text/javascript" } } ]
-            }
-          ]
+            },
             {
               "name": "Phone - Send OTP",
               "request": {
@@ -426,7 +425,8 @@
                   }
                 }
               ]
-            },
+            }
+          ]
         },
         {
           "name": "Protected",
