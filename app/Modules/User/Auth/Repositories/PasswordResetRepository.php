@@ -9,6 +9,13 @@ class PasswordResetRepository
 {
     public function createToken(string $phone, string $tokenHash, Carbon $expiresAt)
     {
+        // Remove any existing tokens for the phone to keep a single active token
+        try {
+            PasswordResetToken::where('phone', $phone)->delete();
+        } catch (\Exception $e) {
+            // ignore deletion errors (best-effort)
+        }
+
         return PasswordResetToken::create([
             'phone' => $phone,
             'token_hash' => $tokenHash,
