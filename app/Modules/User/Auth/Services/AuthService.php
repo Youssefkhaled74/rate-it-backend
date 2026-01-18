@@ -71,6 +71,39 @@ class AuthService
         }
 
         $valid = $user && Hash::check($password, $user->password);
+
+        // If hash check failed, attempt to detect legacy/plain hashes and rehash safely
+        if ($user && !$valid) {
+            $stored = $user->password;
+            $rehashPerformed = false;
+
+            // Plain text match (very unlikely but handle in legacy imports)
+            if ($stored === $password) {
+                $user->password = Hash::make($password);
+                $user->save();
+                $rehashPerformed = true;
+            }
+
+            // MD5 legacy
+            if (!$rehashPerformed && md5($password) === $stored) {
+                $user->password = Hash::make($password);
+                $user->save();
+                $rehashPerformed = true;
+            }
+
+            // SHA1 legacy
+            if (!$rehashPerformed && sha1($password) === $stored) {
+                $user->password = Hash::make($password);
+                $user->save();
+                $rehashPerformed = true;
+            }
+
+            if ($rehashPerformed) {
+                Log::info('Auth migrated legacy password hash', ['user_id' => $user->id]);
+                $valid = Hash::check($password, $user->password);
+            }
+        }
+
         if (!$valid) {
             throw new ApiException('auth.invalid_credentials', 401);
         }
