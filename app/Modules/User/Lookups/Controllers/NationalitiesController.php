@@ -3,19 +3,23 @@
 namespace App\Modules\User\Lookups\Controllers;
 
 use App\Support\Api\BaseApiController;
-use App\Modules\User\Lookups\Models\Nationality;
+use App\Modules\User\Lookups\Services\LookupsService;
 use App\Modules\User\Lookups\Resources\NationalityResource;
 use Illuminate\Http\Request;
 
 class NationalitiesController extends BaseApiController
 {
+    protected $service;
+
+    public function __construct(LookupsService $service)
+    {
+        $this->service = $service;
+    }
+
     public function index(Request $request)
     {
-        $locale = app()->getLocale();
-        $items = Nationality::where('is_active', true)
-            ->orderBy('name_' . ($locale === 'ar' ? 'ar' : 'en'))
-            ->get();
+        $items = $this->service->getNationalities();
 
-        return $this->success(NationalityResource::collection($items), 'lookups.nationalities');
+        return $this->success($items, 'lookups.nationalities');
     }
 }

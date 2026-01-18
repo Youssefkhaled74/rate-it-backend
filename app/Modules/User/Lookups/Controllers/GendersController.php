@@ -3,24 +3,21 @@
 namespace App\Modules\User\Lookups\Controllers;
 
 use App\Support\Api\BaseApiController;
-use App\Modules\User\Lookups\Models\Gender;
+use App\Modules\User\Lookups\Services\LookupsService;
 use Illuminate\Http\Request;
 
 class GendersController extends BaseApiController
 {
+    protected $service;
+
+    public function __construct(LookupsService $service)
+    {
+        $this->service = $service;
+    }
+
     public function index(Request $request)
     {
-        $locale = app()->getLocale();
-        $genders = Gender::where('is_active', true)
-            ->orderBy('name_' . ($locale === 'ar' ? 'ar' : 'en'))
-            ->get()
-            ->map(function ($g) use ($locale) {
-                return [
-                    'id' => $g->id,
-                    'code' => $g->code,
-                    'name' => $locale === 'ar' ? $g->name_ar : $g->name_en,
-                ];
-            });
+        $genders = $this->service->getGenders();
 
         return $this->success($genders, 'lookups.genders');
     }
