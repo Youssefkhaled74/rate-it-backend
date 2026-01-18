@@ -4,8 +4,6 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-
 class ContentSeeder extends Seeder
 {
     public function run()
@@ -28,7 +26,6 @@ class ContentSeeder extends Seeder
                 ]);
             } else {
                 DB::table('onboarding_screens')->insert([
-                    'id' => (string) Str::uuid(),
                     'title' => $s['title'],
                     'body' => $s['body'],
                     'sort_order' => $s['sort_order'],
@@ -56,7 +53,6 @@ class ContentSeeder extends Seeder
                 ]);
             } else {
                 DB::table('banner_offers')->insert([
-                    'id' => (string) Str::uuid(),
                     'image_path' => $b['image_path'],
                     'link_url' => $b['link_url'],
                     'sort_order' => $b['sort_order'],

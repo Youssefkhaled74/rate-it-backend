@@ -10,8 +10,7 @@ class Voucher extends Model
     use HasFactory;
 
     protected $table = 'vouchers';
-    public $incrementing = false;
-    protected $keyType = 'string';
+    
     protected $guarded = [];
     protected $casts = [
         'issued_at' => 'datetime',

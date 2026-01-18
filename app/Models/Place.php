@@ -10,8 +10,7 @@ class Place extends Model
     use HasFactory;
 
     protected $table = 'places';
-    public $incrementing = false;
-    protected $keyType = 'string';
+    
     protected $guarded = [];
     protected $casts = [
         'meta' => 'array',

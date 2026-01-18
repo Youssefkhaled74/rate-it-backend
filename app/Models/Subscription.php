@@ -10,8 +10,7 @@ class Subscription extends Model
     use HasFactory;
 
     protected $table = 'subscriptions';
-    public $incrementing = false;
-    protected $keyType = 'string';
+    
     protected $guarded = [];
     protected $casts = [
         'started_at' => 'datetime',

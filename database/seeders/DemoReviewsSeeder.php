@@ -6,7 +6,6 @@ use App\Models\Review;
 use App\Models\ReviewAnswer;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class DemoReviewsSeeder extends Seeder
 {
@@ -22,10 +21,7 @@ class DemoReviewsSeeder extends Seeder
             $branch_id = $branches[array_rand($branches)];
             $place_id = DB::table('branches')->where('id',$branch_id)->value('place_id');
 
-            $reviewId = (string) Str::uuid();
-            $overall = round(mt_rand(10,50)/10,1);
-            DB::table('reviews')->insert([
-                'id' => $reviewId,
+            $reviewId = DB::table('reviews')->insertGetId([
                 'user_id' => $user_id,
                 'place_id' => $place_id,
                 'branch_id' => $branch_id,
@@ -36,12 +32,13 @@ class DemoReviewsSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+            $overall = round(mt_rand(10,50)/10,1);
 
             // answers for criteria in this place's subcategory set (approx)
             $sampleCriteria = $criteria->random(min(5, $criteria->count()));
             $sum = 0; $cnt = 0;
             foreach ($sampleCriteria as $c) {
-                $answerId = (string) Str::uuid();
+                // create answer row
                 $rating = null; $yesno = null; $choice = null;
                 if ($c->type === 'RATING') { $rating = mt_rand(1,5); $sum += $rating; $cnt++; }
                 if ($c->type === 'YES_NO') { $yesno = (bool) mt_rand(0,1); }
@@ -51,7 +48,6 @@ class DemoReviewsSeeder extends Seeder
                 }
 
                 DB::table('review_answers')->insert([
-                    'id' => $answerId,
                     'review_id' => $reviewId,
                     'criteria_id' => $c->id,
                     'rating_value' => $rating,

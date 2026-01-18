@@ -10,8 +10,7 @@ class Brand extends Model
     use HasFactory;
 
     protected $table = 'brands';
-    public $incrementing = false;
-    protected $keyType = 'string';
+    
     protected $guarded = [];
     protected $casts = [
         'created_at' => 'datetime',

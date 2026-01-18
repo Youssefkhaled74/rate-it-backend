@@ -4,8 +4,6 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-
 class NotificationTemplateSeeder extends Seeder
 {
     public function run()
@@ -17,7 +15,6 @@ class NotificationTemplateSeeder extends Seeder
 
         foreach ($types as $type) {
             DB::table('notification_templates')->insert([
-                'id' => (string) Str::uuid(),
                 'type' => $type,
                 'title_tpl' => $type . ' Title',
                 'body_tpl' => $type . ' body',

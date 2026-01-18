@@ -10,8 +10,7 @@ class UserNotification extends Model
     use HasFactory;
 
     protected $table = 'user_notifications';
-    public $incrementing = false;
-    protected $keyType = 'string';
+    
     protected $guarded = [];
     protected $casts = [
         'data' => 'array',

@@ -22,8 +22,7 @@ class DemoVouchersSeeder extends Seeder
             $brand = $brands[array_rand($brands)];
             $status = $this->randomStatus();
 
-            $voucher = [
-                'id' => (string) Str::uuid(),
+            $voucherData = [
                 'user_id' => $user,
                 'brand_id' => $brand,
                 'code' => strtoupper(Str::random(10)) . $i,
@@ -40,27 +39,26 @@ class DemoVouchersSeeder extends Seeder
             ];
 
             if ($status === 'USED') {
-                $voucher['used_at'] = now();
-                $voucher['used_branch_id'] = $branches[array_rand($branches)];
-                $voucher['verified_by_vendor_user_id'] = $vendorUsers[array_rand($vendorUsers)];
+                $voucherData['used_at'] = now();
+                $voucherData['used_branch_id'] = $branches[array_rand($branches)];
+                $voucherData['verified_by_vendor_user_id'] = $vendorUsers[array_rand($vendorUsers)];
             }
 
-            DB::table('vouchers')->insert($voucher);
+            $voucherId = DB::table('vouchers')->insertGetId($voucherData);
 
             if ($status === 'USED') {
                 // create activity log for voucher redemption
                 DB::table('activity_logs')->insert([
-                    'id' => (string) Str::uuid(),
                     'actor_type' => 'VENDOR_USER',
                     'actor_user_id' => null,
                     'actor_admin_id' => null,
-                    'actor_vendor_user_id' => $voucher['verified_by_vendor_user_id'],
+                    'actor_vendor_user_id' => $voucherData['verified_by_vendor_user_id'],
                     'action' => 'REDEEM_VOUCHER',
                     'entity_type' => 'VOUCHERS',
-                    'entity_id' => $voucher['id'],
+                    'entity_id' => $voucherId,
                     'ip_address' => null,
                     'user_agent' => null,
-                    'meta' => json_encode(['branch_id' => $voucher['used_branch_id']]),
+                    'meta' => json_encode(['branch_id' => $voucherData['used_branch_id']]),
                     'created_at' => now(),
                 ]);
             }

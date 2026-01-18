@@ -10,8 +10,7 @@ class PointsTransaction extends Model
     use HasFactory;
 
     protected $table = 'points_transactions';
-    public $incrementing = false;
-    protected $keyType = 'string';
+    
     protected $guarded = [];
     protected $casts = [
         'meta' => 'array',

@@ -4,8 +4,6 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-
 class UserLevelsSeeder extends Seeder
 {
     public function run()
@@ -18,7 +16,6 @@ class UserLevelsSeeder extends Seeder
 
         foreach ($levels as $l) {
             DB::table('user_levels')->insert([
-                'id' => (string) Str::uuid(),
                 'name' => $l['name'],
                 'min_reviews' => $l['min_reviews'],
                 'benefits' => $l['benefits'],

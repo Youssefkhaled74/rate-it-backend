@@ -10,8 +10,7 @@ class Branch extends Model
     use HasFactory;
 
     protected $table = 'branches';
-    public $incrementing = false;
-    protected $keyType = 'string';
+    
     protected $guarded = [];
     protected $casts = [
         'working_hours' => 'array',

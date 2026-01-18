@@ -4,8 +4,6 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-
 class DemoPointsSeeder extends Seeder
 {
     public function run()
@@ -15,7 +13,6 @@ class DemoPointsSeeder extends Seeder
 
         foreach ($rows as $r) {
             DB::table('points_transactions')->insert([
-                'id' => (string) Str::uuid(),
                 'user_id' => $r->user_id,
                 'brand_id' => DB::table('places')->where('id', $r->place_id)->value('brand_id'),
                 'type' => 'EARN_REVIEW',
@@ -33,7 +30,6 @@ class DemoPointsSeeder extends Seeder
         $users = DB::table('users')->inRandomOrder()->limit(50)->get();
         foreach ($users as $u) {
             DB::table('points_transactions')->insert([
-                'id' => (string) Str::uuid(),
                 'user_id' => $u->id,
                 'brand_id' => null,
                 'type' => 'ADJUST_ADMIN',

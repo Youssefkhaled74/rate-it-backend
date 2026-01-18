@@ -10,8 +10,7 @@ class Review extends Model
     use HasFactory;
 
     protected $table = 'reviews';
-    public $incrementing = false;
-    protected $keyType = 'string';
+    
     protected $guarded = [];
     protected $casts = [
         'created_at' => 'datetime',

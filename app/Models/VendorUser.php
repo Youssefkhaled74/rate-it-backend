@@ -10,8 +10,7 @@ class VendorUser extends Model
     use HasFactory;
 
     protected $table = 'vendor_users';
-    public $incrementing = false;
-    protected $keyType = 'string';
+    
     protected $guarded = [];
     protected $casts = [
         'created_at' => 'datetime',

@@ -10,8 +10,7 @@ class VendorNotification extends Model
     use HasFactory;
 
     protected $table = 'vendor_notifications';
-    public $incrementing = false;
-    protected $keyType = 'string';
+    
     protected $guarded = [];
     protected $casts = [
         'data' => 'array',

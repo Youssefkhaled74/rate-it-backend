@@ -11,8 +11,7 @@ class ActivityLog extends Model
 
     public $timestamps = false;
     protected $table = 'activity_logs';
-    public $incrementing = false;
-    protected $keyType = 'string';
+    
     protected $guarded = [];
     protected $casts = [
         'created_at' => 'datetime',

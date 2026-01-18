@@ -4,8 +4,6 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-
 class DemoActivityLogsSeeder extends Seeder
 {
     public function run()
@@ -17,7 +15,6 @@ class DemoActivityLogsSeeder extends Seeder
         // create some user actions
         foreach (array_slice($users,0,50) as $u) {
             DB::table('activity_logs')->insert([
-                'id' => (string) Str::uuid(),
                 'actor_type' => 'USER',
                 'actor_user_id' => $u,
                 'actor_admin_id' => null,
@@ -35,7 +32,6 @@ class DemoActivityLogsSeeder extends Seeder
         // some admin actions
         foreach (array_slice($admins,0,5) as $a) {
             DB::table('activity_logs')->insert([
-                'id' => (string) Str::uuid(),
                 'actor_type' => 'ADMIN',
                 'actor_user_id' => null,
                 'actor_admin_id' => $a,
@@ -53,7 +49,6 @@ class DemoActivityLogsSeeder extends Seeder
         // vendor actions
         foreach (array_slice($vendors,0,30) as $v) {
             DB::table('activity_logs')->insert([
-                'id' => (string) Str::uuid(),
                 'actor_type' => 'VENDOR_USER',
                 'actor_user_id' => null,
                 'actor_admin_id' => null,
