@@ -25,8 +25,7 @@ class CreateReviewsTable extends Migration
             $table->index('branch_id');
             $table->index('place_id');
             $table->index('created_at');
-            $table->foreign('place_id')->references('id')->on('places')->onDelete('set null');
-            $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
+            
         });
     }
 

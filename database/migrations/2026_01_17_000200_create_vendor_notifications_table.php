@@ -21,7 +21,7 @@ class CreateVendorNotificationsTable extends Migration
 
             $table->index(['vendor_user_id','is_read']);
             $table->index(['vendor_user_id','created_at']);
-            $table->foreign('vendor_user_id')->references('id')->on('vendor_users')->onDelete('cascade');
+            
         });
     }
 

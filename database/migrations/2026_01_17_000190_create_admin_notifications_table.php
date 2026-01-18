@@ -21,7 +21,7 @@ class CreateAdminNotificationsTable extends Migration
 
             $table->index(['admin_id','is_read']);
             $table->index(['admin_id','created_at']);
-            $table->foreign('admin_id')->references('id')->on('admins')->onDelete('cascade');
+            
         });
     }
 
