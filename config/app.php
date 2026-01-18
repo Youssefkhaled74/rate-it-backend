@@ -123,17 +123,4 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | Service Providers
-    |--------------------------------------------------------------------------
-    |
-    | Here you may list additional service providers for your application.
-    |
-    */
-    'providers' => [
-        // Module service providers
-        App\Modules\User\Onboarding\Providers\OnboardingServiceProvider::class,
-    ],
-
 ];
