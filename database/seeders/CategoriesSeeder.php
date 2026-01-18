@@ -17,18 +17,43 @@ class CategoriesSeeder extends Seeder
         ];
 
         foreach ($categories as $cat) {
-            $category = DB::table('categories')->updateOrInsert(
-                ['name_en' => $cat['name_en']],
-                ['name_ar' => $cat['name_ar'], 'is_active' => true, 'updated_at' => now(), 'created_at' => now()]
-            );
-
-            $catRow = DB::table('categories')->where('name_en', $cat['name_en'])->first();
+            $existing = DB::table('categories')->where('name_en', $cat['name_en'])->first();
+            if ($existing) {
+                DB::table('categories')->where('id', $existing->id)->update([
+                    'name_ar' => $cat['name_ar'],
+                    'is_active' => true,
+                    'updated_at' => now(),
+                ]);
+                $catId = $existing->id;
+            } else {
+                $catId = (string) Str::uuid();
+                DB::table('categories')->insert([
+                    'id' => $catId,
+                    'name_en' => $cat['name_en'],
+                    'name_ar' => $cat['name_ar'],
+                    'is_active' => true,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
 
             foreach ($cat['subcategories'] as $sub) {
-                DB::table('subcategories')->updateOrInsert(
-                    ['category_id' => $catRow->id, 'name_en' => $sub],
-                    ['name_ar' => null, 'updated_at' => now(), 'created_at' => now()]
-                );
+                $existingSub = DB::table('subcategories')->where('category_id', $catId)->where('name_en', $sub)->first();
+                if ($existingSub) {
+                    DB::table('subcategories')->where('id', $existingSub->id)->update([
+                        'name_ar' => null,
+                        'updated_at' => now(),
+                    ]);
+                } else {
+                    DB::table('subcategories')->insert([
+                        'id' => (string) Str::uuid(),
+                        'category_id' => $catId,
+                        'name_en' => $sub,
+                        'name_ar' => null,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
             }
         }
     }

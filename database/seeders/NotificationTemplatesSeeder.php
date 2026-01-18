@@ -16,10 +16,27 @@ class NotificationTemplatesSeeder extends Seeder
         ];
 
         foreach ($types as $type) {
-            DB::table('notification_templates')->updateOrInsert(
-                ['type' => $type],
-                ['title_tpl' => $type . ' Title', 'body_tpl' => $type . ' body', 'channel' => 'PUSH', 'is_active' => true, 'updated_at' => now(), 'created_at' => now()]
-            );
+            $existing = DB::table('notification_templates')->where('type', $type)->first();
+            if ($existing) {
+                DB::table('notification_templates')->where('id', $existing->id)->update([
+                    'title_tpl' => $type . ' Title',
+                    'body_tpl' => $type . ' body',
+                    'channel' => 'PUSH',
+                    'is_active' => true,
+                    'updated_at' => now(),
+                ]);
+            } else {
+                DB::table('notification_templates')->insert([
+                    'id' => (string) Str::uuid(),
+                    'type' => $type,
+                    'title_tpl' => $type . ' Title',
+                    'body_tpl' => $type . ' body',
+                    'channel' => 'PUSH',
+                    'is_active' => true,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
         }
     }
 }

@@ -10,17 +10,26 @@ class AdminsSeeder extends Seeder
 {
     public function run()
     {
-        DB::table('admins')->updateOrInsert(
-            ['email' => 'admin@example.com'],
-            [
+        $existing = DB::table('admins')->where('email', 'admin@example.com')->first();
+        if ($existing) {
+            DB::table('admins')->where('id', $existing->id)->update([
+                'name' => 'Super Admin',
+                'phone' => null,
+                'password_hash' => bcrypt('password'),
+                'role' => 'SUPER_ADMIN',
+                'updated_at' => now(),
+            ]);
+        } else {
+            DB::table('admins')->insert([
                 'id' => (string) Str::uuid(),
                 'name' => 'Super Admin',
+                'email' => 'admin@example.com',
                 'phone' => null,
                 'password_hash' => bcrypt('password'),
                 'role' => 'SUPER_ADMIN',
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]
-        );
+            ]);
+        }
     }
 }

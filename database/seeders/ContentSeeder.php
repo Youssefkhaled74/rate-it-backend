@@ -18,10 +18,25 @@ class ContentSeeder extends Seeder
         ];
 
         foreach ($screens as $s) {
-            DB::table('onboarding_screens')->updateOrInsert(
-                ['title' => $s['title']],
-                ['body' => $s['body'], 'sort_order' => $s['sort_order'], 'is_active' => true, 'updated_at' => now(), 'created_at' => now()]
-            );
+            $existing = DB::table('onboarding_screens')->where('title', $s['title'])->first();
+            if ($existing) {
+                DB::table('onboarding_screens')->where('id', $existing->id)->update([
+                    'body' => $s['body'],
+                    'sort_order' => $s['sort_order'],
+                    'is_active' => true,
+                    'updated_at' => now(),
+                ]);
+            } else {
+                DB::table('onboarding_screens')->insert([
+                    'id' => (string) Str::uuid(),
+                    'title' => $s['title'],
+                    'body' => $s['body'],
+                    'sort_order' => $s['sort_order'],
+                    'is_active' => true,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
         }
 
         // Banners
@@ -31,10 +46,25 @@ class ContentSeeder extends Seeder
         ];
 
         foreach ($banners as $b) {
-            DB::table('banner_offers')->updateOrInsert(
-                ['image_path' => $b['image_path']],
-                ['link_url' => $b['link_url'], 'sort_order' => $b['sort_order'], 'is_active' => true, 'updated_at' => now(), 'created_at' => now()]
-            );
+            $existing = DB::table('banner_offers')->where('image_path', $b['image_path'])->first();
+            if ($existing) {
+                DB::table('banner_offers')->where('id', $existing->id)->update([
+                    'link_url' => $b['link_url'],
+                    'sort_order' => $b['sort_order'],
+                    'is_active' => true,
+                    'updated_at' => now(),
+                ]);
+            } else {
+                DB::table('banner_offers')->insert([
+                    'id' => (string) Str::uuid(),
+                    'image_path' => $b['image_path'],
+                    'link_url' => $b['link_url'],
+                    'sort_order' => $b['sort_order'],
+                    'is_active' => true,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
         }
     }
 }
