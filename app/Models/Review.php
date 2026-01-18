@@ -52,4 +52,9 @@ class Review extends Model
     {
         return $this->hasMany(ReviewAnswer::class, 'review_id');
     }
+
+    public function photos()
+    {
+        return $this->hasMany(ReviewPhoto::class, 'review_id');
+    }
 }

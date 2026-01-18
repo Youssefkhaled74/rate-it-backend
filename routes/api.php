@@ -15,6 +15,8 @@ Route::prefix('v1/user')->group(function () {
     require base_path('app/Modules/User/Categories/Routes/api.php');
     // User Brands & Places
     require base_path('app/Modules/User/Brands/Routes/api.php');
+    // User Reviews
+    require base_path('app/Modules/User/Reviews/Routes/api.php');
 });
 
 // Demo routes for traits

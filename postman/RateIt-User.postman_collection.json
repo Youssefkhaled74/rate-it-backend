@@ -14,7 +14,10 @@
     { "key": "brand_id", "value": "1" },
     { "key": "place_id", "value": "1" },
     { "key": "phone", "value": "+201000000000" },
-    { "key": "otp", "value": "" }
+    { "key": "otp", "value": "" },
+    { "key": "branch_qr", "value": "BRANCH_QR_123" },
+    { "key": "review_session_token", "value": "" },
+    { "key": "review_id", "value": "" }
   ],
 
   "event": [
@@ -663,6 +666,77 @@
             "method": "GET",
             "header": [ { "key": "Accept", "value": "application/json" }, { "key": "X-Lang", "value": "en" } ],
             "url": { "raw": "{{base_url}}/api/{{api_version}}/user/places/{{place_id}}/reviews?page=1", "host": ["{{base_url}}"], "path": ["api","{{api_version}}","user","places","{{place_id}}","reviews"], "query": [ { "key": "page", "value": "1" } ] }
+          },
+          "event": [ { "listen": "test", "script": { "exec": [ "pm.test('status 200', function(){ pm.response.to.have.status(200); });", "var json = pm.response.json();", "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });" ], "type": "text/javascript" } } ]
+        }
+      ]
+    },
+    {
+      "name": "Reviews",
+      "description": "Review flow: scan QR, submit review, list and details",
+      "item": [
+        {
+          "name": "POST Scan QR",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Accept", "value": "application/json" }, { "key": "X-Lang", "value": "en" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"qr_code_value\": \"{{branch_qr}}\"\n}" },
+            "url": { "raw": "{{base_url}}/api/{{api_version}}/user/reviews/scan-qr", "host": ["{{base_url}}"], "path": ["api","{{api_version}}","user","reviews","scan-qr"] }
+          },
+          "event": [ { "listen": "test", "script": { "exec": [ "pm.test('status 200', function(){ pm.response.to.have.status(200); });", "var json = pm.response.json();", "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });", "if (json.data && json.data.session_token) { pm.environment.set('review_session_token', json.data.session_token); }" ], "type": "text/javascript" } } ]
+        },
+        {
+          "name": "GET Branch Questions",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Accept", "value": "application/json" }, { "key": "X-Lang", "value": "en" } ],
+            "url": { "raw": "{{base_url}}/api/{{api_version}}/user/reviews/branch/{{branch_id}}/questions", "host": ["{{base_url}}"], "path": ["api","{{api_version}}","user","reviews","branch","{{branch_id}}","questions"] }
+          },
+          "event": [ { "listen": "test", "script": { "exec": [ "pm.test('status 200', function(){ pm.response.to.have.status(200); });", "var json = pm.response.json();", "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });" ], "type": "text/javascript" } } ]
+        },
+        {
+          "name": "POST Create Review (multipart)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Accept", "value": "application/json" }, { "key": "X-Lang", "value": "en" } ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "session_token", "value": "{{review_session_token}}", "type": "text" },
+                { "key": "overall_rating", "value": "5", "type": "text" },
+                { "key": "comment", "value": "Great service", "type": "text" },
+                { "key": "answers", "value": "[ { \"criteria_id\": 1, \"rating_value\": 5 } ]", "type": "text" },
+                { "key": "photos[]", "type": "file" }
+              ]
+            },
+            "url": { "raw": "{{base_url}}/api/{{api_version}}/user/reviews", "host": ["{{base_url}}"], "path": ["api","{{api_version}}","user","reviews"] }
+          },
+          "event": [ { "listen": "test", "script": { "exec": [ "pm.test('status 200', function(){ pm.response.to.have.status(200); });", "var json = pm.response.json();", "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });", "if (json.data && json.data.id) { pm.environment.set('review_id', json.data.id); }" ], "type": "text/javascript" } } ]
+        },
+        {
+          "name": "GET Place Reviews",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Accept", "value": "application/json" }, { "key": "X-Lang", "value": "en" } ],
+            "url": { "raw": "{{base_url}}/api/{{api_version}}/user/places/{{place_id}}/reviews?page=1", "host": ["{{base_url}}"], "path": ["api","{{api_version}}","user","places","{{place_id}}","reviews"], "query": [ { "key": "page", "value": "1" } ] }
+          },
+          "event": [ { "listen": "test", "script": { "exec": [ "pm.test('status 200', function(){ pm.response.to.have.status(200); });", "var json = pm.response.json();", "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });" ], "type": "text/javascript" } } ]
+        },
+        {
+          "name": "GET My Reviews",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Accept", "value": "application/json" }, { "key": "X-Lang", "value": "en" } ],
+            "url": { "raw": "{{base_url}}/api/{{api_version}}/user/reviews/me/list", "host": ["{{base_url}}"], "path": ["api","{{api_version}}","user","reviews","me","list"] }
+          },
+          "event": [ { "listen": "test", "script": { "exec": [ "pm.test('status 200', function(){ pm.response.to.have.status(200); });", "var json = pm.response.json();", "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });" ], "type": "text/javascript" } } ]
+        },
+        {
+          "name": "GET Review Details",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Accept", "value": "application/json" }, { "key": "X-Lang", "value": "en" } ],
+            "url": { "raw": "{{base_url}}/api/{{api_version}}/user/reviews/{{review_id}}", "host": ["{{base_url}}"], "path": ["api","{{api_version}}","user","reviews","{{review_id}}"] }
           },
           "event": [ { "listen": "test", "script": { "exec": [ "pm.test('status 200', function(){ pm.response.to.have.status(200); });", "var json = pm.response.json();", "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });" ], "type": "text/javascript" } } ]
         }
