@@ -18,7 +18,6 @@ class CreateRatingCriteriaTable extends Migration
             $table->timestampsTz();
 
             $table->index(['subcategory_id','sort_order']);
-            $table->foreign('subcategory_id')->references('id')->on('subcategories')->onDelete('cascade');
         });
     }
 
