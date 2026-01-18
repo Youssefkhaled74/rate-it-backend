@@ -9,7 +9,9 @@
     { "key": "base_url", "value": "http://127.0.0.1:8000" },
     { "key": "api_version", "value": "v1" },
     { "key": "user_token", "value": "" },
-    { "key": "reset_token", "value": "" }
+    { "key": "reset_token", "value": "" },
+    { "key": "phone", "value": "+201000000000" },
+    { "key": "otp", "value": "" }
   ],
   "event": [
     {
@@ -360,6 +362,71 @@
               "event": [ { "listen": "test", "script": { "exec": [ "pm.test('status is 200', function(){ pm.response.to.have.status(200); });", "var json = pm.response.json();", "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });" ], "type": "text/javascript" } } ]
             }
           ]
+            {
+              "name": "Phone - Send OTP",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Accept", "value": "application/json" },
+                  { "key": "X-Lang", "value": "en" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": { "mode": "raw", "raw": "{\n  \"phone\": \"{{phone}}\"\n}" },
+                "url": {
+                  "raw": "{{base_url}}/api/{{api_version}}/user/auth/phone/send-otp",
+                  "host": ["{{base_url}}"],
+                  "path": ["api","{{api_version}}","user","auth","phone","send-otp"]
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('status is 200', function(){ pm.response.to.have.status(200); });",
+                      "var json = pm.response.json();",
+                      "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });",
+                      "if (json.meta && json.meta.otp_code) { pm.environment.set('otp', json.meta.otp_code); }"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Phone - Verify OTP",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Accept", "value": "application/json" },
+                  { "key": "X-Lang", "value": "en" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": { "mode": "raw", "raw": "{\n  \"phone\": \"{{phone}}\",\n  \"otp\": \"{{otp}}\"\n}" },
+                "url": {
+                  "raw": "{{base_url}}/api/{{api_version}}/user/auth/phone/verify-otp",
+                  "host": ["{{base_url}}"],
+                  "path": ["api","{{api_version}}","user","auth","phone","verify-otp"]
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('status is 200', function(){ pm.response.to.have.status(200); });",
+                      "var json = pm.response.json();",
+                      "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });",
+                      "pm.test('phone verified', function(){ pm.expect(json.data.user.is_phone_verified).to.eql(true); });",
+                      "if (json.data && json.data.user) { pm.environment.set('user_phone_verified', json.data.user.is_phone_verified); }"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ]
+            },
         },
         {
           "name": "Protected",
