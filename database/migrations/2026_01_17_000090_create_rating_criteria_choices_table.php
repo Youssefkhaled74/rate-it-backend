@@ -17,7 +17,6 @@ class CreateRatingCriteriaChoicesTable extends Migration
             $table->timestampsTz();
 
             $table->index(['criteria_id','sort_order']);
-            $table->foreign('criteria_id')->references('id')->on('rating_criteria')->onDelete('cascade');
         });
     }
 
