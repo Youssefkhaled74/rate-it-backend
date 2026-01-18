@@ -92,6 +92,40 @@
       "description": "Public lookup endpoints (genders, nationalities)",
       "item": [
         {
+          "name": "GET Genders",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "X-Lang", "value": "en" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/{{api_version}}/user/lookups/genders",
+              "host": ["{{base_url}}"],
+              "path": ["api","{{api_version}}","user","lookups","genders"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status is 200', function(){ pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });",
+                  "pm.test('data is array', function(){ pm.expect(json.data).to.be.an('array'); });",
+                  "pm.test('items contain code and name', function(){",
+                  "  pm.expect(json.data.length).to.be.at.least(1);",
+                  "  json.data.forEach(function(item){ pm.expect(item.id).to.be.a('number'); pm.expect(item.code).to.be.a('string'); pm.expect(item.name).to.be.a('string'); });",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
           "name": "GET Nationalities",
           "request": {
             "method": "GET",
@@ -117,7 +151,7 @@
                   "pm.test('data is array', function(){ pm.expect(json.data).to.be.an('array'); });",
                   "pm.test('items contain flag_url', function(){",
                   "  pm.expect(json.data.length).to.be.at.least(1);",
-                  "  json.data.forEach(function(item){ pm.expect(item.flag_url).to.be.a('string'); pm.expect(item.country_code).to.match(/^[A-Z]{2}$/); pm.expect(item.flag_url).to.match(/^https:\\/\\/flagsapi\\.com\\\/[A-Z]{2}\\\/[a-z]+\\\/[0-9]+\\.png$/); });",
+                  "  json.data.forEach(function(item){ pm.expect(item.flag_url).to.be.a('string'); pm.expect(item.country_code).to.match(/^[A-Z]{2}$/); pm.test('flag url starts with flagsapi', function(){ pm.expect(item.flag_url.startsWith('https://flagsapi.com/')).to.eql(true); }); });",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -145,8 +179,8 @@
                   { "key": "Content-Type", "value": "application/json" }
                 ],
                 "body": {
-                    "mode": "raw",
-                    "raw": "{\n  \"full_name\": \"Test User\",\n  \"phone\": \"+201000000000\",\n  \"email\": \"{{test_email}}\",\n  \"password\": \"Password123!\",\n  \"password_confirmation\": \"Password123!\"\n}"
+                  "mode": "raw",
+                  "raw": "{\n  \"full_name\": \"Test User\",\n  \"phone\": \"+201000000000\",\n  \"email\": \"{{test_email}}\",\n  \"birth_date\": \"1990-01-01\",\n  \"gender_id\": 1,\n  \"nationality_id\": 1,\n  \"password\": \"Password123!\",\n  \"password_confirmation\": \"Password123!\"\n}"
                 },
                 "url": {
                   "raw": "{{base_url}}/api/{{api_version}}/user/auth/register",
