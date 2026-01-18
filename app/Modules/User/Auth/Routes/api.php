@@ -9,6 +9,9 @@ Route::prefix('auth')->group(function () {
     Route::post('forgot-password/send-otp', [AuthController::class, 'sendOtp']);
     Route::post('forgot-password/verify-otp', [AuthController::class, 'verifyOtp']);
     Route::post('forgot-password/reset', [AuthController::class, 'resetPassword']);
+    // Phone verification endpoints
+    Route::post('phone/send-otp', [AuthController::class, 'sendPhoneOtp'])->middleware('throttle:6,1');
+    Route::post('phone/verify-otp', [AuthController::class, 'verifyPhoneOtp'])->middleware('throttle:6,1');
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('logout', [AuthController::class, 'logout']);

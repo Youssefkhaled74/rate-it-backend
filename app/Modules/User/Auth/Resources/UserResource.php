@@ -24,6 +24,8 @@ class UserResource extends JsonResource
             }),
             'created_at' => $this->created_at ? $this->created_at->toDateTimeString() : null,
             'created_at_human' => $this->created_at ? $this->created_at->diffForHumans() : null,
+            'is_phone_verified' => ! is_null($this->phone_verified_at),
+            'phone_verified_at' => $this->phone_verified_at ? $this->phone_verified_at->toDateTimeString() : null,
         ];
     }
 }
