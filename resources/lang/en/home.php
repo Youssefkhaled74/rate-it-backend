@@ -7,4 +7,7 @@ return [
     'banners' => [
         'list' => 'Banners loaded successfully',
     ],
+    'search' => [
+        'results' => 'Search results loaded successfully',
+    ],
 ];

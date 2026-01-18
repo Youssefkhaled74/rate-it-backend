@@ -41,68 +41,110 @@
   ],
   "item": [
             {
-              "name": "GET Home Banners",
-              "request": {
-                "method": "GET",
-                "header": [
-                  { "key": "Accept", "value": "application/json" },
-                  { "key": "X-Lang", "value": "en" }
-                ],
-                "url": {
-                  "raw": "{{base_url}}/api/{{api_version}}/user/home/banners",
-                  "host": ["{{base_url}}"],
-                  "path": ["api","{{api_version}}","user","home","banners"]
-                }
-              },
-              "response": [],
-              "event": [
+              "name": "User - Home",
+              "description": "Home endpoints: banners, categories, search",
+              "item": [
                 {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test('status is 200', function(){ pm.response.to.have.status(200); });",
-                      "var json = pm.response.json();",
-                      "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });",
-                      "pm.test('data is array', function(){ pm.expect(json.data).to.be.an('array'); });",
-                      "pm.test('items structure', function(){",
-                      "  json.data.forEach(function(item){ pm.expect(item).to.have.property('id'); pm.expect(item).to.have.property('title'); pm.expect(item).to.have.property('image_url'); pm.expect(item).to.have.property('action'); pm.expect(item.action).to.have.property('type'); pm.expect(item.action).to.have.property('value'); });",
-                      "});"
+                  "name": "GET Home Banners",
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      { "key": "Accept", "value": "application/json" },
+                      { "key": "X-Lang", "value": "en" }
                     ],
-                    "type": "text/javascript"
-                  }
-                }
-              ]
-            },
-            {
-              "name": "GET Home Categories",
-              "request": {
-                "method": "GET",
-                "header": [
-                  { "key": "Accept", "value": "application/json" },
-                  { "key": "X-Lang", "value": "en" }
-                ],
-                "url": {
-                  "raw": "{{base_url}}/api/{{api_version}}/user/home/categories",
-                  "host": ["{{base_url}}"],
-                  "path": ["api","{{api_version}}","user","home","categories"]
-                }
-              },
-              "response": [],
-              "event": [
+                    "url": {
+                      "raw": "{{base_url}}/api/{{api_version}}/user/home/banners",
+                      "host": ["{{base_url}}"],
+                      "path": ["api","{{api_version}}","user","home","banners"]
+                    }
+                  },
+                  "response": [],
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test('status is 200', function(){ pm.response.to.have.status(200); });",
+                          "var json = pm.response.json();",
+                          "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });",
+                          "pm.test('data is array', function(){ pm.expect(json.data).to.be.an('array'); });",
+                          "pm.test('items structure', function(){",
+                          "  json.data.forEach(function(item){ pm.expect(item).to.have.property('id'); pm.expect(item).to.have.property('title'); pm.expect(item).to.have.property('image_url'); pm.expect(item).to.have.property('action'); pm.expect(item.action).to.have.property('type'); pm.expect(item.action).to.have.property('value'); });",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ]
+                },
                 {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test('status is 200', function(){ pm.response.to.have.status(200); });",
-                      "var json = pm.response.json();",
-                      "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });",
-                      "pm.test('data is array', function(){ pm.expect(json.data).to.be.an('array'); });",
-                      "pm.test('items structure', function(){",
-                      "  json.data.forEach(function(item){ pm.expect(item).to.have.property('id'); pm.expect(item).to.have.property('name'); pm.expect(item).to.have.property('logo_url'); });",
-                      "});"
+                  "name": "GET Home Categories",
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      { "key": "Accept", "value": "application/json" },
+                      { "key": "X-Lang", "value": "en" }
                     ],
-                    "type": "text/javascript"
-                  }
+                    "url": {
+                      "raw": "{{base_url}}/api/{{api_version}}/user/home/categories",
+                      "host": ["{{base_url}}"],
+                      "path": ["api","{{api_version}}","user","home","categories"]
+                    }
+                  },
+                  "response": [],
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test('status is 200', function(){ pm.response.to.have.status(200); });",
+                          "var json = pm.response.json();",
+                          "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });",
+                          "pm.test('data is array', function(){ pm.expect(json.data).to.be.an('array'); });",
+                          "pm.test('items structure', function(){",
+                          "  json.data.forEach(function(item){ pm.expect(item).to.have.property('id'); pm.expect(item).to.have.property('name'); pm.expect(item).to.have.property('logo_url'); });",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "name": "GET Home Search - burger",
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      { "key": "Accept", "value": "application/json" },
+                      { "key": "X-Lang", "value": "en" }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/api/{{api_version}}/user/home/search?q=burger&limit=10",
+                      "host": ["{{base_url}}"],
+                      "path": ["api","{{api_version}}","user","home","search"],
+                      "query": [
+                        { "key": "q", "value": "burger" },
+                        { "key": "limit", "value": "10" }
+                      ]
+                    }
+                  },
+                  "response": [],
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test('status is 200', function(){ pm.response.to.have.status(200); });",
+                          "var json = pm.response.json();",
+                          "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });",
+                          "pm.test('data.query exists', function(){ pm.expect(json.data.query).to.be.a('string'); });",
+                          "pm.test('results array', function(){ pm.expect(json.data.results).to.be.an('array'); });",
+                          "pm.test('items structure', function(){ json.data.results.forEach(function(item){ pm.expect(item).to.have.property('type'); pm.expect(item).to.have.property('id'); pm.expect(item).to.have.property('name'); }); });"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ]
                 }
               ]
             },
