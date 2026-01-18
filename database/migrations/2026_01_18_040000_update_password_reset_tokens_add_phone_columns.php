@@ -38,22 +38,30 @@ class UpdatePasswordResetTokensAddPhoneColumns extends Migration
 
         Schema::table('password_reset_tokens', function (Blueprint $table) {
             if (! Schema::hasColumn('password_reset_tokens', 'phone')) {
-                $table->string('phone')->nullable()->index()->after('email');
+                if (Schema::hasColumn('password_reset_tokens', 'email')) {
+                    $table->string('phone')->nullable()->index()->after('email');
+                } else {
+                    $table->string('phone')->nullable()->index();
+                }
             }
             if (! Schema::hasColumn('password_reset_tokens', 'token_hash')) {
-                // keep old 'token' column for compatibility if exists
-                $table->string('token_hash')->nullable()->after('email');
+                // place token_hash after phone if phone exists, otherwise append
+                if (Schema::hasColumn('password_reset_tokens', 'phone')) {
+                    $table->string('token_hash')->nullable()->after('phone');
+                } else {
+                    $table->string('token_hash')->nullable();
+                }
             }
             if (! Schema::hasColumn('password_reset_tokens', 'expires_at')) {
-                $table->timestamp('expires_at')->nullable()->after('token_hash')->index();
+                $table->timestamp('expires_at')->nullable()->index();
             }
 
             // Add created_at/updated_at individually to avoid duplicate column errors
             if (! Schema::hasColumn('password_reset_tokens', 'created_at')) {
-                $table->timestamp('created_at')->nullable()->after('expires_at');
+                $table->timestamp('created_at')->nullable();
             }
             if (! Schema::hasColumn('password_reset_tokens', 'updated_at')) {
-                $table->timestamp('updated_at')->nullable()->after('created_at');
+                $table->timestamp('updated_at')->nullable();
             }
         });
     }
