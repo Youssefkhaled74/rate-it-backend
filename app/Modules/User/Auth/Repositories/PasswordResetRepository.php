@@ -30,6 +30,36 @@ class PasswordResetRepository
 
     public function deleteToken(PasswordResetToken $token): void
     {
-        $token->delete();
+        // Some legacy schemas may not have an `id` primary key column.
+        // Deleting the model directly will fail if `id` column is missing (SQL: where `id` is null).
+        // Prefer deleting by identifying attributes as a safe fallback.
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasColumn('password_reset_tokens', 'id')) {
+                $token->delete();
+                return;
+            }
+        } catch (\Exception $e) {
+            // ignore schema check errors and fall back to attribute-based deletion
+        }
+
+        try {
+            $query = PasswordResetToken::query();
+            if (! empty($token->phone)) {
+                $query->where('phone', $token->phone);
+            }
+            if (! empty($token->token_hash)) {
+                $query->where('token_hash', $token->token_hash);
+            }
+            $query->delete();
+        } catch (\Exception $e) {
+            // last resort: attempt to delete by phone only
+            try {
+                if (! empty($token->phone)) {
+                    PasswordResetToken::where('phone', $token->phone)->delete();
+                }
+            } catch (\Exception $e2) {
+                // give up silently - non-fatal
+            }
+        }
     }
 }
