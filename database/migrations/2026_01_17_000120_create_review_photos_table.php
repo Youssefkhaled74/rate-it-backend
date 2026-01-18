@@ -17,7 +17,6 @@ class CreateReviewPhotosTable extends Migration
             $table->softDeletesTz();
 
             $table->index('review_id');
-            $table->foreign('review_id')->references('id')->on('reviews')->onDelete('cascade');
         });
     }
 
