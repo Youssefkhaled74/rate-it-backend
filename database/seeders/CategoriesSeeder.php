@@ -4,52 +4,53 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
+
 class CategoriesSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
-        $categories = [
-            ['name_en' => 'Food', 'name_ar' => 'مأكولات', 'subcategories' => ['Restaurants','Cafes','Fast Food']],
-            ['name_en' => 'Shopping', 'name_ar' => 'تسوق', 'subcategories' => ['Malls','Clothing','Electronics']],
-            ['name_en' => 'Services', 'name_ar' => 'خدمات', 'subcategories' => ['Health','Beauty','Automotive']],
+        $now = Carbon::now();
+
+        $rows = [
+            [
+                'name_en' => 'Hospitals',
+                'name_ar' => 'مستشفيات',
+                'logo' => 'uploads/categories/hospitals.png',
+                'is_active' => true,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+            [
+                'name_en' => 'Companies',
+                'name_ar' => 'شركات',
+                'logo' => 'uploads/categories/companies.png',
+                'is_active' => true,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+            [
+                'name_en' => 'Auto Service',
+                'name_ar' => 'خدمات سيارات',
+                'logo' => 'uploads/categories/auto_service.png',
+                'is_active' => true,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+            [
+                'name_en' => 'Restaurants',
+                'name_ar' => 'مطاعم',
+                'logo' => 'uploads/categories/restaurants.png',
+                'is_active' => true,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
         ];
 
-        foreach ($categories as $cat) {
-            $existing = DB::table('categories')->where('name_en', $cat['name_en'])->first();
-            if ($existing) {
-                DB::table('categories')->where('id', $existing->id)->update([
-                    'name_ar' => $cat['name_ar'],
-                    'is_active' => true,
-                    'updated_at' => now(),
-                ]);
-                $catId = $existing->id;
-            } else {
-                $catId = DB::table('categories')->insertGetId([
-                    'name_en' => $cat['name_en'],
-                    'name_ar' => $cat['name_ar'],
-                    'is_active' => true,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            }
-
-            foreach ($cat['subcategories'] as $sub) {
-                $existingSub = DB::table('subcategories')->where('category_id', $catId)->where('name_en', $sub)->first();
-                if ($existingSub) {
-                    DB::table('subcategories')->where('id', $existingSub->id)->update([
-                        'name_ar' => null,
-                        'updated_at' => now(),
-                    ]);
-                } else {
-                    DB::table('subcategories')->insert([
-                        'category_id' => $catId,
-                        'name_en' => $sub,
-                        'name_ar' => null,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-                }
-            }
-        }
+        DB::table('categories')->upsert(
+            $rows,
+            ['name_en'],
+            ['name_ar', 'logo', 'is_active', 'updated_at']
+        );
     }
 }
