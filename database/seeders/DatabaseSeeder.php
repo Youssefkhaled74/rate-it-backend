@@ -13,11 +13,13 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      */
-        $this->call([
-            AdminSeeder::class,
-            NotificationTemplateSeeder::class,
-            UserLevelsSeeder::class,
-        ]);
+            $this->call([
+                AdminsSeeder::class,
+                CategoriesSeeder::class,
+                UserLevelsSeeder::class,
+                NotificationTemplatesSeeder::class,
+                ContentSeeder::class,
+            ]);
     {
         // User::factory(10)->create();
 
