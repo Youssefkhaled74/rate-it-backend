@@ -24,8 +24,6 @@ class CreatePlacesTable extends Migration
             $table->index('brand_id');
             $table->index('subcategory_id');
             $table->index(['city','area']);
-            $table->foreign('brand_id')->references('id')->on('brands')->onDelete('set null');
-            $table->foreign('subcategory_id')->references('id')->on('subcategories')->onDelete('set null');
         });
         // Optionally add a trigram index for name search in PostgreSQL via raw statement
         // DB::statement('CREATE INDEX places_name_trgm_idx ON places USING gin (name gin_trgm_ops);');
