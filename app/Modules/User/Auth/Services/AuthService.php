@@ -6,16 +6,21 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Support\Exceptions\ApiException;
 use Illuminate\Support\Facades\Log;
+use App\Support\PhoneNormalizer;
 
 class AuthService
 {
     public function register(array $data): User
     {
+        // Normalize phone before creating user so storage is consistent
+        $phone = $data['phone'] ?? null;
+        $phone = PhoneNormalizer::normalize($phone);
+
         $user = User::create([
             // Some apps store `name` column; ensure we set it to avoid SQL errors when 'name' is required
             'name' => $data['full_name'] ?? ($data['first_name'] ?? null),
             'email' => $data['email'] ?? null,
-            'phone' => $data['phone'] ?? null,
+            'phone' => $phone,
             'birth_date' => $data['birth_date'] ?? null,
             'gender_id' => $data['gender_id'] ?? null,
             'nationality_id' => $data['nationality_id'] ?? null,
@@ -27,8 +32,46 @@ class AuthService
 
     public function login(string $phone, string $password): User
     {
-        $user = User::where('phone', $phone)->first();
-        if (!$user || !Hash::check($password, $user->password)) {
+
+        // Allow identifier to be phone or email by checking both columns.
+        $identifier = $phone;
+
+        // Normalize incoming identifier for phone lookups
+        $normalizedIdentifier = PhoneNormalizer::normalize($identifier);
+
+        $user = null;
+        // If identifier contains @ assume email lookup first
+        if (str_contains($identifier, '@')) {
+            $user = User::where('email', $identifier)->first();
+        }
+
+        // Try phone lookup by normalized value
+        if (!$user && $normalizedIdentifier) {
+            $user = User::where('phone', $normalizedIdentifier)->first();
+        }
+
+        // Log helpful debug info before password check
+        if ($user) {
+            $hasPassword = !empty($user->password);
+            $hashLength = is_string($user->password) ? strlen($user->password) : null;
+            $checkResult = Hash::check($password, $user->password);
+            Log::info('Auth login attempt', [
+                'identifier' => $identifier,
+                'db_phone' => $user->phone,
+                'user_id' => $user->id,
+                'has_password' => $hasPassword,
+                'password_hash_length' => $hashLength,
+                'hash_check' => $checkResult ? 'true' : 'false',
+            ]);
+            if (!$checkResult) {
+                Log::error('Auth password mismatch', ['user_id' => $user->id]);
+            }
+        } else {
+            Log::info('Auth login failed - user not found', ['identifier' => $identifier]);
+        }
+
+        $valid = $user && Hash::check($password, $user->password);
+        if (!$valid) {
             throw new ApiException('auth.invalid_credentials', 401);
         }
 
@@ -49,7 +92,7 @@ class AuthService
 
     public function createTokenForUser(User $user): string
     {
-        $token = $user->createToken('api-token');
+        $token = $user->createToken('user');
         return $token->plainTextToken;
     }
 
