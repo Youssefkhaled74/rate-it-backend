@@ -13,19 +13,20 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      */
-            $this->call([
-                AdminsSeeder::class,
-                CategoriesSeeder::class,
-                UserLevelsSeeder::class,
-                NotificationTemplatesSeeder::class,
-                ContentSeeder::class,
-            ]);
+    public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // Bootstrap / safe seeders (idempotent)
+        $this->call([
+            AdminsSeeder::class,
+            CategoriesSeeder::class,
+            UserLevelsSeeder::class,
+            NotificationTemplatesSeeder::class,
+            ContentSeeder::class,
         ]);
+
+        // Optionally run demo data only in local or when DB_SEED_DEMO=true
+        if (app()->environment('local') || env('DB_SEED_DEMO', false)) {
+            $this->call(\Database\Seeders\DemoDatabaseSeeder::class);
+        }
     }
 }

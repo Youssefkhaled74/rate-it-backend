@@ -8,9 +8,23 @@ class CreatePointsTransactionsTable extends Migration
 {
     public function up()
     {
-        Schema::create('points_transactions', function (Blueprint $table) {
+        $userIdIsUuid = false;
+        try {
+            $col = DB::selectOne("SELECT DATA_TYPE, COLUMN_TYPE FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = ? AND column_name = ?", ['users','id']);
+            if ($col && (stripos($col->COLUMN_TYPE, 'char') !== false || in_array(strtolower($col->DATA_TYPE), ['char','varchar']))) {
+                $userIdIsUuid = true;
+            }
+        } catch (\Exception $e) {
+            $userIdIsUuid = true;
+        }
+
+        Schema::create('points_transactions', function (Blueprint $table) use ($userIdIsUuid) {
             $table->uuid('id')->primary();
-            $table->uuid('user_id');
+            if ($userIdIsUuid) {
+                $table->uuid('user_id');
+            } else {
+                $table->unsignedBigInteger('user_id');
+            }
             $table->uuid('brand_id')->nullable();
             $table->enum('type', ['EARN_REVIEW','REDEEM_VOUCHER','ADJUST_ADMIN','EXPIRE']);
             $table->integer('points');

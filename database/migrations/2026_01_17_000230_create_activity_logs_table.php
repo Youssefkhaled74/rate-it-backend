@@ -9,10 +9,25 @@ class CreateActivityLogsTable extends Migration
 {
     public function up()
     {
-        Schema::create('activity_logs', function (Blueprint $table) {
+        // determine users.id type
+        $userIdIsUuid = false;
+        try {
+            $col = DB::selectOne("SELECT DATA_TYPE, COLUMN_TYPE FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = ? AND column_name = ?", ['users','id']);
+            if ($col && (stripos($col->COLUMN_TYPE, 'char') !== false || in_array(strtolower($col->DATA_TYPE), ['char','varchar']))) {
+                $userIdIsUuid = true;
+            }
+        } catch (\Exception $e) {
+            $userIdIsUuid = true;
+        }
+
+        Schema::create('activity_logs', function (Blueprint $table) use ($userIdIsUuid) {
             $table->uuid('id')->primary();
             $table->enum('actor_type', ['USER','ADMIN','VENDOR_USER']);
-            $table->uuid('actor_user_id')->nullable();
+            if ($userIdIsUuid) {
+                $table->uuid('actor_user_id')->nullable();
+            } else {
+                $table->unsignedBigInteger('actor_user_id')->nullable();
+            }
             $table->uuid('actor_admin_id')->nullable();
             $table->uuid('actor_vendor_user_id')->nullable();
             $table->string('action');
