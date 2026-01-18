@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 // API v1 - User module routes
 Route::prefix('v1/user')->group(function () {
     require base_path('app/Modules/User/Onboarding/Routes/api.php');
+    // User Home (banners, etc.)
+    require base_path('app/Modules/User/Home/Routes/api.php');
     // User Auth module routes
     require base_path('app/Modules/User/Auth/Routes/api.php');
     // User Lookups (genders, nationalities)
