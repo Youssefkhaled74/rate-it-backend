@@ -15,20 +15,22 @@
     {
       "listen": "prerequest",
       "script": {
-        "exec": [
+          "exec": [
           "// Ensure base_url is configured in environment or collection variables",
           "if (!pm.variables.get('base_url')) {",
           "  throw new Error('base_url is not set in environment or collection variables. Set {{base_url}} to continue.');",
           "}",
-          "// Ensure default headers exist for each request: Accept and X-Lang",
-          "function ensureHeader(key, value){",
-          "  pm.request.headers.upsert({ key: key, value: value });",
+          "// Ensure default headers exist for each request: Accept and X-Lang (don't overwrite explicit headers)",
+          "function ensureHeaderIfMissing(key, value){",
+          "  if (!pm.request.headers.get(key)) {",
+          "    pm.request.headers.add({ key: key, value: value });",
+          "  }",
           "}",
-          "ensureHeader('Accept','application/json');",
-          "ensureHeader('X-Lang','en');",
+          "ensureHeaderIfMissing('Accept','application/json');",
+          "ensureHeaderIfMissing('X-Lang','en');",
           "// For POST/PUT/PATCH ensure Content-Type if absent",
           "if (pm.request.method === 'POST' || pm.request.method === 'PUT' || pm.request.method === 'PATCH') {",
-          "  ensureHeader('Content-Type','application/json');",
+          "  ensureHeaderIfMissing('Content-Type','application/json');",
           "}"
         ],
         "type": "text/javascript"
