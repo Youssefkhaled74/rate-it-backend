@@ -22,7 +22,8 @@ class UserResource extends JsonResource
             'nationality' => $this->when($this->nationality, function () use ($request) {
                 return new NationalityResource($this->nationality);
             }),
-            'created_at' => $this->created_at,
+            'created_at' => $this->created_at ? $this->created_at->toDateTimeString() : null,
+            'created_at_human' => $this->created_at ? $this->created_at->diffForHumans() : null,
         ];
     }
 }
