@@ -23,6 +23,8 @@ class DatabaseSeeder extends Seeder
             NotificationTemplatesSeeder::class,
             ContentSeeder::class,
             \Database\Seeders\OnboardingScreensSeeder::class,
+            \Database\Seeders\GendersSeeder::class,
+            \Database\Seeders\NationalitiesSeeder::class,
         ]);
 
         // Optionally run demo data only in local or when DB_SEED_DEMO=true

@@ -10,12 +10,22 @@ class UserResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'full_name' => $this->full_name ?? $this->name,
             'phone' => $this->phone,
             'email' => $this->email,
-            'gender' => $this->gender,
-            'nationality' => $this->nationality,
             'birth_date' => $this->birth_date,
+            'gender' => $this->when($this->gender, function () use ($request) {
+                return [
+                    'id' => $this->gender->id,
+                    'name' => app()->getLocale() === 'ar' ? $this->gender->name_ar : $this->gender->name_en,
+                ];
+            }),
+            'nationality' => $this->when($this->nationality, function () use ($request) {
+                return [
+                    'id' => $this->nationality->id,
+                    'name' => app()->getLocale() === 'ar' ? $this->nationality->name_ar : $this->nationality->name_en,
+                ];
+            }),
             'governorate' => $this->governorate,
             'area' => $this->area,
             'created_at' => $this->created_at,

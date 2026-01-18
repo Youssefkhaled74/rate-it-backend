@@ -12,9 +12,12 @@ class AuthService
     public function register(array $data): User
     {
         $user = User::create([
-            'name' => $data['full_name'] ?? ($data['first_name'] ?? null),
+            'full_name' => $data['full_name'] ?? ($data['first_name'] ?? null),
             'email' => $data['email'] ?? null,
             'phone' => $data['phone'] ?? null,
+            'birth_date' => $data['birth_date'] ?? null,
+            'gender_id' => $data['gender_id'] ?? null,
+            'nationality_id' => $data['nationality_id'] ?? null,
             'password' => Hash::make($data['password']),
         ]);
 

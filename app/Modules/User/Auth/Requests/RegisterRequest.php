@@ -18,8 +18,8 @@ class RegisterRequest extends FormRequest
             'phone' => ['required','string','max:20','unique:users,phone'],
             'email' => ['required','email','max:255','unique:users,email'],
             'birth_date' => ['nullable','date'],
-            'gender' => ['nullable','in:male,female,other'],
-            'nationality' => ['nullable','string'],
+            'gender_id' => ['required','exists:genders,id'],
+            'nationality_id' => ['required','exists:nationalities,id'],
             'password' => ['required','string','min:8','confirmed'],
         ];
     }

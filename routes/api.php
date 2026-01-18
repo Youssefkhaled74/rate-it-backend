@@ -7,6 +7,8 @@ Route::prefix('v1/user')->group(function () {
     require base_path('app/Modules/User/Onboarding/Routes/api.php');
     // User Auth module routes
     require base_path('app/Modules/User/Auth/Routes/api.php');
+    // User Lookups (genders, nationalities)
+    require base_path('app/Modules/User/Lookups/Routes/api.php');
 });
 
 // Demo routes for traits
