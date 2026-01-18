@@ -36,6 +36,11 @@ class CreateVendorUsersTable extends Migration
 
     public function down()
     {
+        // Drop postgresql-only check constraint if exists
+        if (Schema::getConnection()->getDriverName() === 'pgsql') {
+            DB::statement('ALTER TABLE vendor_users DROP CONSTRAINT IF EXISTS vendor_users_branch_required');
+        }
+
         Schema::dropIfExists('vendor_users');
     }
 }

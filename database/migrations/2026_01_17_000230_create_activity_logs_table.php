@@ -53,6 +53,11 @@ class CreateActivityLogsTable extends Migration
 
     public function down()
     {
+        // Drop postgresql-only check constraint if exists
+        if (Schema::getConnection()->getDriverName() === 'pgsql') {
+            DB::statement('ALTER TABLE activity_logs DROP CONSTRAINT IF EXISTS activity_actor_one_not_null');
+        }
+
         Schema::dropIfExists('activity_logs');
     }
 }
