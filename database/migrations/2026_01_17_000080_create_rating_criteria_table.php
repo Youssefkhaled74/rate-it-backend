@@ -1,0 +1,29 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateRatingCriteriaTable extends Migration
+{
+    public function up()
+    {
+        Schema::create('rating_criteria', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->uuid('subcategory_id');
+            $table->text('question_text');
+            $table->enum('type', ['RATING','YES_NO','MULTIPLE_CHOICE']);
+            $table->boolean('is_required')->default(false);
+            $table->integer('sort_order')->default(0);
+            $table->timestampsTz();
+
+            $table->index(['subcategory_id','sort_order']);
+            $table->foreign('subcategory_id')->references('id')->on('subcategories')->onDelete('cascade');
+        });
+    }
+
+    public function down()
+    {
+        Schema::dropIfExists('rating_criteria');
+    }
+}
