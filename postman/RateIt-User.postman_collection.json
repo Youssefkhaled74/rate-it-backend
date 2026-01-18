@@ -11,9 +11,12 @@
     { "key": "user_token", "value": "" },
     { "key": "reset_token", "value": "" },
     { "key": "category_id", "value": "1" },
+    { "key": "brand_id", "value": "1" },
+    { "key": "place_id", "value": "1" },
     { "key": "phone", "value": "+201000000000" },
     { "key": "otp", "value": "" }
   ],
+
   "event": [
     {
       "listen": "prerequest",
@@ -620,6 +623,48 @@
               "event": [ { "listen": "test", "script": { "exec": [ "pm.test('status is 200', function(){ pm.response.to.have.status(200); });", "var json = pm.response.json();", "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });" ], "type": "text/javascript" } } ]
             }
           ]
+        }
+      ]
+    },
+    {
+      "name": "Brands",
+      "description": "Brand and Place detail endpoints",
+      "item": [
+        {
+          "name": "GET Brand Details",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Accept", "value": "application/json" }, { "key": "X-Lang", "value": "en" } ],
+            "url": { "raw": "{{base_url}}/api/{{api_version}}/user/brands/{{brand_id}}", "host": ["{{base_url}}"], "path": ["api","{{api_version}}","user","brands","{{brand_id}}"] }
+          },
+          "event": [ { "listen": "test", "script": { "exec": [ "pm.test('status 200', function(){ pm.response.to.have.status(200); });", "var json = pm.response.json();", "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });" ], "type": "text/javascript" } } ]
+        },
+        {
+          "name": "GET Brand Places",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Accept", "value": "application/json" }, { "key": "X-Lang", "value": "en" } ],
+            "url": { "raw": "{{base_url}}/api/{{api_version}}/user/brands/{{brand_id}}/places", "host": ["{{base_url}}"], "path": ["api","{{api_version}}","user","brands","{{brand_id}}","places"] }
+          },
+          "event": [ { "listen": "test", "script": { "exec": [ "pm.test('status 200', function(){ pm.response.to.have.status(200); });", "var json = pm.response.json();", "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });" ], "type": "text/javascript" } } ]
+        },
+        {
+          "name": "GET Place Details",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Accept", "value": "application/json" }, { "key": "X-Lang", "value": "en" } ],
+            "url": { "raw": "{{base_url}}/api/{{api_version}}/user/places/{{place_id}}", "host": ["{{base_url}}"], "path": ["api","{{api_version}}","user","places","{{place_id}}"] }
+          },
+          "event": [ { "listen": "test", "script": { "exec": [ "pm.test('status 200', function(){ pm.response.to.have.status(200); });", "var json = pm.response.json();", "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });" ], "type": "text/javascript" } } ]
+        },
+        {
+          "name": "GET Place Reviews",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Accept", "value": "application/json" }, { "key": "X-Lang", "value": "en" } ],
+            "url": { "raw": "{{base_url}}/api/{{api_version}}/user/places/{{place_id}}/reviews?page=1", "host": ["{{base_url}}"], "path": ["api","{{api_version}}","user","places","{{place_id}}","reviews"], "query": [ { "key": "page", "value": "1" } ] }
+          },
+          "event": [ { "listen": "test", "script": { "exec": [ "pm.test('status 200', function(){ pm.response.to.have.status(200); });", "var json = pm.response.json();", "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });" ], "type": "text/javascript" } } ]
         }
       ]
     }
