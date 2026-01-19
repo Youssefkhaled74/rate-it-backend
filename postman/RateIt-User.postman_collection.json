@@ -1289,6 +1289,89 @@
             "url": { "raw": "{{base_url}}/api/{{api_version}}/user/invites" }
           }
         }
+        ,
+        {
+          "name": "12 - Subscriptions",
+          "description": "Subscription plans and user subscription endpoints",
+          "item": [
+            {
+              "name": "01. GET Plans",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "Accept", "value": "application/json" },
+                  { "key": "X-Lang", "value": "en" }
+                ],
+                "url": { "raw": "{{base_url}}/api/{{api_version}}/user/subscriptions/plans" }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('status is 200', function(){ pm.response.to.have.status(200); });",
+                      "var json = pm.response.json();",
+                      "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });",
+                      "if (json.data && json.data.length) { pm.environment.set('subscription_plan_id', json.data[0].id); }"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ]
+            },
+            {
+              "name": "02. GET My Subscription",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{user_token}}" }
+                ],
+                "url": { "raw": "{{base_url}}/api/{{api_version}}/user/subscriptions/me" }
+              },
+              "event": [ { "listen": "test", "script": { "exec": [ "pm.test('status is 200', function(){ pm.response.to.have.status(200); });", "var json = pm.response.json();", "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });" ], "type": "text/javascript" } } ]
+            },
+            {
+              "name": "03. POST Checkout",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{user_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": { "mode": "raw", "raw": "{ \"plan_id\": {{subscription_plan_id}}, \"provider\": \"manual\" }" },
+                "url": { "raw": "{{base_url}}/api/{{api_version}}/user/subscriptions/checkout" }
+              },
+              "event": [ { "listen": "test", "script": { "exec": [ "pm.test('status is 200', function(){ pm.response.to.have.status(200); });", "var json = pm.response.json();", "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });" ], "type": "text/javascript" } } ]
+            },
+            {
+              "name": "04. POST Cancel Auto-Renew",
+              "request": {
+                "method": "POST",
+                "header": [ { "key": "Authorization", "value": "Bearer {{user_token}}" } ],
+                "url": { "raw": "{{base_url}}/api/{{api_version}}/user/subscriptions/cancel-auto-renew" }
+              },
+              "event": [ { "listen": "test", "script": { "exec": [ "pm.test('status is 200', function(){ pm.response.to.have.status(200); });", "var json = pm.response.json();", "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });" ], "type": "text/javascript" } } ]
+            },
+            {
+              "name": "05. POST Resume Auto-Renew",
+              "request": {
+                "method": "POST",
+                "header": [ { "key": "Authorization", "value": "Bearer {{user_token}}" } ],
+                "url": { "raw": "{{base_url}}/api/{{api_version}}/user/subscriptions/resume-auto-renew" }
+              },
+              "event": [ { "listen": "test", "script": { "exec": [ "pm.test('status is 200', function(){ pm.response.to.have.status(200); });", "var json = pm.response.json();", "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });" ], "type": "text/javascript" } } ]
+            },
+            {
+              "name": "06. GET History",
+              "request": {
+                "method": "GET",
+                "header": [ { "key": "Authorization", "value": "Bearer {{user_token}}" } ],
+                "url": { "raw": "{{base_url}}/api/{{api_version}}/user/subscriptions/history" }
+              },
+              "event": [ { "listen": "test", "script": { "exec": [ "pm.test('status is 200', function(){ pm.response.to.have.status(200); });", "var json = pm.response.json();", "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });" ], "type": "text/javascript" } } ]
+            }
+          ]
+        }
       ]
     }
   ]

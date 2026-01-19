@@ -19,4 +19,14 @@ class Subscription extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    public function plan()
+    {
+        return $this->belongsTo(\App\Models\SubscriptionPlan::class, 'subscription_plan_id');
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(\App\Models\SubscriptionTransaction::class, 'subscription_id');
+    }
 }

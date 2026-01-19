@@ -45,6 +45,8 @@ class DatabaseSeeder extends Seeder
             $this->call([\Database\Seeders\NotificationsSeeder::class]);
             // Points settings demo
             $this->call([\Database\Seeders\PointsSettingsSeeder::class]);
+            // Subscriptions demo data
+            $this->call([\Database\Seeders\SubscriptionPlansSeeder::class]);
         }
     }
 }
