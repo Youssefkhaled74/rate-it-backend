@@ -15,6 +15,7 @@ use App\Support\Traits\Media\PublicUploadTrait;
 use App\Support\Exceptions\ApiException;
 use Illuminate\Support\Facades\Log;
 use App\Modules\User\Reviews\Support\CriteriaResolver;
+use App\Modules\User\Points\Services\PointsService;
 
 class ReviewService
 {
@@ -199,9 +200,28 @@ class ReviewService
                 $review->save();
             }
 
+            // Award points for review (idempotent)
+            $pointsSvc = app(PointsService::class);
+            $pointsAwarded = 0;
+            try {
+                $pointsAwarded = $pointsSvc->awardPointsForReview($user, $review);
+            } catch (\Throwable $ex) {
+                // Log and continue; do not fail the review creation for points errors
+                Log::error('points.award_failed: '.$ex->getMessage(), ['exception' => $ex, 'review_id' => $review->id]);
+                $pointsAwarded = 0;
+            }
+
+            $pointsBalance = 0;
+            try {
+                $pointsBalance = $pointsSvc->getBalance($user);
+            } catch (\Throwable $_) {
+                $pointsBalance = 0;
+            }
+
             DB::commit();
 
-            return $review->load(['answers.choice','photos']);
+            $review->load(['answers.choice','photos']);
+            return ['review' => $review, 'points_awarded' => $pointsAwarded, 'points_balance' => $pointsBalance];
 
         } catch (\Throwable $e) {
             DB::rollBack();

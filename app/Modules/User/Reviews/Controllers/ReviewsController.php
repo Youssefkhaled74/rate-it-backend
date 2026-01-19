@@ -51,9 +51,19 @@ class ReviewsController extends BaseApiController
         }
         $photos = $req->file('photos', []);
 
-        $review = $svc->createReview($user, $req->input('session_token'), $req->input('overall_rating'), $req->input('comment'), $answers, $photos);
+        $result = $svc->createReview($user, $req->input('session_token'), $req->input('overall_rating'), $req->input('comment'), $answers, $photos);
 
-        return $this->success(new \App\Modules\User\Reviews\Resources\ReviewResource($review), 'reviews.created');
+        // $result may be an array with review and points info
+        if (is_array($result) && isset($result['review'])) {
+            $review = $result['review'];
+            $meta = [
+                'points_awarded' => $result['points_awarded'] ?? 0,
+                'points_balance' => $result['points_balance'] ?? 0,
+            ];
+            return $this->success(new \App\Modules\User\Reviews\Resources\ReviewResource($review), 'reviews.created', $meta);
+        }
+
+        return $this->success(new \App\Modules\User\Reviews\Resources\ReviewResource($result), 'reviews.created');
     }
 
     public function myReviews(Request $req)

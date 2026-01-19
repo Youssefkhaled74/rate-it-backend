@@ -822,6 +822,62 @@
           }
         }
       ]
+    },
+    {
+      "name": "User - Points",
+      "description": "Points/Loyalty endpoints (requires {{user_token}})",
+      "item": [
+        {
+          "name": "GET Points Summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "X-Lang", "value": "en" },
+              { "key": "Authorization", "value": "Bearer {{user_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/api/{{api_version}}/user/points/summary" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status is 200', function(){ pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });",
+                  "if (json.data && typeof json.data.points_balance !== 'undefined') { pm.environment.set('points_balance', json.data.points_balance); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Points History",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{user_token}}" } ],
+            "url": { "raw": "{{base_url}}/api/{{api_version}}/user/points/history?page=1" }
+          },
+          "event": [ { "listen": "test", "script": { "exec": [ "pm.test('status is 200', function(){ pm.response.to.have.status(200); });", "var json = pm.response.json();", "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });" ], "type": "text/javascript" } } ]
+        },
+        {
+          "name": "POST Redeem Points",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "X-Lang", "value": "en" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{user_token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{ \"points\": 100 }" },
+            "url": { "raw": "{{base_url}}/api/{{api_version}}/user/points/redeem" }
+          },
+          "event": [ { "listen": "test", "script": { "exec": [ "pm.test('status is 200 or 422', function(){ pm.expect([200,422]).to.include(pm.response.code); });", "var json = pm.response.json();", "pm.test('success boolean present', function(){ pm.expect(json).to.have.property('success'); });", "if (json.data && typeof json.data.points_balance !== 'undefined') { pm.environment.set('points_balance', json.data.points_balance); }" ], "type": "text/javascript" } } ]
+        }
+      ]
     }
   ]
 }

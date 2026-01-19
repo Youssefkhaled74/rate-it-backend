@@ -1,0 +1,38 @@
+{
+  "info": {
+    "name": "User Points",
+    "_postman_id": "points-collection",
+    "description": "Requests for user points (requires {{user_token}})",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "GET Points Summary",
+      "request": {
+        "method": "GET",
+        "header": [ { "key": "Authorization", "value": "Bearer {{user_token}}" } ],
+        "url": { "raw": "{{base_url}}/api/{{api_version}}/user/points/summary" }
+      },
+      "response": []
+    },
+    {
+      "name": "GET Points History",
+      "request": {
+        "method": "GET",
+        "header": [ { "key": "Authorization", "value": "Bearer {{user_token}}" } ],
+        "url": { "raw": "{{base_url}}/api/{{api_version}}/user/points/history" }
+      },
+      "response": []
+    },
+    {
+      "name": "POST Points Redeem",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Authorization", "value": "Bearer {{user_token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+        "body": { "mode": "raw", "raw": "{ \"points\": 10 }" },
+        "url": { "raw": "{{base_url}}/api/{{api_version}}/user/points/redeem" }
+      },
+      "response": []
+    }
+  ]
+}
