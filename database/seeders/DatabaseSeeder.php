@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         // Bootstrap / safe seeders (idempotent)
         $this->call([
             AdminsSeeder::class,
+            \Database\Seeders\RolesAndPermissionsSeeder::class,
             CategoriesSeeder::class,
             UserLevelsSeeder::class,
             NotificationTemplatesSeeder::class,

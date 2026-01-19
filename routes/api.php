@@ -29,6 +29,11 @@ Route::prefix('v1/user')->group(function () {
     require base_path('app/Modules/User/Subscriptions/Routes/api.php');
 });
 
+// API v1 - Admin module routes
+Route::prefix('v1/admin')->group(function () {
+    require base_path('app/Modules/Admin/Auth/Routes/api.php');
+});
+
 // Demo routes for traits
 Route::prefix('v1/demo')->group(function () {
     Route::get('ping', [\App\Http\Controllers\Api\DemoTraitController::class, 'ping']);
