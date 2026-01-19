@@ -76,9 +76,9 @@ class ReviewService
         Log::debug('review.create.incoming_answers', ['answers' => $answers]);
 
         $required = $criteria->where('is_required', true)->pluck('id')->toArray();
-        $providedIds = array_column($answers, 'criteria_id');
+        $providedIds = array_map('intval', array_column($answers, 'criteria_id'));
         foreach ($required as $rid) {
-            if (! in_array($rid, $providedIds, true)) {
+            if (! in_array((int) $rid, $providedIds, true)) {
                 throw new ApiException(trans('reviews.invalid_answer'), 422);
             }
         }
@@ -95,34 +95,73 @@ class ReviewService
             ]);
 
             foreach ($answers as $ans) {
-                $criteriaId = Arr::get($ans, 'criteria_id');
+                // Normalize incoming criteria id to int
+                $criteriaId = (int) Arr::get($ans, 'criteria_id');
                 $crit = $criteria->get($criteriaId);
+
+                // Per-answer debug context
+                $answerDebug = [
+                    'criteria_id' => $criteriaId,
+                    'incoming_keys' => array_keys((array) $ans),
+                    'incoming_values' => $ans,
+                    'criteria_resolved' => $crit ? $crit->type : null,
+                    'subcategory_id' => $subcat,
+                ];
+
                 if (! $crit) {
-                    Log::debug('review.create.invalid_criteria', ['criteria_id' => $criteriaId, 'reason' => 'not_in_allowed_set']);
+                    Log::debug('review.create.invalid_criteria', $answerDebug + ['reason' => 'not_in_allowed_set']);
                     throw new ApiException('reviews.invalid_answer_for_criteria', 422, ['criteria_id' => $criteriaId]);
                 }
 
                 $data = ['review_id' => $review->id, 'criteria_id' => $criteriaId];
                 switch ($crit->type) {
                     case 'RATING':
-                        $val = Arr::get($ans, 'rating_value');
-                        if (! is_numeric($val) || $val < 1 || $val > 5) {
-                            throw new ApiException(trans('reviews.invalid_answer'), 422);
+                        $raw = Arr::get($ans, 'rating_value');
+                        $val = is_numeric($raw) ? (int) $raw : null;
+                        Log::debug('review.create.answer_validation', $answerDebug + ['normalized_rating' => $val]);
+                        if ($val === null || $val < 1 || $val > 5) {
+                            Log::debug('review.create.invalid_answer', $answerDebug + ['reason' => 'rating_out_of_range', 'normalized' => $val]);
+                            throw new ApiException(trans('reviews.invalid_answer'), 422, ['criteria_id' => $criteriaId, 'type' => 'RATING']);
                         }
-                        $data['rating_value'] = (int) $val;
+                        $data['rating_value'] = $val;
                         break;
                     case 'YES_NO':
-                        if (! isset($ans['yes_no_value'])) {
-                            throw new ApiException(trans('reviews.invalid_answer'), 422);
+                        $raw = Arr::get($ans, 'yes_no_value');
+                        // Accept "1"/"0", "true"/"false", booleans, ints
+                        if (is_string($raw)) {
+                            $low = strtolower($raw);
+                            if ($low === '1' || $low === 'true') {
+                                $boolVal = true;
+                            } elseif ($low === '0' || $low === 'false') {
+                                $boolVal = false;
+                            } else {
+                                $boolVal = null;
+                            }
+                        } elseif (is_int($raw) || is_bool($raw)) {
+                            $boolVal = (bool) $raw;
+                        } else {
+                            $boolVal = null;
                         }
-                        $data['yes_no_value'] = (bool) $ans['yes_no_value'];
+
+                        Log::debug('review.create.answer_validation', $answerDebug + ['normalized_yes_no' => $boolVal]);
+                        if ($boolVal === null) {
+                            Log::debug('review.create.invalid_answer', $answerDebug + ['reason' => 'invalid_yes_no_value', 'raw' => $raw]);
+                            throw new ApiException(trans('reviews.invalid_answer'), 422, ['criteria_id' => $criteriaId, 'type' => 'YES_NO']);
+                        }
+                        $data['yes_no_value'] = (int) $boolVal;
                         break;
                     case 'MULTIPLE_CHOICE':
-                        $choiceId = Arr::get($ans, 'choice_id');
-                        $choice = RatingCriteriaChoice::where('id', $choiceId)->where('criteria_id', $criteriaId)->first();
-                        if (! $choice) {
-                            throw new ApiException(trans('reviews.invalid_answer'), 422);
+                        $choiceId = (int) Arr::get($ans, 'choice_id');
+                        // Allowed choice ids from resolved criteria (if loaded) or DB fallback
+                        $allowed = $crit && $crit->relationLoaded('choices') ? $crit->choices->pluck('id')->map(fn($i) => (int) $i)->toArray() : RatingCriteriaChoice::where('criteria_id', $criteriaId)->pluck('id')->map(fn($i) => (int) $i)->toArray();
+
+                        Log::debug('review.create.answer_validation', $answerDebug + ['allowed_choice_ids' => $allowed, 'incoming_choice_id' => $choiceId]);
+
+                        if (! in_array($choiceId, $allowed, true)) {
+                            Log::debug('review.create.invalid_answer', $answerDebug + ['reason' => 'choice_not_belong_to_criteria', 'incoming_choice_id' => $choiceId, 'allowed' => $allowed]);
+                            throw new ApiException(trans('reviews.invalid_answer'), 422, ['criteria_id' => $criteriaId, 'type' => 'MULTIPLE_CHOICE', 'allowed_choice_ids' => $allowed]);
                         }
+
                         $data['choice_id'] = $choiceId;
                         break;
                 }
