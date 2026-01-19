@@ -23,6 +23,8 @@ Route::prefix('v1/user')->group(function () {
     require base_path('app/Modules/User/Points/Routes/api.php');
     // User Invites
     require base_path('app/Modules/User/Invites/Routes/api.php');
+    // User Profile
+    require base_path('app/Modules/User/Profile/Routes/api.php');
 });
 
 // Demo routes for traits

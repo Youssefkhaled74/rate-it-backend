@@ -207,6 +207,47 @@
       ]
     },
     {
+      "name": "Profile",
+      "description": "User profile endpoints (requires {{user_token}})",
+      "item": [
+        {
+          "name": "GET Profile",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{user_token}}" } ],
+            "url": { "raw": "{{base_url}}/api/{{api_version}}/user/profile" }
+          }
+        },
+        {
+          "name": "POST Update Profile (multipart)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{user_token}}" } ],
+            "body": { "mode": "formdata", "formdata": [ { "key": "full_name", "value": "New Name", "type": "text" }, { "key": "avatar", "type": "file" } ] },
+            "url": { "raw": "{{base_url}}/api/{{api_version}}/user/profile" }
+          }
+        },
+        {
+          "name": "POST Profile Send Phone OTP",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{user_token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{ \"phone\": \"+201000000010\" }" },
+            "url": { "raw": "{{base_url}}/api/{{api_version}}/user/profile/phone/send-otp" }
+          }
+        },
+        {
+          "name": "POST Profile Verify Phone OTP",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{user_token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{ \"phone\": \"+201000000010\", \"otp\": \"1234\" }" },
+            "url": { "raw": "{{base_url}}/api/{{api_version}}/user/profile/phone/verify-otp" }
+          }
+        }
+      ]
+    }
+    {
       "name": "User - Lookups",
       "description": "Public lookup endpoints (genders, nationalities)",
       "item": [
