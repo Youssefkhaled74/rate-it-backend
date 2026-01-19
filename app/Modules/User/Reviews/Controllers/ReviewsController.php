@@ -17,7 +17,7 @@ class ReviewsController extends BaseApiController
 {
     public function scanQr(ScanQrRequest $req, QrScanService $svc)
     {
-        $payload = $svc->scan(auth()->user(), $req->input('qr_code_value'));
+        $payload = $svc->scan($req->user(), $req->input('qr_code_value'));
         if (! $payload) {
             return $this->error(trans('reviews.invalid_qr'), 422);
         }
@@ -44,7 +44,7 @@ class ReviewsController extends BaseApiController
 
     public function store(StoreReviewRequest $req, ReviewService $svc)
     {
-        $user = auth()->user();
+        $user = $req->user();
         $answers = json_decode($req->input('answers'), true) ?? [];
         $photos = $req->file('photos', []);
 
@@ -55,15 +55,14 @@ class ReviewsController extends BaseApiController
 
     public function myReviews(Request $req)
     {
-        $user = auth()->user();
+        $user = $req->user();
         $perPage = (int) $req->query('per_page', 15);
         $p = Review::where('user_id', $user->id)->with(['photos','answers'])->paginate($perPage);
         return $this->success(\App\Modules\User\Reviews\Resources\ReviewResource::collection($p), 'reviews.my_list');
     }
-
-    public function show(Review $review)
+    public function show(Request $req, Review $review)
     {
-        $user = auth()->user();
+        $user = $req->user();
         if ($review->user_id !== $user->id) {
             return $this->error(trans('reviews.unauthorized'), 403);
         }

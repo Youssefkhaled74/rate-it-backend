@@ -8,7 +8,7 @@ class ScanQrRequest extends FormRequest
 {
     public function authorize()
     {
-        return auth()->check();
+        return $this->user() !== null;
     }
 
     public function rules()

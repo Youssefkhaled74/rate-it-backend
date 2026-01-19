@@ -31,6 +31,13 @@ class DatabaseSeeder extends Seeder
         // Optionally run demo data only in local or when DB_SEED_DEMO=true
         if (app()->environment('local') || env('DB_SEED_DEMO', false)) {
             $this->call(\Database\Seeders\DemoDatabaseSeeder::class);
+
+            // Demo helpers for reviews/questions
+            $this->call([ 
+                \Database\Seeders\DemoMedicalSubcategorySeeder::class,
+                \Database\Seeders\AttachBranch1ToClinicsSeeder::class,
+                \Database\Seeders\RatingCriteriaSeeder::class,
+            ]);
         }
     }
 }

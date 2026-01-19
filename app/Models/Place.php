@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Subcategory;
 
 class Place extends Model
 {
@@ -17,4 +18,9 @@ class Place extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    public function subcategory()
+    {
+        return $this->belongsTo(Subcategory::class, 'subcategory_id');
+    }
 }
