@@ -246,7 +246,7 @@
           }
         }
       ]
-    }
+    },
     {
       "name": "User - Lookups",
       "description": "Public lookup endpoints (genders, nationalities)",
