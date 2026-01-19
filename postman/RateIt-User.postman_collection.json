@@ -744,6 +744,84 @@
           "event": [ { "listen": "test", "script": { "exec": [ "pm.test('status 200', function(){ pm.response.to.have.status(200); });", "var json = pm.response.json();", "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });" ], "type": "text/javascript" } } ]
         }
       ]
+    },
+    {
+      "name": "User - Notifications",
+      "description": "Notifications endpoints (requires {{user_token}})",
+      "item": [
+        {
+          "name": "GET Notifications List",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "X-Lang", "value": "en" },
+              { "key": "Authorization", "value": "Bearer {{user_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/{{api_version}}/user/notifications",
+              "host": ["{{base_url}}"],
+              "path": ["api","{{api_version}}","user","notifications"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status 200', function(){ pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });",
+                  "if (json.data && json.data.length) { pm.environment.set('first_notification_id', json.data[0].id); }",
+                  "if (json.meta && typeof json.meta.unread_count !== 'undefined') { pm.environment.set('unread_count', json.meta.unread_count); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Notifications - Unread Count",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{user_token}}" } ],
+            "url": { "raw": "{{base_url}}/api/{{api_version}}/user/notifications/unread-count" }
+          },
+          "event": [ { "listen": "test", "script": { "exec": [ "pm.test('status 200', function(){ pm.response.to.have.status(200); });", "var json = pm.response.json();", "pm.test('success true', function(){ pm.expect(json.success).to.eql(true); });", "if (json.data && typeof json.data.unread_count !== 'undefined') { pm.environment.set('unread_count', json.data.unread_count); }" ], "type": "text/javascript" } } ]
+        },
+        {
+          "name": "POST Notification - Mark Read",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{user_token}}" } ],
+            "url": { "raw": "{{base_url}}/api/{{api_version}}/user/notifications/{{first_notification_id}}/read" }
+          }
+        },
+        {
+          "name": "POST Notifications - Mark All Read",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{user_token}}" } ],
+            "url": { "raw": "{{base_url}}/api/{{api_version}}/user/notifications/read-all" }
+          }
+        },
+        {
+          "name": "DELETE Notification - Delete One",
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Authorization", "value": "Bearer {{user_token}}" } ],
+            "url": { "raw": "{{base_url}}/api/{{api_version}}/user/notifications/{{first_notification_id}}" }
+          }
+        },
+        {
+          "name": "DELETE Notifications - Clear All",
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Authorization", "value": "Bearer {{user_token}}" } ],
+            "url": { "raw": "{{base_url}}/api/{{api_version}}/user/notifications" }
+          }
+        }
+      ]
     }
   ]
 }

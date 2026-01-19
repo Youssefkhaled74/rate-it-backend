@@ -66,4 +66,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Nationality::class, 'nationality_id');
     }
+
+    public function notifications()
+    {
+        return $this->hasMany(\App\Models\UserNotification::class);
+    }
 }

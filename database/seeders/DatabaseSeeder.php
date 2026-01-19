@@ -41,6 +41,8 @@ class DatabaseSeeder extends Seeder
 
             // Ensure branch 1 has criteria to match questions -> reviews flow
             $this->call([\Database\Seeders\EnsureBranch1CriteriaSeeder::class]);
+            // Notifications demo
+            $this->call([\Database\Seeders\NotificationsSeeder::class]);
         }
     }
 }
