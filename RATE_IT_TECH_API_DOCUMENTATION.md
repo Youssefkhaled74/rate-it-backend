@@ -149,7 +149,133 @@ Rate-It is a Laravel 12 backend API following a **modular architecture** under `
   - Manual `provider` checkout placeholder (records a pending transaction and subscription) with structured extension points for payment provider integration
   - Transaction history tracking in `subscription_transactions`
 
-See the detailed Subscriptions API reference: [TECH_SUBSCRIPTIONS.md](TECH_SUBSCRIPTIONS.md)
+### Subscriptions API Reference (Detailed)
+
+This section documents database schema changes, models, service behaviour, and the Subscriptions endpoints.
+
+#### Database (new/updated tables)
+
+- `subscription_plans` (new)
+  - id, name_en, name_ar, description_en, description_ar
+  - price_cents (integer), currency (string), interval (enum: monthly, annual)
+  - trial_days (integer), is_best_value (boolean), is_active (boolean)
+  - metadata JSON, timestamps
+
+- `subscriptions` (updated)
+  - existing legacy fields kept (status, started_at, free_until, paid_until)
+  - added: subscription_plan_id (fk), subscription_status (enum: trialing, active, past_due, canceled, expired)
+  - auto_renew (boolean), canceled_at (nullable), provider (string), provider_subscription_id (string), provider_transaction_id (string), meta JSON
+
+- `subscription_transactions` (new)
+  - id, subscription_id (fk), user_id, amount_cents, currency, provider, provider_transaction_id, status (pending, success, failed), meta JSON, created_at
+
+#### Models
+
+- `SubscriptionPlan` — Eloquent model for `subscription_plans` with localized accessors
+- `Subscription` — updated relations: `plan()` and `transactions()`
+- `SubscriptionTransaction` — transaction records
+
+#### Business Rules
+
+- Trial: `trial_days` seeded as 180 (6 months). When checking out, if a plan has `trial_days>0`, subscription is created with `subscription_status = 'trialing'` and `free_until = now + trial_days`
+- Auto-renew: default `true`. Cancelling auto-renew sets `auto_renew=false` and `canceled_at` but access remains until `paid_until` or `free_until`.
+- Checkout flow: currently supports `provider = 'manual'` which creates a pending transaction and records the subscription. Payment provider integration must update transactions via webhooks and set `subscription_status`/`paid_until` accordingly.
+- Renewals & expirations: a scheduled job should process upcoming renewals and handle provider interactions. Not implemented here.
+
+#### Endpoints
+
+Base: `/api/v1/user/subscriptions`
+
+1. GET `/plans` — Public
+   - Description: List available subscription plans (localized by `X-Lang`)
+   - Response: array of plan objects (id, name, description, price_cents, currency, interval, trial_days, is_best_value)
+
+2. GET `/me` — Auth required
+   - Description: Get the authenticated user's current subscription (if any)
+   - Response: subscription object with plan, status, free_until, paid_until, auto_renew
+
+3. POST `/checkout` — Auth required
+   - Description: Start a subscription checkout. Request body: `{ "plan_id": <id>, "provider": "manual" }`
+   - Behaviour: Creates `subscription` and a pending `subscription_transaction`. If the plan has trial days, sets `subscription_status` to `trialing` and `free_until` accordingly.
+   - Response: subscription object and transaction meta
+
+4. POST `/cancel-auto-renew` — Auth required
+   - Description: Disable auto-renew for the user's current subscription. Sets `auto_renew=false` and `canceled_at`.
+   - Response: success true
+
+5. POST `/resume-auto-renew` — Auth required
+   - Description: Re-enable auto-renew for the subscription (`auto_renew=true`, clears `canceled_at`)
+   - Response: success true
+
+6. GET `/history` — Auth required
+   - Description: Paginated transaction/subscription history for the user
+   - Response: paginated list of subscription transactions and past subscriptions
+
+#### Request/Response Examples
+
+##### Example: GET Plans
+Response (200):
+```json
+{
+  "success": true,
+  "message": "Plans retrieved",
+  "data": [
+    {
+      "id": 1,
+      "name": "Monthly",
+      "description": "Monthly plan",
+      "price_cents": 9900,
+      "currency": "EGP",
+      "interval": "monthly",
+      "trial_days": 180,
+      "is_best_value": false
+    }
+  ],
+  "meta": null
+}
+```
+
+##### Example: POST Checkout (manual)
+Request:
+```json
+{ "plan_id": 1, "provider": "manual" }
+```
+Response (200):
+```json
+{
+  "success": true,
+  "message": "Subscription created",
+  "data": {
+    "subscription": { /* subscription fields */ },
+    "transaction": { /* pending transaction */ }
+  },
+  "meta": null
+}
+```
+
+#### Postman
+The updated Postman collection includes a `12 - Subscriptions` folder with these requests:
+- `GET Plans`
+- `GET My Subscription`
+- `POST Checkout` (manual)
+- `POST Cancel Auto-Renew`
+- `POST Resume Auto-Renew`
+- `GET History`
+
+Use the collection variables to store `subscription_plan_id` and `user_token` during tests.
+
+#### Developer Notes / Next Steps
+- Integrate a payment provider (Stripe recommended) and implement webhook handlers to mark transactions `success` and set `paid_until`.
+- Implement a scheduler to process renewals and expire subscriptions.
+- Add notifications on subscription activation, renewal, cancellation, and expiry via existing `NotificationService`.
+- Add unit/integration tests for checkout, trial, cancel/resume flows.
+
+#### Local Setup (migrate & seed)
+
+```powershell
+php artisan migrate
+php artisan db:seed --class=SubscriptionPlansSeeder
+```
 
 ---
 
