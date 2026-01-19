@@ -138,6 +138,19 @@ Rate-It is a Laravel 12 backend API following a **modular architecture** under `
   - Update profile (name, avatar upload)
   - Phone change flow (send OTP → verify OTP)
 
+#### **12. Subscriptions Module**
+- **Purpose**: Manage subscription plans, user subscriptions, trials, and auto-renew settings
+- **Dependencies**: `subscriptions` table (legacy fields retained), new `subscription_plans` and `subscription_transactions` tables; NotificationService (optional for events), Scheduler for renewals
+- **Status**: Implemented (DB migrations, models, service, controller, resources, routes, seeder). Payment provider integration (Stripe/Apple/Google) is a planned next step.
+- **Key Features**:
+  - Bilingual plan metadata (`name_en`, `name_ar`, `description_en`, `description_ar`)
+  - Trial support (seeded with `trial_days = 180` → ~6 months free)
+  - Auto-renew toggle (default ON) with cancel/resume endpoints; cancellation sets `auto_renew=false` and `canceled_at` but does not immediately revoke access
+  - Manual `provider` checkout placeholder (records a pending transaction and subscription) with structured extension points for payment provider integration
+  - Transaction history tracking in `subscription_transactions`
+
+See the detailed Subscriptions API reference: [TECH_SUBSCRIPTIONS.md](TECH_SUBSCRIPTIONS.md)
+
 ---
 
 ## 2. API Conventions

@@ -1,3 +1,34 @@
+# Subscriptions — Non-Technical Overview
+
+This document explains the new Subscriptions feature in plain language for product, support, and QA teams.
+
+- **What it is:** A paid subscriptions feature allowing users to subscribe to Monthly or Annual plans.
+- **Free trial:** New subscribers receive a 6-month free trial (180 days) before billing begins.
+- **Auto-renew:** Auto-renew is enabled by default. Users can cancel auto-renew; cancelling does not immediately remove access — access remains until the current paid period (or trial) ends.
+- **Plans:** Plans are bilingual (English/Arabic) and include a name, description, price (in cents), currency, interval (monthly/annual), and trial length.
+
+How users interact (high-level):
+- View available plans (GET Plans).
+- Start a subscription via Checkout (POST Checkout). For now the server supports a `manual` provider placeholder; payment gateway integrations (Stripe, Apple, Google) are planned.
+- View current subscription (GET My Subscription).
+- Cancel or resume auto-renew (POST Cancel Auto-Renew / POST Resume Auto-Renew).
+
+Quick QA steps (Postman):
+1. Run `GET /user/subscriptions/plans` and pick a `plan_id`.
+2. `POST /user/subscriptions/checkout` with body `{ "plan_id": <id>, "provider": "manual" }` (requires auth).
+3. `GET /user/subscriptions/me` to verify subscription state and trial dates.
+4. `POST /user/subscriptions/cancel-auto-renew` to test cancelling; `POST /user/subscriptions/resume-auto-renew` to resume.
+
+Run these locally after migrations and seeding:
+
+```powershell
+php artisan migrate
+php artisan db:seed --class=SubscriptionPlansSeeder
+```
+
+Notes:
+- The backend currently seeds Monthly and Annual plans with a 180-day trial. Payment processing is a manual placeholder; complete provider integration is required for live billing and renewals.
+
 # Rate-It: User App - Non-Technical Documentation
 **For Product Managers, Business Stakeholders & Non-Technical Teams**
 
