@@ -19,6 +19,12 @@ class QrScanService
 
         $ttl = $ttlMinutes ?? (int) config('reviews.qr_ttl_minutes', 10);
         $now = Carbon::now();
+        // Invalidate previous non-consumed sessions for this user+branch
+        BranchQrSession::where('user_id', $user->id)
+            ->where('branch_id', $branch->id)
+            ->whereNull('consumed_at')
+            ->update(['consumed_at' => Carbon::now()]);
+
         $session = BranchQrSession::create([
             'user_id' => $user->id,
             'branch_id' => $branch->id,

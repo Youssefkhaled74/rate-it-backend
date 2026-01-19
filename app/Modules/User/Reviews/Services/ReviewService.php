@@ -29,7 +29,7 @@ class ReviewService
             ->first();
 
         if (! $session) {
-            throw new ApiException(trans('reviews.qr_invalid_or_used'), 422);
+            throw new ApiException('reviews.invalid_qr', 422);
         }
 
         // Debug log (temporary)
@@ -37,9 +37,10 @@ class ReviewService
 
         // Ensure expires_at is a proper Carbon instance and check expiry
         if (! $session->expires_at || $session->expires_at->isPast()) {
-            throw new ApiException(trans('reviews.qr_expired'), 422, [
+            throw new ApiException('reviews.qr_expired', 422, [
                 'server_time' => Carbon::now()->toDateTimeString(),
                 'expires_at' => optional($session->expires_at)->toDateTimeString(),
+                'action' => 'RESCAN_REQUIRED',
             ]);
         }
 
