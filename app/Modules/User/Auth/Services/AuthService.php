@@ -27,6 +27,17 @@ class AuthService
             'password' => $data['password'], // Let 'hashed' cast handle hashing
         ]);
 
+        // If user was invited, attempt to complete the invite and award points.
+        if (!empty($data['invited_by_phone'])) {
+            try {
+                app(\App\Modules\User\Invites\Services\InviteService::class)
+                    ->completeInviteForNewUser($user, $data['invited_by_phone']);
+            } catch (\Exception $e) {
+                // log and continue - registering user should not fail due to invite processing
+                \Illuminate\Support\Facades\Log::debug('invite.process_error', ['error'=>$e->getMessage(),'user_id'=>$user->id]);
+            }
+        }
+
         return $user;
     }
 

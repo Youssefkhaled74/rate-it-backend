@@ -17,6 +17,8 @@ class PointsSettingsSeeder extends Seeder
 
         PointsSetting::create([
             'points_per_review' => 15,
+            'invite_points_per_friend' => 50,
+            'invitee_bonus_points' => 0,
             'point_value_money' => 0.10,
             'currency' => 'EGP',
             'is_active' => true,

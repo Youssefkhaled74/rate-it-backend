@@ -877,7 +877,39 @@
           },
           "event": [ { "listen": "test", "script": { "exec": [ "pm.test('status is 200 or 422', function(){ pm.expect([200,422]).to.include(pm.response.code); });", "var json = pm.response.json();", "pm.test('success boolean present', function(){ pm.expect(json).to.have.property('success'); });", "if (json.data && typeof json.data.points_balance !== 'undefined') { pm.environment.set('points_balance', json.data.points_balance); }" ], "type": "text/javascript" } } ]
         }
-      ]
-    }
+        ]
+      },
+      {
+        "name": "User - Invites",
+        "description": "Invite friends endpoints (requires {{user_token}})",
+        "item": [
+          {
+            "name": "POST Check Phones",
+            "request": {
+              "method": "POST",
+              "header": [ { "key": "Content-Type", "value": "application/json" } ],
+              "body": { "mode": "raw", "raw": "{ \"phones\": [ \"+201000000001\", \"+201000000002\" ] }" },
+              "url": { "raw": "{{base_url}}/api/{{api_version}}/user/invites/check-phones" }
+            }
+          },
+          {
+            "name": "POST Create Invites",
+            "request": {
+              "method": "POST",
+              "header": [ { "key": "Authorization", "value": "Bearer {{user_token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+              "body": { "mode": "raw", "raw": "{ \"phones\": [ \"+201000000001\", \"+201000000002\" ] }" },
+              "url": { "raw": "{{base_url}}/api/{{api_version}}/user/invites" }
+            }
+          },
+          {
+            "name": "GET My Invites",
+            "request": {
+              "method": "GET",
+              "header": [ { "key": "Authorization", "value": "Bearer {{user_token}}" } ],
+              "url": { "raw": "{{base_url}}/api/{{api_version}}/user/invites" }
+            }
+          }
+        ]
+      }
   ]
 }
