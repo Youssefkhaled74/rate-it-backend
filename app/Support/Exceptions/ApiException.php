@@ -3,26 +3,39 @@
 namespace App\Support\Exceptions;
 
 use Exception;
+use Throwable;
 
 class ApiException extends Exception
 {
-    protected int $status;
-    protected ?array $data = null;
+    protected int $statusCode = 400;
+    protected ?array $meta = null;
 
-    public function __construct(string $message = "", int $status = 422, ?array $data = null)
+    public function __construct(string $message = "", int $statusCode = 400, ?array $meta = null, ?Throwable $previous = null)
     {
-        parent::__construct($message);
-        $this->status = $status;
-        $this->data = $data;
+        parent::__construct($message, 0, $previous);
+        $this->statusCode = $statusCode;
+        $this->meta = $meta;
     }
 
+    // New canonical accessors
+    public function getStatusCode(): int
+    {
+        return $this->statusCode;
+    }
+
+    public function getMeta(): ?array
+    {
+        return $this->meta;
+    }
+
+    // Backwards compatible aliases
     public function getStatus(): int
     {
-        return $this->status;
+        return $this->getStatusCode();
     }
 
     public function getData(): ?array
     {
-        return $this->data;
+        return $this->getMeta();
     }
 }

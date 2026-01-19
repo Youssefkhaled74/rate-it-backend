@@ -59,7 +59,14 @@ class ReviewService
         if ($cooldownDays > 0) {
             $last = Review::where('branch_id', $branch->id)->where('user_id', $user->id)->orderBy('created_at', 'desc')->first();
             if ($last && Carbon::now()->diffInDays($last->created_at) < $cooldownDays) {
-                throw new ApiException(trans('reviews.cooldown_active', ['days' => $cooldownDays]), 422);
+                $cooldownEndsAt = $last->created_at->copy()->addDays($cooldownDays);
+                $remainingSeconds = max(0, Carbon::now()->diffInSeconds($cooldownEndsAt));
+                $human = Carbon::now()->diffForHumans($cooldownEndsAt);
+                throw new ApiException('reviews.cooldown_active', 429, [
+                    'retry_after_seconds' => $remainingSeconds,
+                    'retry_after_human' => $human,
+                    'cooldown_ends_at' => $cooldownEndsAt->toDateTimeString(),
+                ]);
             }
         }
 

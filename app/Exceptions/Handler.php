@@ -30,16 +30,25 @@ class Handler extends ExceptionHandler
             return parent::render($request, $e);
         }
 
-        // ApiException
+        // ApiException handling: return unified JSON response without trace
         if ($e instanceof ApiException) {
-            $status = $e->getStatus() ?: 422;
+            // Determine HTTP status code from exception if available
+            $status = method_exists($e, 'getStatusCode') ? $e->getStatusCode() : ($e->getStatus() ?? 400);
+
+            // Message is a localization key or plain text - do not expose debug trace
             $message = __($e->getMessage());
-            $data = $e->getData() ?? null;
+
+            // Meta payload if provided by exception
+            $meta = method_exists($e, 'getMeta') ? $e->getMeta() : ($e->getData() ?? null);
+
+            // Log full exception server-side (includes trace in logs) but never return it to client
+            Log::error('ApiException: '.$e->getMessage(), ['meta' => $meta, 'exception' => $e]);
+
             return response()->json([
                 'success' => false,
                 'message' => $message,
-                'data' => $data,
-                'meta' => null,
+                'data' => null,
+                'meta' => $meta ?? null,
             ], $status);
         }
 
