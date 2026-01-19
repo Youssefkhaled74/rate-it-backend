@@ -10,7 +10,7 @@ use Carbon\Carbon;
 
 class QrScanService
 {
-    public function scan($user, string $qrCodeValue, int $ttlMinutes = null)
+    public function scan($user, string $qrCodeValue, ?int $ttlMinutes = null)
     {
         $branch = Branch::where('qr_code_value', $qrCodeValue)->first();
         if (! $branch) {

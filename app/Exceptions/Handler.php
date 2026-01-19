@@ -13,6 +13,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 class Handler extends ExceptionHandler
 {
@@ -104,7 +105,13 @@ class Handler extends ExceptionHandler
         // Generic exceptions: do not leak trace in production
         Log::error('Unhandled exception: '.$e->getMessage(), ['exception' => $e]);
         $message = app()->environment('production') ? __('server.error') : $e->getMessage();
-        $status = method_exists($e, 'getStatusCode') ? $e->getStatusCode() : 500;
+
+        if ($e instanceof HttpExceptionInterface) {
+            $status = $e->getStatusCode();
+        } else {
+            $status = 500;
+        }
+
         return response()->json([
             'success' => false,
             'message' => __($message),
