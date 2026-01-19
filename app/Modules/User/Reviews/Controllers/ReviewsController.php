@@ -45,7 +45,10 @@ class ReviewsController extends BaseApiController
     public function store(StoreReviewRequest $req, ReviewService $svc)
     {
         $user = $req->user();
-        $answers = json_decode($req->input('answers'), true) ?? [];
+        $answers = $req->input('answers', []);
+        if (is_string($answers)) {
+            $answers = json_decode($answers, true) ?? [];
+        }
         $photos = $req->file('photos', []);
 
         $review = $svc->createReview($user, $req->input('session_token'), $req->input('overall_rating'), $req->input('comment'), $answers, $photos);

@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use App\Support\Traits\Media\PublicUploadTrait;
 use App\Support\Exceptions\ApiException;
 use Illuminate\Support\Facades\Log;
+use App\Modules\User\Reviews\Support\CriteriaResolver;
 
 class ReviewService
 {
@@ -49,6 +50,10 @@ class ReviewService
             throw new ApiException(trans('reviews.invalid_qr'), 422);
         }
 
+        // Instrumentation: log branch and subcategory
+        $subcat = optional(optional($branch)->place)->subcategory_id;
+        Log::debug('review.create.branch_info', ['branch_id' => $branch->id, 'place_id' => $branch->place_id, 'subcategory_id' => $subcat]);
+
         // Cooldown check
         $cooldownDays = (int) $branch->review_cooldown_days;
         if ($cooldownDays > 0) {
@@ -58,9 +63,17 @@ class ReviewService
             }
         }
 
-        // Validate answers against criteria
-        $subcategoryId = optional($branch->place)->subcategory_id;
-        $criteria = RatingCriteria::where('subcategory_id', $subcategoryId)->get()->keyBy('id');
+        // Validate answers against criteria using CriteriaResolver (single source of truth)
+        $resolver = app(CriteriaResolver::class);
+        $criteriaCollection = $resolver->getForBranch($branch);
+        $criteria = $criteriaCollection->keyBy('id');
+
+        // Log allowed criteria ids (count + first 20)
+        $allowedIds = $criteriaCollection->pluck('id')->toArray();
+        Log::debug('review.create.allowed_criteria', ['count' => count($allowedIds), 'sample_ids' => array_slice($allowedIds, 0, 20)]);
+
+        // Log incoming answers for debugging
+        Log::debug('review.create.incoming_answers', ['answers' => $answers]);
 
         $required = $criteria->where('is_required', true)->pluck('id')->toArray();
         $providedIds = array_column($answers, 'criteria_id');
@@ -85,7 +98,8 @@ class ReviewService
                 $criteriaId = Arr::get($ans, 'criteria_id');
                 $crit = $criteria->get($criteriaId);
                 if (! $crit) {
-                    throw new ApiException(trans('reviews.invalid_answer'), 422);
+                    Log::debug('review.create.invalid_criteria', ['criteria_id' => $criteriaId, 'reason' => 'not_in_allowed_set']);
+                    throw new ApiException('reviews.invalid_answer_for_criteria', 422, ['criteria_id' => $criteriaId]);
                 }
 
                 $data = ['review_id' => $review->id, 'criteria_id' => $criteriaId];
