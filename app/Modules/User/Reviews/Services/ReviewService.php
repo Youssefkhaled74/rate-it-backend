@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Support\Traits\Media\PublicUploadTrait;
 use App\Support\Exceptions\ApiException;
+use Illuminate\Support\Facades\Log;
 
 class ReviewService
 {
@@ -20,21 +21,26 @@ class ReviewService
 
     public function createReview($user, string $sessionToken, $overallRating, $comment, array $answers, array $photos = [])
     {
-        $session = BranchQrSession::where('session_token', $sessionToken)->first();
+        // Load session scoped to user, not consumed
+        $session = BranchQrSession::query()
+            ->where('session_token', $sessionToken)
+            ->where('user_id', $user->id)
+            ->whereNull('consumed_at')
+            ->first();
+
         if (! $session) {
-            throw new ApiException(trans('reviews.invalid_qr'), 422);
+            throw new ApiException(trans('reviews.qr_invalid_or_used'), 422);
         }
 
-        if ($session->user_id !== $user->id) {
-            throw new ApiException(trans('reviews.invalid_qr'), 403);
-        }
+        // Debug log (temporary)
+        Log::debug('qr.create_attempt', ['token' => $sessionToken, 'found' => (bool) $session, 'expires_at' => optional($session->expires_at)->toDateTimeString(), 'now' => Carbon::now()->toDateTimeString(), 'consumed_at' => optional($session->consumed_at)->toDateTimeString()]);
 
-        if ($session->consumed_at) {
-            throw new ApiException(trans('reviews.qr_consumed'), 422);
-        }
-
-        if (Carbon::now()->greaterThan($session->expires_at)) {
-            throw new ApiException(trans('reviews.qr_expired'), 422);
+        // Ensure expires_at is a proper Carbon instance and check expiry
+        if (! $session->expires_at || $session->expires_at->isPast()) {
+            throw new ApiException(trans('reviews.qr_expired'), 422, [
+                'server_time' => Carbon::now()->toDateTimeString(),
+                'expires_at' => optional($session->expires_at)->toDateTimeString(),
+            ]);
         }
 
         $branch = $session->branch;
