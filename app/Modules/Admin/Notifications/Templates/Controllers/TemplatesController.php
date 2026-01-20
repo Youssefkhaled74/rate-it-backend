@@ -4,6 +4,7 @@ namespace App\Modules\Admin\Notifications\Templates\Controllers;
 
 use App\Support\Api\BaseApiController;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use App\Modules\Admin\Notifications\Templates\Services\TemplatesService;
 use App\Modules\Admin\Notifications\Templates\Requests\AdminTemplatesIndexRequest;
 use App\Modules\Admin\Notifications\Templates\Requests\StoreNotificationTemplateRequest;
@@ -28,7 +29,7 @@ class TemplatesController extends BaseApiController
     public function store(StoreNotificationTemplateRequest $request)
     {
         $data = $request->validated();
-        $user = (auth()?->user()) ?: new User();
+        $user = Auth::user() ?? new User();
         $t = $this->service->create($data, $user);
         return $this->success(new AdminNotificationTemplateResource($t), 'admin.notifications.templates.created');
     }
@@ -36,7 +37,7 @@ class TemplatesController extends BaseApiController
     public function update(UpdateNotificationTemplateRequest $request, $id)
     {
         $data = $request->validated();
-        $user = (auth()?->user()) ?: new User();
+        $user = Auth::user() ?? new User();
         $t = $this->service->update((int)$id, $data, $user ?? new User());
         if (! $t) return $this->error('Not found', null, 404);
         return $this->success(new AdminNotificationTemplateResource($t), 'admin.notifications.templates.updated');

@@ -4,6 +4,7 @@ namespace App\Modules\Admin\Subscriptions\Plans\Controllers;
 
 use App\Support\Api\BaseApiController;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use App\Modules\Admin\Subscriptions\Plans\Services\PlansService;
 use App\Modules\Admin\Subscriptions\Plans\Requests\StorePlanRequest;
 use App\Modules\Admin\Subscriptions\Plans\Requests\UpdatePlanRequest;
@@ -27,14 +28,14 @@ class PlansController extends BaseApiController
 
     public function store(StorePlanRequest $request)
     {
-        $user = (auth()?->user()) ?: new User();
+        $user = Auth::user() ?? new User();
         $row = $this->service->create($request->validated(), $user);
         return $this->success(new AdminSubscriptionPlanResource($row), 'admin.subscriptions.plans.created');
     }
 
     public function update(UpdatePlanRequest $request, $id)
     {
-        $user = (auth()?->user()) ?: new User();
+        $user = Auth::user() ?? new User();
         $row = $this->service->update((int)$id, $request->validated(), $user);
         if (! $row) return $this->error('Not found', null, 404);
         return $this->success(new AdminSubscriptionPlanResource($row), 'admin.subscriptions.plans.updated');
@@ -42,7 +43,7 @@ class PlansController extends BaseApiController
 
     public function activate($id)
     {
-        $user = (auth()?->user()) ?: new User();
+        $user = Auth::user() ?? new User();
         $row = $this->service->activate((int)$id, $user ?? new User());
         if (! $row) return $this->error('Not found', null, 404);
         return $this->success(new AdminSubscriptionPlanResource($row), 'admin.subscriptions.plans.activated');
