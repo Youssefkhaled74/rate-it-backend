@@ -24,6 +24,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'master.categories.manage',
             'master.brands.manage',
             'master.places.manage',
+            // Dashboard
+            'dashboard.view',
             // Reviews
             'reviews.view', 'reviews.moderate',
             // Points
