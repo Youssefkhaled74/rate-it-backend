@@ -16,12 +16,24 @@ class DashboardController extends BaseApiController
     }
 
     /**
-     * Get dashboard overview
+     * Get dashboard summary
      */
-    public function overview()
+    public function summary()
     {
-        $data = $this->service->getOverview();
-        return $this->successResponse($data);
+        $from = request()->query('from');
+        $to = request()->query('to');
+        $data = $this->service->summary($from, $to);
+        return $this->success($data);
+    }
+
+    /**
+     * Get top places
+     */
+    public function topPlaces(DashboardChartRequest $request)
+    {
+        $filters = $request->validated();
+        $data = $this->service->topPlaces($filters);
+        return $this->success($data);
     }
 
     /**
@@ -30,17 +42,7 @@ class DashboardController extends BaseApiController
     public function reviewsChart(DashboardChartRequest $request)
     {
         $filters = $request->validated();
-        $data = $this->service->getReviewsChart($filters);
-        return $this->successResponse($data);
-    }
-
-    /**
-     * Get ratings chart data
-     */
-    public function ratingsChart(DashboardChartRequest $request)
-    {
-        $filters = $request->validated();
-        $data = $this->service->getRatingsChart($filters);
-        return $this->successResponse($data);
+        $result = $this->service->reviewsChart($filters);
+        return $this->success($result);
     }
 }
