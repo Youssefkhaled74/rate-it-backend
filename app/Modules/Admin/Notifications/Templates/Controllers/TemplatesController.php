@@ -28,14 +28,18 @@ class TemplatesController extends BaseApiController
     public function store(StoreNotificationTemplateRequest $request)
     {
         $data = $request->validated();
-        $t = $this->service->create($data, auth()->user() ?? new User());
+        /** @var User|null $user */
+        $user = auth()?->user();
+        $t = $this->service->create($data, $user ?? new User());
         return $this->success(new AdminNotificationTemplateResource($t), 'admin.notifications.templates.created');
     }
 
     public function update(UpdateNotificationTemplateRequest $request, $id)
     {
         $data = $request->validated();
-        $t = $this->service->update((int)$id, $data, auth()->user() ?? new User());
+        /** @var User|null $user */
+        $user = auth()?->user();
+        $t = $this->service->update((int)$id, $data, $user ?? new User());
         if (! $t) return $this->error('Not found', null, 404);
         return $this->success(new AdminNotificationTemplateResource($t), 'admin.notifications.templates.updated');
     }

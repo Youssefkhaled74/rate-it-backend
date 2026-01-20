@@ -27,20 +27,26 @@ class PlansController extends BaseApiController
 
     public function store(StorePlanRequest $request)
     {
-        $row = $this->service->create($request->validated(), auth()->user() ?? new User());
+        /** @var User|null $user */
+        $user = auth()?->user();
+        $row = $this->service->create($request->validated(), $user ?? new User());
         return $this->success(new AdminSubscriptionPlanResource($row), 'admin.subscriptions.plans.created');
     }
 
     public function update(UpdatePlanRequest $request, $id)
     {
-        $row = $this->service->update((int)$id, $request->validated(), auth()->user() ?? new User());
+        /** @var User|null $user */
+        $user = auth()?->user();
+        $row = $this->service->update((int)$id, $request->validated(), $user ?? new User());
         if (! $row) return $this->error('Not found', null, 404);
         return $this->success(new AdminSubscriptionPlanResource($row), 'admin.subscriptions.plans.updated');
     }
 
     public function activate($id)
     {
-        $row = $this->service->activate((int)$id, auth()->user() ?? new User());
+        /** @var User|null $user */
+        $user = auth()?->user();
+        $row = $this->service->activate((int)$id, $user ?? new User());
         if (! $row) return $this->error('Not found', null, 404);
         return $this->success(new AdminSubscriptionPlanResource($row), 'admin.subscriptions.plans.activated');
     }

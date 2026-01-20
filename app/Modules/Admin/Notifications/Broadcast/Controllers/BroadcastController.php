@@ -19,7 +19,9 @@ class BroadcastController extends BaseApiController
     public function send(SendBroadcastRequest $request)
     {
         $data = $request->validated();
-        $result = $this->service->broadcast($data, auth()->user() ?? new User());
+        /** @var User|null $user */
+        $user = auth()?->user();
+        $result = $this->service->broadcast($data, $user ?? new User());
         return $this->success($result, 'admin.notifications.broadcast.sent');
     }
 }
