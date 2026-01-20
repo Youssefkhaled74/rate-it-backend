@@ -25,4 +25,32 @@ class Subcategory extends Model
     {
         return $this->belongsTo(Category::class);
     }
+
+    public function ratingCriteria()
+    {
+        return $this->hasMany(RatingCriteria::class, 'subcategory_id');
+    }
+
+    /**
+     * Determine if this subcategory is ready to be used by branches/places.
+     * Rules:
+     * - Must have at least one RatingCriteria
+     * - MULTIPLE_CHOICE criteria must have at least 2 choices
+     * - YES_NO criteria must not have custom choices
+     */
+    public function isReadyForUse(): bool
+    {
+        $criteria = $this->ratingCriteria()->with('choices')->get();
+        if ($criteria->isEmpty()) return false;
+        foreach ($criteria as $c) {
+            $type = strtoupper($c->type ?? '');
+            if ($type === 'MULTIPLE_CHOICE') {
+                if ($c->choices()->count() < 2) return false;
+            }
+            if ($type === 'YES_NO') {
+                if ($c->choices()->count() > 0) return false;
+            }
+        }
+        return true;
+    }
 }

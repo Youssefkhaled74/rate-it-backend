@@ -3,6 +3,9 @@
 namespace App\Modules\Admin\Catalog\Services;
 
 use App\Models\Subcategory;
+use App\Models\RatingCriteria;
+use App\Models\Place;
+use App\Models\Branch;
 
 class SubcategoryService
 {
@@ -40,6 +43,23 @@ class SubcategoryService
     {
         $sub = Subcategory::find($id);
         if (! $sub) return false;
+
+        // Prevent deletion if there are rating criteria attached
+        if (RatingCriteria::where('subcategory_id', $id)->exists()) {
+            throw new \RuntimeException('subcategory.delete_blocked.criteria');
+        }
+
+        // Prevent deletion if any place references this subcategory
+        if (Place::where('subcategory_id', $id)->exists()) {
+            throw new \RuntimeException('subcategory.delete_blocked.places');
+        }
+
+        // Prevent deletion if any branch exists under places of this subcategory
+        $placeIds = Place::where('subcategory_id', $id)->pluck('id');
+        if ($placeIds->isNotEmpty() && Branch::whereIn('place_id', $placeIds)->exists()) {
+            throw new \RuntimeException('subcategory.delete_blocked.branches');
+        }
+
         return (bool) $sub->delete();
     }
 }

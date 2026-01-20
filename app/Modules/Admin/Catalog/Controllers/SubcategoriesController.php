@@ -59,7 +59,11 @@ class SubcategoriesController extends BaseApiController
 
     public function destroy($id)
     {
-        $ok = $this->service->delete((int) $id);
+        try {
+            $ok = $this->service->delete((int) $id);
+        } catch (\RuntimeException $e) {
+            return $this->error($e->getMessage(), null, 409);
+        }
         if (! $ok) return $this->error('Not found', null, 404);
         return $this->noContent('subcategory.deleted');
     }

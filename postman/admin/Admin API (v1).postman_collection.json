@@ -1,0 +1,256 @@
+{
+  "info": {
+    "name": "Admin API (v1)",
+    "description": "Postman collection for Admin API (v1) - Auth, RBAC, Catalog",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "admin_token",
+      "value": ""
+    },
+    {
+      "key": "category_id",
+      "value": ""
+    },
+    {
+      "key": "subcategory_id",
+      "value": ""
+    },
+    {
+      "key": "brand_id",
+      "value": ""
+    },
+    {
+      "key": "place_id",
+      "value": ""
+    },
+    {
+      "key": "branch_id",
+      "value": ""
+    },
+    {
+      "key": "criteria_id",
+      "value": ""
+    },
+    {
+      "key": "choice_id",
+      "value": ""
+    },
+    {
+      "key": "role_id",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password\"\n}" },
+            "url": { "raw": "{{base_url}}/api/v1/admin/auth/login", "host": ["{{base_url}}"], "path": ["api","v1","admin","auth","login"] },
+            "description": "Admin login - saves token to {{admin_token}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "var json = {}; try { json = pm.response.json(); } catch(e) {}",
+                  "var token = json.token || json.access_token || (json.data && (json.data.token || json.data.access_token));",
+                  "if (!token) {",
+                  "  function findToken(obj) { if (!obj || typeof obj !== 'object') return null; if (obj.token) return obj.token; if (obj.access_token) return obj.access_token; for (var k in obj) { if (obj.hasOwnProperty(k) && typeof obj[k] === 'object') { var t = findToken(obj[k]); if (t) return t; } } return null; }",
+                  "  token = findToken(json);",
+                  "}",
+                  "if (token) { pm.collectionVariables.set('admin_token', token); }"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/api/v1/admin/auth/me", "host": ["{{base_url}}"], "path": ["api","v1","admin","auth","me"] },
+            "description": "Get current admin profile (protected)"
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }]
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/api/v1/admin/auth/logout", "host": ["{{base_url}}"], "path": ["api","v1","admin","auth","logout"] },
+            "description": "Logout admin (protected)"
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }]
+        }
+      ]
+    },
+    {
+      "name": "RBAC",
+      "item": [
+        {
+          "name": "List Roles",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ],
+            "url": { "raw": "{{base_url}}/api/v1/admin/roles", "host": ["{{base_url}}"], "path": ["api","v1","admin","roles"] },
+            "description": "List roles (requires rbac.roles.manage permission)"
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }]
+        },
+        {
+          "name": "Create Role",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"manager\"\n}" },
+            "url": { "raw": "{{base_url}}/api/v1/admin/roles", "host": ["{{base_url}}"], "path": ["api","v1","admin","roles"] },
+            "description": "Create a role (requires rbac.roles.manage). Saves {{role_id}}"
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 201 or 200', function () { pm.expect(pm.response.code).to.be.oneOf([200,201]); });","var json = {}; try { json = pm.response.json(); } catch(e) {}","function findId(obj){ if(!obj||typeof obj!=='object') return null; if(obj.id) return obj.id; for(var k in obj){ if(obj.hasOwnProperty(k)){ var v = findId(obj[k]); if(v) return v; }} return null; }","var id = findId(json);","if(id) pm.collectionVariables.set('role_id', id);"] } }]
+        },
+        {
+          "name": "Sync Permissions To Role",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"permissions\": [\"catalog.categories.manage\", \"catalog.brands.manage\"]\n}" },
+            "url": { "raw": "{{base_url}}/api/v1/admin/roles/{{role_id}}/sync-permissions", "host": ["{{base_url}}"], "path": ["api","v1","admin","roles","{{role_id}}","sync-permissions"] },
+            "description": "Sync permissions for role (requires rbac.roles.manage)"
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }]
+        },
+        {
+          "name": "List Permissions",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ],
+            "url": { "raw": "{{base_url}}/api/v1/admin/permissions", "host": ["{{base_url}}"], "path": ["api","v1","admin","permissions"] },
+            "description": "List permissions (requires rbac.permissions.manage)"
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }]
+        }
+      ]
+    },
+    {
+      "name": "Catalog",
+      "item": [
+        {
+          "name": "Categories",
+          "item": [
+            {
+              "name": "List Categories",
+              "request": { "method": "GET", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "url": { "raw": "{{base_url}}/api/v1/admin/categories", "host": ["{{base_url}}"], "path": ["api","v1","admin","categories"] }, "description": "List categories" },
+              "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }]
+            },
+            {
+              "name": "Create Category",
+              "request": { "method": "POST", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "body": { "mode": "raw", "raw": "{\n  \"name_en\": \"Test Category\"\n}" }, "url": { "raw": "{{base_url}}/api/v1/admin/categories", "host": ["{{base_url}}"], "path": ["api","v1","admin","categories"] }, "description": "Create category and save {{category_id}}" },
+              "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 201 or 200', function () { pm.expect(pm.response.code).to.be.oneOf([200,201]); });","var json = {}; try { json = pm.response.json(); } catch(e) {}","function findId(obj){ if(!obj||typeof obj!=='object') return null; if(obj.id) return obj.id; for(var k in obj){ if(obj.hasOwnProperty(k)){ var v = findId(obj[k]); if(v) return v; }} return null; }","var id = findId(json);","if(id) pm.collectionVariables.set('category_id', id);"] } }]
+            },
+            {
+              "name": "Get Category",
+              "request": { "method": "GET", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "url": { "raw": "{{base_url}}/api/v1/admin/categories/{{category_id}}", "host": ["{{base_url}}"], "path": ["api","v1","admin","categories","{{category_id}}"] }, "description": "Get single category by {{category_id}}" },
+              "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }]
+            },
+            {
+              "name": "Update Category",
+              "request": { "method": "PUT", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "body": { "mode": "raw", "raw": "{\n  \"name_en\": \"Updated Category\"\n}" }, "url": { "raw": "{{base_url}}/api/v1/admin/categories/{{category_id}}", "host": ["{{base_url}}"], "path": ["api","v1","admin","categories","{{category_id}}"] }, "description": "Update category" },
+              "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }]
+            },
+            {
+              "name": "Delete Category",
+              "request": { "method": "DELETE", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "url": { "raw": "{{base_url}}/api/v1/admin/categories/{{category_id}}", "host": ["{{base_url}}"], "path": ["api","v1","admin","categories","{{category_id}}"] }, "description": "Delete category" },
+              "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200 or 204', function () { pm.expect(pm.response.code).to.be.oneOf([200,204]); });"] } }]
+            }
+          ]
+        },
+        {
+          "name": "Subcategories",
+          "item": [
+            { "name": "List Subcategories", "request": { "method": "GET", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "url": { "raw": "{{base_url}}/api/v1/admin/subcategories", "host": ["{{base_url}}"], "path": ["api","v1","admin","subcategories"] }, "description": "List subcategories" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }] },
+            { "name": "Create Subcategory", "request": { "method": "POST", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "body": { "mode": "raw", "raw": "{\n  \"name_en\": \"Test Subcategory\",\n  \"category_id\": \"{{category_id}}\"\n}" }, "url": { "raw": "{{base_url}}/api/v1/admin/subcategories", "host": ["{{base_url}}"], "path": ["api","v1","admin","subcategories"] }, "description": "Create subcategory and save {{subcategory_id}}" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 201 or 200', function () { pm.expect(pm.response.code).to.be.oneOf([200,201]); });","var json = {}; try { json = pm.response.json(); } catch(e) {}","function findId(obj){ if(!obj||typeof obj!=='object') return null; if(obj.id) return obj.id; for(var k in obj){ if(obj.hasOwnProperty(k)){ var v = findId(obj[k]); if(v) return v; }} return null; }","var id = findId(json);","if(id) pm.collectionVariables.set('subcategory_id', id);"] } }] },
+            { "name": "Get Subcategory", "request": { "method": "GET", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "url": { "raw": "{{base_url}}/api/v1/admin/subcategories/{{subcategory_id}}", "host": ["{{base_url}}"], "path": ["api","v1","admin","subcategories","{{subcategory_id}}"] }, "description": "Get single subcategory" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }] },
+            { "name": "Update Subcategory", "request": { "method": "PUT", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "body": { "mode": "raw", "raw": "{\n  \"name_en\": \"Updated Subcategory\",\n  \"category_id\": \"{{category_id}}\"\n}" }, "url": { "raw": "{{base_url}}/api/v1/admin/subcategories/{{subcategory_id}}", "host": ["{{base_url}}"], "path": ["api","v1","admin","subcategories","{{subcategory_id}}"] }, "description": "Update subcategory" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }] },
+            { "name": "Delete Subcategory", "request": { "method": "DELETE", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "url": { "raw": "{{base_url}}/api/v1/admin/subcategories/{{subcategory_id}}", "host": ["{{base_url}}"], "path": ["api","v1","admin","subcategories","{{subcategory_id}}"] }, "description": "Delete subcategory" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200 or 204', function () { pm.expect(pm.response.code).to.be.oneOf([200,204]); });"] } }] }
+          ]
+        },
+        {
+          "name": "Brands",
+          "item": [
+            { "name": "List Brands", "request": { "method": "GET", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "url": { "raw": "{{base_url}}/api/v1/admin/brands", "host": ["{{base_url}}"], "path": ["api","v1","admin","brands"] }, "description": "List brands" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }] },
+            { "name": "Create Brand", "request": { "method": "POST", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "body": { "mode": "raw", "raw": "{\n  \"name_en\": \"Test Brand\"\n}" }, "url": { "raw": "{{base_url}}/api/v1/admin/brands", "host": ["{{base_url}}"], "path": ["api","v1","admin","brands"] }, "description": "Create brand and save {{brand_id}}" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 201 or 200', function () { pm.expect(pm.response.code).to.be.oneOf([200,201]); });","var json = {}; try { json = pm.response.json(); } catch(e) {}","function findId(obj){ if(!obj||typeof obj!=='object') return null; if(obj.id) return obj.id; for(var k in obj){ if(obj.hasOwnProperty(k)){ var v = findId(obj[k]); if(v) return v; }} return null; }","var id = findId(json);","if(id) pm.collectionVariables.set('brand_id', id);"] } }] },
+            { "name": "Get Brand", "request": { "method": "GET", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "url": { "raw": "{{base_url}}/api/v1/admin/brands/{{brand_id}}", "host": ["{{base_url}}"], "path": ["api","v1","admin","brands","{{brand_id}}"] }, "description": "Get single brand" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }] },
+            { "name": "Update Brand", "request": { "method": "PUT", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "body": { "mode": "raw", "raw": "{\n  \"name_en\": \"Updated Brand\"\n}" }, "url": { "raw": "{{base_url}}/api/v1/admin/brands/{{brand_id}}", "host": ["{{base_url}}"], "path": ["api","v1","admin","brands","{{brand_id}}"] }, "description": "Update brand" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }] },
+            { "name": "Delete Brand", "request": { "method": "DELETE", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "url": { "raw": "{{base_url}}/api/v1/admin/brands/{{brand_id}}", "host": ["{{base_url}}"], "path": ["api","v1","admin","brands","{{brand_id}}"] }, "description": "Delete brand" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200 or 204', function () { pm.expect(pm.response.code).to.be.oneOf([200,204]); });"] } }] }
+          ]
+        },
+        {
+          "name": "Places",
+          "item": [
+            { "name": "List Places", "request": { "method": "GET", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "url": { "raw": "{{base_url}}/api/v1/admin/places", "host": ["{{base_url}}"], "path": ["api","v1","admin","places"] }, "description": "List places" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }] },
+            { "name": "Create Place", "request": { "method": "POST", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "body": { "mode": "raw", "raw": "{\n  \"name_en\": \"Test Place\"\n}" }, "url": { "raw": "{{base_url}}/api/v1/admin/places", "host": ["{{base_url}}"], "path": ["api","v1","admin","places"] }, "description": "Create place and save {{place_id}}" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 201 or 200', function () { pm.expect(pm.response.code).to.be.oneOf([200,201]); });","var json = {}; try { json = pm.response.json(); } catch(e) {}","function findId(obj){ if(!obj||typeof obj!=='object') return null; if(obj.id) return obj.id; for(var k in obj){ if(obj.hasOwnProperty(k)){ var v = findId(obj[k]); if(v) return v; }} return null; }","var id = findId(json);","if(id) pm.collectionVariables.set('place_id', id);"] } }] },
+            { "name": "Get Place", "request": { "method": "GET", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "url": { "raw": "{{base_url}}/api/v1/admin/places/{{place_id}}", "host": ["{{base_url}}"], "path": ["api","v1","admin","places","{{place_id}}"] }, "description": "Get single place" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }] },
+            { "name": "Update Place", "request": { "method": "PUT", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "body": { "mode": "raw", "raw": "{\n  \"name_en\": \"Updated Place\"\n}" }, "url": { "raw": "{{base_url}}/api/v1/admin/places/{{place_id}}", "host": ["{{base_url}}"], "path": ["api","v1","admin","places","{{place_id}}"] }, "description": "Update place" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }] },
+            { "name": "Delete Place", "request": { "method": "DELETE", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "url": { "raw": "{{base_url}}/api/v1/admin/places/{{place_id}}", "host": ["{{base_url}}"], "path": ["api","v1","admin","places","{{place_id}}"] }, "description": "Delete place" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200 or 204', function () { pm.expect(pm.response.code).to.be.oneOf([200,204]); });"] } }] }
+          ]
+        },
+        {
+          "name": "Branches",
+          "item": [
+            { "name": "List Branches", "request": { "method": "GET", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "url": { "raw": "{{base_url}}/api/v1/admin/branches", "host": ["{{base_url}}"], "path": ["api","v1","admin","branches"] }, "description": "List branches" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }] },
+            { "name": "Create Branch", "request": { "method": "POST", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "body": { "mode": "raw", "raw": "{\n  \"name_en\": \"Test Branch\",\n  \"place_id\": \"{{place_id}}\"\n}" }, "url": { "raw": "{{base_url}}/api/v1/admin/branches", "host": ["{{base_url}}"], "path": ["api","v1","admin","branches"] }, "description": "Create branch and save {{branch_id}}" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 201 or 200', function () { pm.expect(pm.response.code).to.be.oneOf([200,201]); });","var json = {}; try { json = pm.response.json(); } catch(e) {}","function findId(obj){ if(!obj||typeof obj!=='object') return null; if(obj.id) return obj.id; for(var k in obj){ if(obj.hasOwnProperty(k)){ var v = findId(obj[k]); if(v) return v; }} return null; }","var id = findId(json);","if(id) pm.collectionVariables.set('branch_id', id);"] } }] },
+            { "name": "Get Branch", "request": { "method": "GET", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "url": { "raw": "{{base_url}}/api/v1/admin/branches/{{branch_id}}", "host": ["{{base_url}}"], "path": ["api","v1","admin","branches","{{branch_id}}"] }, "description": "Get single branch" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }] },
+            { "name": "Update Branch", "request": { "method": "PUT", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "body": { "mode": "raw", "raw": "{\n  \"name_en\": \"Updated Branch\",\n  \"place_id\": \"{{place_id}}\"\n}" }, "url": { "raw": "{{base_url}}/api/v1/admin/branches/{{branch_id}}", "host": ["{{base_url}}"], "path": ["api","v1","admin","branches","{{branch_id}}"] }, "description": "Update branch" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }] },
+            { "name": "Delete Branch", "request": { "method": "DELETE", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "url": { "raw": "{{base_url}}/api/v1/admin/branches/{{branch_id}}", "host": ["{{base_url}}"], "path": ["api","v1","admin","branches","{{branch_id}}"] }, "description": "Delete branch" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200 or 204', function () { pm.expect(pm.response.code).to.be.oneOf([200,204]); });"] } }] },
+            { "name": "Regenerate Branch QR", "request": { "method": "POST", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "url": { "raw": "{{base_url}}/api/v1/admin/branches/{{branch_id}}/regenerate-qr", "host": ["{{base_url}}"], "path": ["api","v1","admin","branches","{{branch_id}}","regenerate-qr"] }, "description": "Regenerate QR for branch" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }] }
+          ]
+        },
+        {
+          "name": "Rating Criteria",
+          "item": [
+            { "name": "List Rating Criteria", "request": { "method": "GET", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "url": { "raw": "{{base_url}}/api/v1/admin/rating-criteria", "host": ["{{base_url}}"], "path": ["api","v1","admin","rating-criteria"] }, "description": "List rating criteria" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }] },
+            { "name": "Create Rating Criteria", "request": { "method": "POST", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "body": { "mode": "raw", "raw": "{\n  \"name_en\": \"Cleanliness\",\n  \"is_active\": true\n}" }, "url": { "raw": "{{base_url}}/api/v1/admin/rating-criteria", "host": ["{{base_url}}"], "path": ["api","v1","admin","rating-criteria"] }, "description": "Create rating criteria and save {{criteria_id}}" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 201 or 200', function () { pm.expect(pm.response.code).to.be.oneOf([200,201]); });","var json = {}; try { json = pm.response.json(); } catch(e) {}","function findId(obj){ if(!obj||typeof obj!=='object') return null; if(obj.id) return obj.id; for(var k in obj){ if(obj.hasOwnProperty(k)){ var v = findId(obj[k]); if(v) return v; }} return null; }","var id = findId(json);","if(id) pm.collectionVariables.set('criteria_id', id);"] } }] },
+            { "name": "Get Rating Criteria", "request": { "method": "GET", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "url": { "raw": "{{base_url}}/api/v1/admin/rating-criteria/{{criteria_id}}", "host": ["{{base_url}}"], "path": ["api","v1","admin","rating-criteria","{{criteria_id}}"] }, "description": "Get single rating criteria" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }] },
+            { "name": "Update Rating Criteria", "request": { "method": "PUT", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "body": { "mode": "raw", "raw": "{\n  \"name_en\": \"Updated Cleanliness\",\n  \"is_active\": true\n}" }, "url": { "raw": "{{base_url}}/api/v1/admin/rating-criteria/{{criteria_id}}", "host": ["{{base_url}}"], "path": ["api","v1","admin","rating-criteria","{{criteria_id}}"] }, "description": "Update rating criteria" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }] },
+            { "name": "Delete Rating Criteria", "request": { "method": "DELETE", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "url": { "raw": "{{base_url}}/api/v1/admin/rating-criteria/{{criteria_id}}", "host": ["{{base_url}}"], "path": ["api","v1","admin","rating-criteria","{{criteria_id}}"] }, "description": "Delete rating criteria" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200 or 204', function () { pm.expect(pm.response.code).to.be.oneOf([200,204]); });"] } }] }
+          ]
+        },
+        {
+          "name": "Rating Criteria Choices",
+          "item": [
+            { "name": "List Choices", "request": { "method": "GET", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "url": { "raw": "{{base_url}}/api/v1/admin/rating-criteria/{{criteria_id}}/choices", "host": ["{{base_url}}"], "path": ["api","v1","admin","rating-criteria","{{criteria_id}}","choices"] }, "description": "List choices for a rating criteria" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }] },
+            { "name": "Create Choice", "request": { "method": "POST", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "body": { "mode": "raw", "raw": "{\n  \"label\": \"Excellent\",\n  \"value\": 5\n}" }, "url": { "raw": "{{base_url}}/api/v1/admin/rating-criteria/{{criteria_id}}/choices", "host": ["{{base_url}}"], "path": ["api","v1","admin","rating-criteria","{{criteria_id}","choices"] }, "description": "Create choice for criteria and save {{choice_id}}" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 201 or 200', function () { pm.expect(pm.response.code).to.be.oneOf([200,201]); });","var json = {}; try { json = pm.response.json(); } catch(e) {}","function findId(obj){ if(!obj||typeof obj!=='object') return null; if(obj.id) return obj.id; for(var k in obj){ if(obj.hasOwnProperty(k)){ var v = findId(obj[k]); if(v) return v; }} return null; }","var id = findId(json);","if(id) pm.collectionVariables.set('choice_id', id);"] } }] },
+            { "name": "Update Choice", "request": { "method": "PUT", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "body": { "mode": "raw", "raw": "{\n  \"label\": \"Good\",\n  \"value\": 4\n}" }, "url": { "raw": "{{base_url}}/api/v1/admin/rating-criteria/{{criteria_id}}/choices/{{choice_id}}", "host": ["{{base_url}}"], "path": ["api","v1","admin","rating-criteria","{{criteria_id}}","choices","{{choice_id}}"] }, "description": "Update a choice" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }] },
+            { "name": "Delete Choice", "request": { "method": "DELETE", "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ], "url": { "raw": "{{base_url}}/api/v1/admin/rating-criteria/{{criteria_id}}/choices/{{choice_id}}", "host": ["{{base_url}}"], "path": ["api","v1","admin","rating-criteria","{{criteria_id}}","choices","{{choice_id}}"] }, "description": "Delete a choice" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200 or 204', function () { pm.expect(pm.response.code).to.be.oneOf([200,204]); });"] } }] }
+          ]
+        }
+      ]
+    }
+  ]
+}
