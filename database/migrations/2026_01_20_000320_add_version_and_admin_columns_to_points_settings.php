@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 
-class AddVersionAndAdminColumnsToPointsSettingsTable extends Migration
+class AddVersionAndAdminColumnsToPointsSettingsTable20260120 extends Migration
 {
     public function up()
     {
