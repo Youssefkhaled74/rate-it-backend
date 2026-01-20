@@ -10,6 +10,7 @@ use App\Modules\Admin\Catalog\Controllers\RatingCriteriaController;
 use App\Modules\Admin\Catalog\Controllers\RatingCriteriaChoicesController;
 use App\Modules\Admin\Catalog\Controllers\SubcategoryRatingCriteriaController;
 use App\Http\Middleware\AdminAuthenticate;
+use App\Modules\Admin\CatalogIntegrity\Controllers\LookupController;
 use App\Http\Middleware\AdminPermission;
 
 // All routes in this file are mounted under /api/v1/admin
@@ -70,7 +71,6 @@ Route::middleware([AdminAuthenticate::class])->group(function () {
     Route::delete('rating-criteria/{criteria_id}/choices/{choice_id}', [RatingCriteriaChoicesController::class, 'destroy']);
 
     // Catalog integrity helpers
-    use App\Modules\Admin\CatalogIntegrity\Controllers\LookupController;
     Route::get('categories/{id}/subcategories', [LookupController::class, 'subcategories']);
     Route::get('places/{id}/branches', [LookupController::class, 'placeBranches']);
 });
