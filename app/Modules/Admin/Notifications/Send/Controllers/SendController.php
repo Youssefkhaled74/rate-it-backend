@@ -3,6 +3,7 @@
 namespace App\Modules\Admin\Notifications\Send\Controllers;
 
 use App\Support\Api\BaseApiController;
+use App\Models\User;
 use App\Modules\Admin\Notifications\Send\Requests\SendToUserRequest;
 use App\Modules\Admin\Notifications\Send\Services\SendService;
 
@@ -18,7 +19,7 @@ class SendController extends BaseApiController
     public function sendToUser(SendToUserRequest $request, $id)
     {
         $data = $request->validated();
-        $n = $this->service->sendToUser((int)$id, $data, auth()->user());
+        $n = $this->service->sendToUser((int)$id, $data, auth()->user() ?? new User());
         if (! $n) return $this->error('Not found', null, 404);
         return $this->success($n, 'admin.notifications.user.sent');
     }
