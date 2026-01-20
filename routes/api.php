@@ -32,6 +32,10 @@ Route::prefix('v1/user')->group(function () {
 // API v1 - Admin module routes
 Route::prefix('v1/admin')->group(function () {
     require base_path('app/Modules/Admin/Auth/Routes/api.php');
+    // Admin Reviews moderation
+    require base_path('app/Modules/Admin/Reviews/Routes/api.php');
+    // Admin Users management
+    require base_path('app/Modules/Admin/Users/Routes/api.php');
 });
 
 // Demo routes for traits
