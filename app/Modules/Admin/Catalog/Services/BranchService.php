@@ -32,7 +32,42 @@ class BranchService
     {
         $branch = Branch::find($id);
         if (! $branch) return null;
+        // If qr_code_value provided, ensure uniqueness
+        if (array_key_exists('qr_code_value', $data)) {
+            $exists = Branch::where('qr_code_value', $data['qr_code_value'])
+                ->where('id', '!=', $id)
+                ->exists();
+            if ($exists) {
+                throw new \RuntimeException('branches.qr_conflict');
+            }
+        }
         $branch->update($data);
+        return $branch;
+    }
+
+    public function regenerateQr(int $id): ?Branch
+    {
+        $branch = Branch::find($id);
+        if (! $branch) return null;
+
+        $attempts = 0;
+        do {
+            try {
+                $token = bin2hex(random_bytes(16));
+            } catch (\Exception $e) {
+                $token = uniqid('qr_', true);
+            }
+            $conflict = Branch::where('qr_code_value', $token)->where('id', '!=', $id)->exists();
+            $attempts++;
+        } while ($conflict && $attempts < 5);
+
+        if ($conflict) {
+            throw new \RuntimeException('branches.qr_generation_failed');
+        }
+
+        $branch->qr_code_value = $token;
+        $branch->qr_generated_at = now();
+        $branch->save();
         return $branch;
     }
 

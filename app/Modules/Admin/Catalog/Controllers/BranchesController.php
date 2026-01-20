@@ -82,14 +82,12 @@ class BranchesController extends BaseApiController
 
     public function regenerateQr($id)
     {
-        $branch = $this->service->find((int) $id);
-        if (! $branch) return $this->error('Not found', null, 404);
         try {
-            $token = bin2hex(random_bytes(16));
-        } catch (\Exception $e) {
-            $token = uniqid('qr_', true);
+            $branch = $this->service->regenerateQr((int) $id);
+        } catch (\RuntimeException $e) {
+            return $this->error($e->getMessage(), null, 500);
         }
-        $branch = $this->service->update((int) $id, ['qr_code_value' => $token, 'qr_generated_at' => now()]);
+        if (! $branch) return $this->error('Not found', null, 404);
         return $this->success(new BranchResource($branch), 'branches.qr_regenerated');
     }
 }

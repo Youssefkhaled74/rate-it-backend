@@ -68,4 +68,9 @@ Route::middleware([AdminAuthenticate::class])->group(function () {
     Route::post('rating-criteria/{criteria_id}/choices', [RatingCriteriaChoicesController::class, 'store']);
     Route::put('rating-criteria/{criteria_id}/choices/{choice_id}', [RatingCriteriaChoicesController::class, 'update']);
     Route::delete('rating-criteria/{criteria_id}/choices/{choice_id}', [RatingCriteriaChoicesController::class, 'destroy']);
+
+    // Catalog integrity helpers
+    use App\Modules\Admin\CatalogIntegrity\Controllers\LookupController;
+    Route::get('categories/{id}/subcategories', [LookupController::class, 'subcategories']);
+    Route::get('places/{id}/branches', [LookupController::class, 'placeBranches']);
 });

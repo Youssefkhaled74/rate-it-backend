@@ -3,6 +3,8 @@
 namespace App\Modules\Admin\Catalog\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Modules\Admin\Catalog\Resources\BrandResource;
+use App\Modules\Admin\Catalog\Resources\SubcategoryResource;
 
 class PlaceResource extends JsonResource
 {
@@ -19,6 +21,8 @@ class PlaceResource extends JsonResource
             'lng' => $this->lng,
             'logo' => $this->logo,
             'is_active' => (bool) $this->is_active,
+            'brand' => $this->when($this->brand, function () { return new BrandResource($this->brand); }),
+            'subcategory' => $this->when($this->subcategory, function () { return new SubcategoryResource($this->subcategory); }),
             'created_at' => optional($this->created_at)->toDateTimeString(),
             'updated_at' => optional($this->updated_at)->toDateTimeString(),
         ];

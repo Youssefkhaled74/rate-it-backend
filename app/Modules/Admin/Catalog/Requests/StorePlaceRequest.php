@@ -14,6 +14,8 @@ class StorePlaceRequest extends FormRequest
     public function rules()
     {
         return [
+            'brand_id' => ['nullable','integer','exists:brands,id'],
+            'subcategory_id' => ['nullable','integer','exists:subcategories,id'],
             'name_en' => ['required','string','max:255'],
             'name_ar' => ['nullable','string','max:255'],
             'address_en' => ['nullable','string','max:1024'],
