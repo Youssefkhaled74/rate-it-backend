@@ -426,6 +426,80 @@
             "url": { "raw": "{{base_url}}/api/v1/admin/points/transactions/{{points_transaction_id}}", "host": ["{{base_url}}"], "path": ["api","v1","admin","points","transactions","{{points_transaction_id}}"] }
           },
           "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200 or 404', function () { pm.expect(pm.response.code).to.be.oneOf([200,404]); });"] } }]
+        },
+        {
+          "name": "07-Notifications",
+          "item": [
+            {
+              "name": "GET Templates",
+              "request": {
+                "method": "GET",
+                "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ],
+                "url": { "raw": "{{base_url}}/api/v1/admin/notifications/templates", "host": ["{{base_url}}"], "path": ["api","v1","admin","notifications","templates"] }
+              },
+              "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });","var json = {}; try { json = pm.response.json(); } catch(e) {}","pm.test('Response shape', function(){ pm.expect(json).to.have.property('success'); pm.expect(json).to.have.property('data'); pm.expect(json).to.have.property('meta'); });"] } }]
+            },
+            {
+              "name": "POST Create Template",
+              "request": {
+                "method": "POST",
+                "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ],
+                "body": { "mode": "raw", "raw": "{\n  \"key\": \"promo_broadcast\",\n  \"type\": \"PROMO_BROADCAST\",\n  \"title_en\": \"Promo\",\n  \"title_ar\": \"عرض\",\n  \"body_en\": \"Hello {{name}}\",\n  \"body_ar\": \"مرحباً {{name}}\"\n}" },
+                "url": { "raw": "{{base_url}}/api/v1/admin/notifications/templates", "host": ["{{base_url}}"], "path": ["api","v1","admin","notifications","templates"] }
+              },
+              "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200 or 201', function () { pm.expect(pm.response.code).to.be.oneOf([200,201]); });","var json = {}; try { json = pm.response.json(); } catch(e) {}","var tid = json.data && json.data.id; if(tid) pm.collectionVariables.set('template_id', tid);"] } }]
+            },
+            {
+              "name": "PUT Update Template",
+              "request": {
+                "method": "PUT",
+                "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ],
+                "body": { "mode": "raw", "raw": "{\n  \"title_en\": \"Updated Promo\",\n  \"title_ar\": \"تحديث العرض\",\n  \"body_en\": \"Hello {{name}} Updated\",\n  \"body_ar\": \"مرحباً {{name}} تحديث\"\n}" },
+                "url": { "raw": "{{base_url}}/api/v1/admin/notifications/templates/{{template_id}}", "host": ["{{base_url}}"], "path": ["api","v1","admin","notifications","templates","{{template_id}}"] }
+              },
+              "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }]
+            },
+            {
+              "name": "POST Broadcast (custom)",
+              "request": {
+                "method": "POST",
+                "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ],
+                "body": { "mode": "raw", "raw": "{\n  \"title_en\": \"Site Maintenance\",\n  \"title_ar\": \"صيانة الموقع\",\n  \"body_en\": \"We will be down tonight\",\n  \"body_ar\": \"سيتم الإغلاق الليلة\",\n  \"audience\": { \"type\": \"all\" }\n}" },
+                "url": { "raw": "{{base_url}}/api/v1/admin/notifications/broadcast", "host": ["{{base_url}}"], "path": ["api","v1","admin","notifications","broadcast"] }
+              },
+              "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });","var json = {}; try { json = pm.response.json(); } catch(e) {}","pm.test('Response shape', function(){ pm.expect(json).to.have.property('success'); pm.expect(json).to.have.property('data'); pm.expect(json.data).to.have.property('recipients_count'); });"] } }]
+            },
+            {
+              "name": "POST Broadcast (template)",
+              "request": {
+                "method": "POST",
+                "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ],
+                "body": { "mode": "raw", "raw": "{\n  \"template_id\": {{template_id}},\n  \"lang\": \"en\",\n  \"data\": { \"name\": \"User\" },\n  \"audience\": { \"type\": \"all\" }\n}" },
+                "url": { "raw": "{{base_url}}/api/v1/admin/notifications/broadcast", "host": ["{{base_url}}"], "path": ["api","v1","admin","notifications","broadcast"] }
+              },
+              "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }]
+            },
+            {
+              "name": "POST Send To User (custom)",
+              "request": {
+                "method": "POST",
+                "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ],
+                "body": { "mode": "raw", "raw": "{\n  \"title_en\": \"Hi\",\n  \"title_ar\": \"مرحباً\",\n  \"body_en\": \"Hello\",\n  \"body_ar\": \"مرحبا\"\n}" },
+                "url": { "raw": "{{base_url}}/api/v1/admin/users/{{target_user_id}}/notifications", "host": ["{{base_url}}"], "path": ["api","v1","admin","users","{{target_user_id}}","notifications"] }
+              },
+              "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });","var json = {}; try { json = pm.response.json(); } catch(e) {}","pm.test('Response shape', function(){ pm.expect(json).to.have.property('success'); pm.expect(json).to.have.property('data'); });"] } }]
+            },
+            {
+              "name": "POST Send To User (template)",
+              "request": {
+                "method": "POST",
+                "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ],
+                "body": { "mode": "raw", "raw": "{\n  \"template_id\": {{template_id}},\n  \"lang\": \"en\",\n  \"data\": { \"name\": \"User\" }\n}" },
+                "url": { "raw": "{{base_url}}/api/v1/admin/users/{{target_user_id}}/notifications", "host": ["{{base_url}}"], "path": ["api","v1","admin","users","{{target_user_id}}","notifications"] }
+              },
+              "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }]
+            }
+          ]
         }
       ]
     }
