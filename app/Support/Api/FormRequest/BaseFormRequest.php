@@ -4,6 +4,11 @@ namespace App\Support\Api\FormRequest;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * @method array validated($key = null, $default = null)
+ * @method array all($keys = null)
+ * @method mixed route($param = null, $default = null)
+ */
 class BaseFormRequest extends FormRequest
 {
     /**
