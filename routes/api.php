@@ -42,6 +42,8 @@ Route::prefix('v1/admin')->group(function () {
     require base_path('app/Modules/Admin/Points/Routes/api.php');
     // Admin Notifications
     require base_path('app/Modules/Admin/Notifications/Routes/api.php');
+    // Admin Invites monitoring
+    require base_path('app/Modules/Admin/Invites/Routes/api.php');
 });
 
 // Demo routes for traits

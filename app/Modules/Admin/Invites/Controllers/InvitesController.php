@@ -21,10 +21,17 @@ class InvitesController extends BaseApiController
         $filters = $request->validated();
         $p = $this->service->list($filters);
         $statusCounts = $this->service->statusCounts();
-        $meta = array_merge(['status_counts' => $statusCounts], []);
-        return $this->paginated($p, 'admin.invites.list')->setData(function($resp) use ($meta) {
-            return $resp; // paginated() already formats; meta will be handled separately by client
-        });
+
+        $meta = [
+            'page' => $p->currentPage(),
+            'limit' => $p->perPage(),
+            'total' => $p->total(),
+            'has_next' => $p->hasMorePages(),
+            'last_page' => $p->lastPage(),
+            'status_counts' => $statusCounts,
+        ];
+
+        return $this->success($p->items(), 'admin.invites.list', $meta);
     }
 
     public function show($id)

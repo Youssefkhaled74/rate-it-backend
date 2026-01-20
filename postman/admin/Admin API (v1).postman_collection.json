@@ -500,6 +500,47 @@
               "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }]
             }
           ]
+        },
+        {
+          "name": "08-Invites",
+          "item": [
+            {
+              "name": "GET Invites (no filters)",
+              "request": {
+                "method": "GET",
+                "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ],
+                "url": { "raw": "{{base_url}}/api/v1/admin/invites", "host": ["{{base_url}}"], "path": ["api","v1","admin","invites"] }
+              },
+              "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });","var json = {}; try { json = pm.response.json(); } catch(e) {}","pm.test('Response shape', function(){ pm.expect(json).to.have.property('success'); pm.expect(json).to.have.property('data'); pm.expect(json).to.have.property('meta'); });"] } }]
+            },
+            {
+              "name": "GET Invites (status filter)",
+              "request": {
+                "method": "GET",
+                "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ],
+                "url": { "raw": "{{base_url}}/api/v1/admin/invites?status=pending", "host": ["{{base_url}}"], "path": ["api","v1","admin","invites"], "query": [{"key":"status","value":"pending"}] }
+              },
+              "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }]
+            },
+            {
+              "name": "GET Invites (search q)",
+              "request": {
+                "method": "GET",
+                "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ],
+                "url": { "raw": "{{base_url}}/api/v1/admin/invites?q=055", "host": ["{{base_url}}"], "path": ["api","v1","admin","invites"], "query": [{"key":"q","value":"055"}] }
+              },
+              "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }]
+            },
+            {
+              "name": "GET Invite Details",
+              "request": {
+                "method": "GET",
+                "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ],
+                "url": { "raw": "{{base_url}}/api/v1/admin/invites/{{invite_id}}", "host": ["{{base_url}}"], "path": ["api","v1","admin","invites","{{invite_id}}"] }
+              },
+              "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200 or 404', function () { pm.expect(pm.response.code).to.be.oneOf([200,404]); });","var json = {}; try { json = pm.response.json(); } catch(e) {}","pm.test('Detail fields', function(){ if(pm.response.code===200){ pm.expect(json.data).to.have.property('id'); pm.expect(json.data).to.have.property('status'); } });"] } }]
+            }
+          ]
         }
       ]
     }
