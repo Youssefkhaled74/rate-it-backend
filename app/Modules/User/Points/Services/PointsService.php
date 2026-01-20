@@ -48,7 +48,7 @@ class PointsService
         $exists = PointsTransaction::where('user_id', $user->id)
             ->where(function($q) use ($review) {
                 $q->where(function($q2) use ($review) {
-                    $q2->where('reference_type', \\App\\Models\\Review::class)->where('reference_id', $review->id);
+                    $q2->where('reference_type', \App\Models\Review::class)->where('reference_id', $review->id);
                 })->orWhere(function($q3) use ($review) {
                     $q3->where('source_type', 'review')->where('source_id', $review->id);
                 });
@@ -67,7 +67,7 @@ class PointsService
             'brand_id' => $review->brand_id ?? null,
             'type' => 'EARN_REVIEW',
             'points' => $points,
-            'reference_type' => \\App\\Models\\Review::class,
+            'reference_type' => \App\Models\Review::class,
             'reference_id' => $review->id,
             'meta' => $meta ? array_merge($meta, ['settings_version' => $setting->version ?? null]) : ['settings_version' => $setting->version ?? null],
             'expires_at' => null,
