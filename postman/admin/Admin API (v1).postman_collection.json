@@ -42,6 +42,14 @@
       "value": ""
     },
     {
+      "key": "from",
+      "value": ""
+    },
+    {
+      "key": "to",
+      "value": ""
+    },
+    {
       "key": "role_id",
       "value": ""
     }
@@ -141,6 +149,124 @@
             }
           ]
         },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/api/v1/admin/auth/me", "host": ["{{base_url}}"], "path": ["api","v1","admin","auth","me"] },
+            "description": "Get current admin profile (protected)"
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }]
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/api/v1/admin/auth/logout", "host": ["{{base_url}}"], "path": ["api","v1","admin","auth","logout"] },
+            "description": "Logout admin (protected)"
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }]
+        }
+      ]
+    },
+    {
+      "name": "10-Dashboard",
+      "item": [
+        {
+          "name": "GET Summary (all-time)",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ],
+            "url": { "raw": "{{base_url}}/api/v1/admin/dashboard/summary", "host": ["{{base_url}}"], "path": ["api","v1","admin","dashboard","summary"] },
+            "description": "Get dashboard KPIs (all-time)"
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });","var json = {}; try { json = pm.response.json(); } catch(e) {}","pm.test('Response shape', function(){ pm.expect(json).to.have.property('success'); pm.expect(json.success).to.equal(true); pm.expect(json).to.have.property('data'); });","pm.test('Summary fields', function(){ pm.expect(json.data).to.have.property('users_count'); pm.expect(json.data).to.have.property('reviews_count'); pm.expect(json.data).to.have.property('avg_rating'); pm.expect(json.data).to.have.property('points_issued_total'); pm.expect(json.data).to.have.property('points_redeemed_total'); });"] } }]
+        },
+        {
+          "name": "GET Summary (date range)",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ],
+            "url": { "raw": "{{base_url}}/api/v1/admin/dashboard/summary?from={{from}}&to={{to}}", "host": ["{{base_url}}"], "path": ["api","v1","admin","dashboard","summary"], "query": [ {"key": "from", "value": "{{from}}"}, {"key": "to", "value": "{{to}}"} ] },
+            "description": "Get dashboard KPIs for date range (from/to: YYYY-MM-DD)"
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });","var json = {}; try { json = pm.response.json(); } catch(e) {}","pm.test('Has meta with dates', function(){ pm.expect(json).to.have.property('meta'); });"] } }]
+        },
+        {
+          "name": "GET Top Places (default limit=10)",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ],
+            "url": { "raw": "{{base_url}}/api/v1/admin/dashboard/top-places", "host": ["{{base_url}}"], "path": ["api","v1","admin","dashboard","top-places"] },
+            "description": "Get top places by reviews count (default)"
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });","var json = {}; try { json = pm.response.json(); } catch(e) {}","pm.test('Response is array', function(){ pm.expect(json.data).to.be.an('array'); });","pm.test('Place fields', function(){ if(json.data.length > 0){ var p = json.data[0]; pm.expect(p).to.have.property('place'); pm.expect(p).to.have.property('reviews_count'); pm.expect(p).to.have.property('avg_rating'); pm.expect(p).to.have.property('points_issued'); }});"] } }]
+        },
+        {
+          "name": "GET Top Places (metric=avg_rating)",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ],
+            "url": { "raw": "{{base_url}}/api/v1/admin/dashboard/top-places?metric=avg_rating&limit=5", "host": ["{{base_url}}"], "path": ["api","v1","admin","dashboard","top-places"], "query": [ {"key": "metric", "value": "avg_rating"}, {"key": "limit", "value": "5"} ] },
+            "description": "Get top places ranked by avg_rating, limit 5"
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });","var json = {}; try { json = pm.response.json(); } catch(e) {}","pm.test('Has data array', function(){ pm.expect(json.data).to.be.an('array'); pm.expect(json.data.length).to.be.at.most(5); });"] } }]
+        },
+        {
+          "name": "GET Top Places (category filter)",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ],
+            "url": { "raw": "{{base_url}}/api/v1/admin/dashboard/top-places?category_id=1&limit=10", "host": ["{{base_url}}"], "path": ["api","v1","admin","dashboard","top-places"], "query": [ {"key": "category_id", "value": "1"}, {"key": "limit", "value": "10"} ] },
+            "description": "Get top places filtered by category"
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"] } }]
+        },
+        {
+          "name": "GET Reviews Chart (interval=auto)",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ],
+            "url": { "raw": "{{base_url}}/api/v1/admin/dashboard/reviews-chart?from=2026-01-01&to=2026-01-31", "host": ["{{base_url}}"], "path": ["api","v1","admin","dashboard","reviews-chart"], "query": [ {"key": "from", "value": "2026-01-01"}, {"key": "to", "value": "2026-01-31"} ] },
+            "description": "Get reviews timeseries (interval auto-selected based on date range)"
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });","var json = {}; try { json = pm.response.json(); } catch(e) {}","pm.test('Chart shape', function(){ pm.expect(json.data).to.have.property('interval'); pm.expect(json.data).to.have.property('from'); pm.expect(json.data).to.have.property('to'); pm.expect(json.data).to.have.property('series'); pm.expect(json.data.series).to.be.an('array'); });","pm.test('Series data fields', function(){ if(json.data.series.length > 0){ var s = json.data.series[0]; pm.expect(s).to.have.property('date'); pm.expect(s).to.have.property('reviews_count'); pm.expect(s).to.have.property('avg_rating'); }});"] } }]
+        },
+        {
+          "name": "GET Reviews Chart (interval=week)",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ],
+            "url": { "raw": "{{base_url}}/api/v1/admin/dashboard/reviews-chart?from=2025-12-01&to=2026-01-31&interval=week", "host": ["{{base_url}}"], "path": ["api","v1","admin","dashboard","reviews-chart"], "query": [ {"key": "from", "value": "2025-12-01"}, {"key": "to", "value": "2026-01-31"}, {"key": "interval", "value": "week"} ] },
+            "description": "Get reviews timeseries grouped by week"
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });","var json = {}; try { json = pm.response.json(); } catch(e) {}","pm.test('Interval is week', function(){ pm.expect(json.data.interval).to.equal('week'); });"] } }]
+        },
+        {
+          "name": "GET Reviews Chart (place_id filter)",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Accept", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" } ],
+            "url": { "raw": "{{base_url}}/api/v1/admin/dashboard/reviews-chart?from=2026-01-01&to=2026-01-31&place_id={{place_id}}", "host": ["{{base_url}}"], "path": ["api","v1","admin","dashboard","reviews-chart"], "query": [ {"key": "from", "value": "2026-01-01"}, {"key": "to", "value": "2026-01-31"}, {"key": "place_id", "value": "{{place_id}}"} ] },
+            "description": "Get reviews chart filtered by place"
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status is 200 or 422', function () { pm.expect(pm.response.code).to.be.oneOf([200,422]); });"] } }]
+        }
+      ]
+    },
+    {
+      "name": "Auth (continued)",
+      "item": [
         {
           "name": "Me",
           "request": {
