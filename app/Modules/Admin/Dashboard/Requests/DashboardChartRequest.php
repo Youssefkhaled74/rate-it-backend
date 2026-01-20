@@ -20,9 +20,16 @@ class DashboardChartRequest extends BaseFormRequest
     public function rules(): array
     {
         return [
-            'start_date' => 'nullable|date',
-            'end_date' => 'nullable|date',
-            'period' => 'nullable|in:day,week,month,year',
+            'from' => 'nullable|date_format:Y-m-d',
+            'to' => 'nullable|date_format:Y-m-d',
+            'interval' => 'nullable|in:day,week,month',
+            'limit' => 'nullable|integer|min:1|max:50',
+            'metric' => 'nullable|in:reviews_count,avg_rating,points_issued',
+            'min_reviews' => 'nullable|integer|min:1',
+            'place_id' => 'nullable|integer|exists:places,id',
+            'branch_id' => 'nullable|integer|exists:branches,id',
+            'category_id' => 'nullable|integer|exists:categories,id',
         ];
     }
 }
+
