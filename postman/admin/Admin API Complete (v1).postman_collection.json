@@ -1,0 +1,2010 @@
+{
+  "info": {
+    "name": "Admin API Complete (v1)",
+    "description": "Professional Postman collection for complete Admin API - All 12 modules with comprehensive endpoints, request/response examples, and validation tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "category_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "subcategory_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "brand_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "place_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "branch_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "criteria_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "choice_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "review_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "role_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "plan_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "transaction_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "invite_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "setting_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "template_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "from",
+      "value": "2024-01-01",
+      "type": "string"
+    },
+    {
+      "key": "to",
+      "value": "2024-12-31",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 - Auth",
+      "description": "Authentication endpoints for admin users",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Response has success flag', function () { pm.expect(pm.response.json().success).to.equal(true); });",
+                  "pm.test('Response contains token', function () { var json = pm.response.json(); pm.expect(json.data).to.have.property('token'); });",
+                  "var json = pm.response.json(); if (json.data && json.data.token) { pm.environment.set('admin_token', json.data.token); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "auth", "login"]
+            },
+            "description": "Login with admin credentials - obtains Bearer token"
+          },
+          "response": [
+            {
+              "name": "Success 200",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password\"\n}"
+                },
+                "url": {
+                  "raw": "http://localhost:8000/api/v1/admin/auth/login",
+                  "host": ["localhost"],
+                  "path": ["api", "v1", "admin", "auth", "login"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Login successful\",\n  \"data\": {\n    \"id\": 1,\n    \"name\": \"Admin User\",\n    \"email\": \"admin@example.com\",\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n  },\n  \"meta\": null\n}"
+            },
+            {
+              "name": "Invalid Credentials 401",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"wrongpassword\"\n}"
+                },
+                "url": {
+                  "raw": "http://localhost:8000/api/v1/admin/auth/login",
+                  "host": ["localhost"],
+                  "path": ["api", "v1", "admin", "auth", "login"]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Invalid credentials\",\n  \"data\": null,\n  \"meta\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Me",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Response has admin user data', function () { var json = pm.response.json(); pm.expect(json.data).to.have.property('id'); pm.expect(json.data).to.have.property('email'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "auth", "me"]
+            },
+            "description": "Get current authenticated admin user details"
+          },
+          "response": [
+            {
+              "name": "Success 200",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer token" }
+                ],
+                "url": {
+                  "raw": "http://localhost:8000/api/v1/admin/auth/me",
+                  "host": ["localhost"],
+                  "path": ["api", "v1", "admin", "auth", "me"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Admin user details\",\n  \"data\": {\n    \"id\": 1,\n    \"name\": \"Admin User\",\n    \"email\": \"admin@example.com\",\n    \"created_at\": \"2024-01-01T00:00:00.000000Z\",\n    \"updated_at\": \"2024-01-01T00:00:00.000000Z\"\n  },\n  \"meta\": null\n}"
+            },
+            {
+              "name": "Unauthorized 401",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer invalid_token" }
+                ],
+                "url": {
+                  "raw": "http://localhost:8000/api/v1/admin/auth/me",
+                  "host": ["localhost"],
+                  "path": ["api", "v1", "admin", "auth", "me"]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Unauthorized\",\n  \"data\": null,\n  \"meta\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Logout",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Response success is true', function () { pm.expect(pm.response.json().success).to.equal(true); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/auth/logout",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "auth", "logout"]
+            },
+            "description": "Logout current admin user - invalidates token"
+          },
+          "response": [
+            {
+              "name": "Success 200",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer token" }
+                ],
+                "url": {
+                  "raw": "http://localhost:8000/api/v1/admin/auth/logout",
+                  "host": ["localhost"],
+                  "path": ["api", "v1", "admin", "auth", "logout"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Logged out successfully\",\n  \"data\": null,\n  \"meta\": null\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02 - RBAC (Roles & Permissions)",
+      "description": "Role-Based Access Control management endpoints",
+      "item": [
+        {
+          "name": "List Roles",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Response is array', function () { pm.expect(pm.response.json().data).to.be.an('array'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/roles",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "roles"]
+            },
+            "description": "List all admin roles - requires rbac.roles.manage permission"
+          },
+          "response": [
+            {
+              "name": "Success 200",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer token" }
+                ],
+                "url": {
+                  "raw": "http://localhost:8000/api/v1/admin/roles",
+                  "host": ["localhost"],
+                  "path": ["api", "v1", "admin", "roles"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Roles list\",\n  \"data\": [\n    { \"id\": 1, \"name\": \"super_admin\", \"guard\": \"admin\", \"created_at\": \"2024-01-01T00:00:00Z\" },\n    { \"id\": 2, \"name\": \"moderator\", \"guard\": \"admin\", \"created_at\": \"2024-01-01T00:00:00Z\" }\n  ],\n  \"meta\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Create Role",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201', function () { pm.response.to.have.status(201); });",
+                  "var json = pm.response.json(); if (json.data && json.data.id) { pm.environment.set('role_id', json.data.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"content_manager\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/roles",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "roles"]
+            },
+            "description": "Create new admin role - name must be unique"
+          },
+          "response": [
+            {
+              "name": "Success 201",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer token" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"content_manager\"\n}"
+                },
+                "url": {
+                  "raw": "http://localhost:8000/api/v1/admin/roles",
+                  "host": ["localhost"],
+                  "path": ["api", "v1", "admin", "roles"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Role created\",\n  \"data\": {\n    \"id\": 3,\n    \"name\": \"content_manager\",\n    \"guard\": \"admin\",\n    \"created_at\": \"2024-01-02T00:00:00Z\",\n    \"updated_at\": \"2024-01-02T00:00:00Z\"\n  },\n  \"meta\": null\n}"
+            },
+            {
+              "name": "Validation Error 422",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"\"\n}"
+                },
+                "url": {
+                  "raw": "http://localhost:8000/api/v1/admin/roles",
+                  "host": ["localhost"],
+                  "path": ["api", "v1", "admin", "roles"]
+                }
+              },
+              "status": "Unprocessable Entity",
+              "code": 422,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Validation failed\",\n  \"data\": null,\n  \"meta\": {\n    \"errors\": {\n      \"name\": [\"The name field is required\"]\n    }\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Sync Role Permissions",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"permissions\": [\n    \"categories.manage\",\n    \"brands.manage\",\n    \"places.manage\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/roles/{{role_id}}/sync-permissions",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "roles", "{{role_id}}", "sync-permissions"]
+            },
+            "description": "Sync permissions for a role - overwrites existing permissions"
+          },
+          "response": [
+            {
+              "name": "Success 200",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer token" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"permissions\": [\"categories.manage\", \"brands.manage\"]\n}"
+                },
+                "url": {
+                  "raw": "http://localhost:8000/api/v1/admin/roles/1/sync-permissions",
+                  "host": ["localhost"],
+                  "path": ["api", "v1", "admin", "roles", "1", "sync-permissions"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Permissions synced\",\n  \"data\": null,\n  \"meta\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "List Permissions",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Response is array', function () { pm.expect(pm.response.json().data).to.be.an('array'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/permissions",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "permissions"]
+            },
+            "description": "List all available admin permissions - requires rbac.permissions.manage permission"
+          },
+          "response": [
+            {
+              "name": "Success 200",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer token" }
+                ],
+                "url": {
+                  "raw": "http://localhost:8000/api/v1/admin/permissions",
+                  "host": ["localhost"],
+                  "path": ["api", "v1", "admin", "permissions"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Permissions list\",\n  \"data\": [\n    { \"id\": 1, \"name\": \"categories.manage\", \"guard\": \"admin\", \"created_at\": \"2024-01-01T00:00:00Z\" },\n    { \"id\": 2, \"name\": \"brands.manage\", \"guard\": \"admin\", \"created_at\": \"2024-01-01T00:00:00Z\" },\n    { \"id\": 3, \"name\": \"places.manage\", \"guard\": \"admin\", \"created_at\": \"2024-01-01T00:00:00Z\" }\n  ],\n  \"meta\": null\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "03 - Catalog (Categories, Brands, Places, Branches, Rating Criteria)",
+      "description": "Master data management for catalog - Categories, Brands, Places, Branches, and Rating Criteria",
+      "item": [
+        {
+          "name": "Categories - List",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/categories",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "categories"]
+            },
+            "description": "List all categories with pagination"
+          }
+        },
+        {
+          "name": "Categories - Create",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json(); if (json.data && json.data.id) { pm.environment.set('category_id', json.data.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Restaurants\",\n  \"description\": \"Food and dining establishments\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/categories",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "categories"]
+            },
+            "description": "Create new category"
+          }
+        },
+        {
+          "name": "Categories - Show",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/categories/{{category_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "categories", "{{category_id}}"]
+            },
+            "description": "Get single category details"
+          }
+        },
+        {
+          "name": "Categories - Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Restaurants Updated\",\n  \"description\": \"Food and dining establishments - Updated\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/categories/{{category_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "categories", "{{category_id}}"]
+            },
+            "description": "Update category"
+          }
+        },
+        {
+          "name": "Categories - Delete",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/categories/{{category_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "categories", "{{category_id}}"]
+            },
+            "description": "Delete category (soft delete)"
+          }
+        },
+        {
+          "name": "Subcategories - List",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/subcategories",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "subcategories"]
+            },
+            "description": "List all subcategories"
+          }
+        },
+        {
+          "name": "Subcategories - Create",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json(); if (json.data && json.data.id) { pm.environment.set('subcategory_id', json.data.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category_id\": \"{{category_id}}\",\n  \"name\": \"Fast Food\",\n  \"description\": \"Quick service restaurants\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/subcategories",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "subcategories"]
+            },
+            "description": "Create new subcategory under category"
+          }
+        },
+        {
+          "name": "Subcategories - Show",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/subcategories/{{subcategory_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "subcategories", "{{subcategory_id}}"]
+            },
+            "description": "Get single subcategory details"
+          }
+        },
+        {
+          "name": "Subcategories - Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Fast Food Updated\",\n  \"description\": \"Quick service restaurants - Updated\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/subcategories/{{subcategory_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "subcategories", "{{subcategory_id}}"]
+            },
+            "description": "Update subcategory"
+          }
+        },
+        {
+          "name": "Subcategories - Delete",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/subcategories/{{subcategory_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "subcategories", "{{subcategory_id}}"]
+            },
+            "description": "Delete subcategory"
+          }
+        },
+        {
+          "name": "Rating Criteria - List",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/rating-criteria",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "rating-criteria"]
+            },
+            "description": "List all rating criteria"
+          }
+        },
+        {
+          "name": "Rating Criteria - Create",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json(); if (json.data && json.data.id) { pm.environment.set('criteria_id', json.data.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Cleanliness\",\n  \"description\": \"Rate the cleanliness of the place\",\n  \"type\": \"rating\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/rating-criteria",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "rating-criteria"]
+            },
+            "description": "Create new rating criteria"
+          }
+        },
+        {
+          "name": "Rating Criteria - Show",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/rating-criteria/{{criteria_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "rating-criteria", "{{criteria_id}}"]
+            },
+            "description": "Get single rating criteria details"
+          }
+        },
+        {
+          "name": "Rating Criteria - Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Cleanliness Updated\",\n  \"description\": \"Rate the cleanliness - Updated\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/rating-criteria/{{criteria_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "rating-criteria", "{{criteria_id}}"]
+            },
+            "description": "Update rating criteria"
+          }
+        },
+        {
+          "name": "Rating Criteria - Delete",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/rating-criteria/{{criteria_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "rating-criteria", "{{criteria_id}}"]
+            },
+            "description": "Delete rating criteria"
+          }
+        },
+        {
+          "name": "Choices - List",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/rating-criteria/{{criteria_id}}/choices",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "rating-criteria", "{{criteria_id}}", "choices"]
+            },
+            "description": "List choices for a rating criteria"
+          }
+        },
+        {
+          "name": "Choices - Create",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json(); if (json.data && json.data.id) { pm.environment.set('choice_id', json.data.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"value\": \"Very Clean\",\n  \"order\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/rating-criteria/{{criteria_id}}/choices",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "rating-criteria", "{{criteria_id}}", "choices"]
+            },
+            "description": "Create choice for a rating criteria"
+          }
+        },
+        {
+          "name": "Choices - Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"value\": \"Very Clean Updated\",\n  \"order\": 2\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/rating-criteria/{{criteria_id}}/choices/{{choice_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "rating-criteria", "{{criteria_id}}", "choices", "{{choice_id}}"]
+            },
+            "description": "Update choice"
+          }
+        },
+        {
+          "name": "Choices - Delete",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/rating-criteria/{{criteria_id}}/choices/{{choice_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "rating-criteria", "{{criteria_id}}", "choices", "{{choice_id}}"]
+            },
+            "description": "Delete choice"
+          }
+        },
+        {
+          "name": "Brands - List",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/brands",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "brands"]
+            },
+            "description": "List all brands"
+          }
+        },
+        {
+          "name": "Brands - Create",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json(); if (json.data && json.data.id) { pm.environment.set('brand_id', json.data.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"McDonald's\",\n  \"description\": \"Fast food chain\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/brands",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "brands"]
+            },
+            "description": "Create new brand"
+          }
+        },
+        {
+          "name": "Brands - Show",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/brands/{{brand_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "brands", "{{brand_id}}"]
+            },
+            "description": "Get single brand details"
+          }
+        },
+        {
+          "name": "Brands - Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"McDonald's Updated\",\n  \"description\": \"Fast food chain - Updated\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/brands/{{brand_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "brands", "{{brand_id}}"]
+            },
+            "description": "Update brand"
+          }
+        },
+        {
+          "name": "Brands - Delete",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/brands/{{brand_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "brands", "{{brand_id}}"]
+            },
+            "description": "Delete brand"
+          }
+        },
+        {
+          "name": "Places - List",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/places",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "places"]
+            },
+            "description": "List all places with pagination"
+          }
+        },
+        {
+          "name": "Places - Create",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json(); if (json.data && json.data.id) { pm.environment.set('place_id', json.data.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Downtown Restaurant\",\n  \"brand_id\": \"{{brand_id}}\",\n  \"category_id\": \"{{category_id}}\",\n  \"description\": \"A great place to eat\",\n  \"latitude\": 40.7128,\n  \"longitude\": -74.0060\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/places",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "places"]
+            },
+            "description": "Create new place"
+          }
+        },
+        {
+          "name": "Places - Show",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/places/{{place_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "places", "{{place_id}}"]
+            },
+            "description": "Get single place details with relations"
+          }
+        },
+        {
+          "name": "Places - Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Downtown Restaurant Updated\",\n  \"description\": \"A great place to eat - Updated\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/places/{{place_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "places", "{{place_id}}"]
+            },
+            "description": "Update place"
+          }
+        },
+        {
+          "name": "Places - Delete",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/places/{{place_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "places", "{{place_id}}"]
+            },
+            "description": "Delete place"
+          }
+        },
+        {
+          "name": "Branches - List",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/branches",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "branches"]
+            },
+            "description": "List all branches"
+          }
+        },
+        {
+          "name": "Branches - Create",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json(); if (json.data && json.data.id) { pm.environment.set('branch_id', json.data.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"place_id\": \"{{place_id}}\",\n  \"name\": \"Main Branch\",\n  \"phone\": \"+1234567890\",\n  \"email\": \"branch@example.com\",\n  \"address\": \"123 Main St\",\n  \"working_hours\": {}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/branches",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "branches"]
+            },
+            "description": "Create new branch"
+          }
+        },
+        {
+          "name": "Branches - Show",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/branches/{{branch_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "branches", "{{branch_id}}"]
+            },
+            "description": "Get single branch details"
+          }
+        },
+        {
+          "name": "Branches - Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Main Branch Updated\",\n  \"phone\": \"+1234567890\",\n  \"email\": \"branch@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/branches/{{branch_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "branches", "{{branch_id}}"]
+            },
+            "description": "Update branch"
+          }
+        },
+        {
+          "name": "Branches - Delete",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/branches/{{branch_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "branches", "{{branch_id}}"]
+            },
+            "description": "Delete branch"
+          }
+        },
+        {
+          "name": "Branches - Regenerate QR",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/branches/{{branch_id}}/regenerate-qr",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "branches", "{{branch_id}}", "regenerate-qr"]
+            },
+            "description": "Regenerate QR code for a branch"
+          }
+        },
+        {
+          "name": "Subcategory Rating Criteria - List",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/subcategories/{{subcategory_id}}/rating-criteria",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "subcategories", "{{subcategory_id}}", "rating-criteria"]
+            },
+            "description": "List rating criteria for a subcategory"
+          }
+        },
+        {
+          "name": "Subcategory Rating Criteria - Sync",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"criteria_ids\": [\"{{criteria_id}}\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/subcategories/{{subcategory_id}}/rating-criteria/sync",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "subcategories", "{{subcategory_id}}", "rating-criteria", "sync"]
+            },
+            "description": "Sync rating criteria for a subcategory"
+          }
+        },
+        {
+          "name": "Subcategory Rating Criteria - Reorder",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"criteria_ids\": [\"1\", \"2\", \"3\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/subcategories/{{subcategory_id}}/rating-criteria/reorder",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "subcategories", "{{subcategory_id}}", "rating-criteria", "reorder"]
+            },
+            "description": "Reorder rating criteria for a subcategory"
+          }
+        },
+        {
+          "name": "Lookup - Subcategories by Category",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/categories/{{category_id}}/subcategories",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "categories", "{{category_id}}", "subcategories"]
+            },
+            "description": "Get subcategories for a category (catalog integrity)"
+          }
+        },
+        {
+          "name": "Lookup - Branches by Place",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/places/{{place_id}}/branches",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "places", "{{place_id}}", "branches"]
+            },
+            "description": "Get branches for a place (catalog integrity)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 - Users Management",
+      "description": "Admin user management - list, view details, block/unblock, user reviews and points",
+      "item": [
+        {
+          "name": "List Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/users",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "users"]
+            },
+            "description": "List all users - requires users.view permission"
+          }
+        },
+        {
+          "name": "Show User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json(); if (json.data && json.data.id) { pm.environment.set('user_id', json.data.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/users/{{user_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "users", "{{user_id}}"]
+            },
+            "description": "Get single user details"
+          }
+        },
+        {
+          "name": "Block User",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/users/{{user_id}}/block",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "users", "{{user_id}}", "block"]
+            },
+            "description": "Block a user - requires users.block permission"
+          }
+        },
+        {
+          "name": "User Reviews",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/users/{{user_id}}/reviews",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "users", "{{user_id}}", "reviews"]
+            },
+            "description": "Get reviews by a user - requires users.reviews.view permission"
+          }
+        },
+        {
+          "name": "User Points",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/users/{{user_id}}/points",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "users", "{{user_id}}", "points"]
+            },
+            "description": "Get points balance and history for user - requires users.points.view permission"
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 - Reviews Management",
+      "description": "Admin review moderation - list, details, hide, reply, mark featured",
+      "item": [
+        {
+          "name": "List Reviews",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/reviews",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "reviews"]
+            },
+            "description": "List all reviews - requires reviews.manage permission"
+          }
+        },
+        {
+          "name": "Show Review",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json(); if (json.data && json.data.id) { pm.environment.set('review_id', json.data.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/reviews/{{review_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "reviews", "{{review_id}}"]
+            },
+            "description": "Get review details with answers and photos"
+          }
+        },
+        {
+          "name": "Hide Review",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/reviews/{{review_id}}/hide",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "reviews", "{{review_id}}", "hide"]
+            },
+            "description": "Hide a review from public - requires reviews.manage permission"
+          }
+        },
+        {
+          "name": "Reply to Review",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reply_text\": \"Thank you for your review! We appreciate your feedback.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/reviews/{{review_id}}/reply",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "reviews", "{{review_id}}", "reply"]
+            },
+            "description": "Reply to a review - requires reviews.reply permission"
+          }
+        },
+        {
+          "name": "Mark Featured",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/reviews/{{review_id}}/mark-featured",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "reviews", "{{review_id}}", "mark-featured"]
+            },
+            "description": "Mark review as featured - requires reviews.feature permission"
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 - Dashboard Analytics",
+      "description": "Admin dashboard with KPIs and analytics - summary, top places, reviews chart",
+      "item": [
+        {
+          "name": "Summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/dashboard/summary?from={{from}}&to={{to}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "dashboard", "summary"],
+              "query": [
+                { "key": "from", "value": "{{from}}" },
+                { "key": "to", "value": "{{to}}" }
+              ]
+            },
+            "description": "Get dashboard KPIs - users, reviews count, avg rating, points - requires dashboard.view permission"
+          }
+        },
+        {
+          "name": "Top Places",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/dashboard/top-places?metric=reviews_count&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "dashboard", "top-places"],
+              "query": [
+                { "key": "metric", "value": "reviews_count", "description": "reviews_count, avg_rating, or points_issued" },
+                { "key": "limit", "value": "10", "description": "1-50" },
+                { "key": "place_id", "value": "", "description": "Optional filter" },
+                { "key": "category_id", "value": "", "description": "Optional filter" }
+              ]
+            },
+            "description": "Get top rated places by metric - requires dashboard.view permission"
+          }
+        },
+        {
+          "name": "Reviews Chart",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/dashboard/reviews-chart?from={{from}}&to={{to}}&interval=week",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "dashboard", "reviews-chart"],
+              "query": [
+                { "key": "from", "value": "{{from}}" },
+                { "key": "to", "value": "{{to}}" },
+                { "key": "interval", "value": "week", "description": "day, week, or month - auto-selected if omitted" },
+                { "key": "place_id", "value": "", "description": "Optional filter" },
+                { "key": "branch_id", "value": "", "description": "Optional filter" }
+              ]
+            },
+            "description": "Get reviews timeseries chart with auto-interval selection - requires dashboard.view permission"
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 - Points Management",
+      "description": "Admin points transactions viewing - list and view transaction details",
+      "item": [
+        {
+          "name": "List Transactions",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/points/transactions",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "points", "transactions"]
+            },
+            "description": "List all points transactions - requires points.transactions.view permission"
+          }
+        },
+        {
+          "name": "Show Transaction",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json(); if (json.data && json.data.id) { pm.environment.set('transaction_id', json.data.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/points/transactions/{{transaction_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "points", "transactions", "{{transaction_id}}"]
+            },
+            "description": "Get single points transaction details"
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 - Subscriptions",
+      "description": "Admin subscription plans and active subscriptions - view and manage",
+      "item": [
+        {
+          "name": "List Subscription Plans",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/subscription-plans",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "subscription-plans"]
+            },
+            "description": "List all subscription plans - requires subscriptions.plans.view permission"
+          }
+        },
+        {
+          "name": "Create Subscription Plan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json(); if (json.data && json.data.id) { pm.environment.set('plan_id', json.data.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Premium Plan\",\n  \"description\": \"Get premium features\",\n  \"price\": 9.99,\n  \"billing_period\": \"monthly\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/subscription-plans",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "subscription-plans"]
+            },
+            "description": "Create new subscription plan - requires subscriptions.plans.manage permission"
+          }
+        },
+        {
+          "name": "Update Subscription Plan",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Premium Plan Updated\",\n  \"description\": \"Get premium features - Updated\",\n  \"price\": 12.99\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/subscription-plans/{{plan_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "subscription-plans", "{{plan_id}}"]
+            },
+            "description": "Update subscription plan"
+          }
+        },
+        {
+          "name": "Activate Subscription Plan",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/subscription-plans/{{plan_id}}/activate",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "subscription-plans", "{{plan_id}}", "activate"]
+            },
+            "description": "Activate a subscription plan"
+          }
+        },
+        {
+          "name": "List Subscriptions",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/subscriptions",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "subscriptions"]
+            },
+            "description": "List all active subscriptions - requires subscriptions.view permission"
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 - Loyalty Settings",
+      "description": "Admin loyalty program settings - points configuration and activation",
+      "item": [
+        {
+          "name": "List Settings",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/loyalty-settings",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "loyalty-settings"]
+            },
+            "description": "List all loyalty settings - requires loyalty.settings.view permission"
+          }
+        },
+        {
+          "name": "Create Setting",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json(); if (json.data && json.data.id) { pm.environment.set('setting_id', json.data.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"key\": \"points_per_review\",\n  \"value\": \"10\",\n  \"description\": \"Points awarded for each review\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/loyalty-settings",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "loyalty-settings"]
+            },
+            "description": "Create loyalty setting - requires loyalty.settings.manage permission"
+          }
+        },
+        {
+          "name": "Activate Setting",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/loyalty-settings/{{setting_id}}/activate",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "loyalty-settings", "{{setting_id}}", "activate"]
+            },
+            "description": "Activate a loyalty setting"
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 - Invites",
+      "description": "Admin invite tracking - list and view details",
+      "item": [
+        {
+          "name": "List Invites",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/invites",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "invites"]
+            },
+            "description": "List all invites - requires invites.view permission"
+          }
+        },
+        {
+          "name": "Show Invite",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json(); if (json.data && json.data.id) { pm.environment.set('invite_id', json.data.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/invites/{{invite_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "invites", "{{invite_id}}"]
+            },
+            "description": "Get single invite details"
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 - Notifications",
+      "description": "Admin notification system - templates, broadcast, and user-specific notifications",
+      "item": [
+        {
+          "name": "Templates - List",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/templates",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "templates"]
+            },
+            "description": "List all notification templates - requires notifications.templates.view permission"
+          }
+        },
+        {
+          "name": "Templates - Create",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json(); if (json.data && json.data.id) { pm.environment.set('template_id', json.data.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Welcome Notification\",\n  \"title\": \"Welcome!\",\n  \"body\": \"Welcome to our app. Enjoy rating and reviewing places!\",\n  \"variables\": []\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/templates",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "templates"]
+            },
+            "description": "Create notification template - requires notifications.templates.manage permission"
+          }
+        },
+        {
+          "name": "Templates - Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Welcome Notification Updated\",\n  \"title\": \"Welcome Back!\",\n  \"body\": \"Welcome back to our app!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/templates/{{template_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "templates", "{{template_id}}"]
+            },
+            "description": "Update notification template"
+          }
+        },
+        {
+          "name": "Broadcast - Send",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"System Announcement\",\n  \"body\": \"Check out our new features!\",\n  \"filters\": {}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/broadcast",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "broadcast"]
+            },
+            "description": "Broadcast notification to all users or filtered users - requires notifications.broadcast.send permission"
+          }
+        },
+        {
+          "name": "Send to User",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Personal Message\",\n  \"body\": \"Thank you for your review!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/users/{{user_id}}/notifications",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "users", "{{user_id}}", "notifications"]
+            },
+            "description": "Send notification to specific user - requires notifications.user.send permission"
+          }
+        }
+      ]
+    }
+  ]
+}
