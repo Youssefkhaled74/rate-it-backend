@@ -8,6 +8,7 @@ use App\Modules\Admin\Catalog\Controllers\PlacesController;
 use App\Modules\Admin\Catalog\Controllers\BranchesController;
 use App\Modules\Admin\Catalog\Controllers\RatingCriteriaController;
 use App\Modules\Admin\Catalog\Controllers\RatingCriteriaChoicesController;
+use App\Modules\Admin\Catalog\Controllers\SubcategoryRatingCriteriaController;
 use App\Http\Middleware\AdminAuthenticate;
 use App\Http\Middleware\AdminPermission;
 
@@ -26,6 +27,12 @@ Route::middleware([AdminAuthenticate::class])->group(function () {
     Route::get('subcategories/{id}', [SubcategoriesController::class, 'show']);
     Route::put('subcategories/{id}', [SubcategoriesController::class, 'update']);
     Route::delete('subcategories/{id}', [SubcategoriesController::class, 'destroy']);
+
+    // Subcategory <-> Rating Criteria mapping
+    Route::get('subcategories/{id}/rating-criteria', [SubcategoryRatingCriteriaController::class, 'index']);
+    Route::post('subcategories/{id}/rating-criteria/sync', [SubcategoryRatingCriteriaController::class, 'sync']);
+    Route::post('subcategories/{id}/rating-criteria/reorder', [SubcategoryRatingCriteriaController::class, 'reorder']);
+    Route::delete('subcategories/{id}/rating-criteria/{criteria_id}', [SubcategoryRatingCriteriaController::class, 'destroy']);
 
     // Brands
     Route::get('brands', [BrandsController::class, 'index']);
