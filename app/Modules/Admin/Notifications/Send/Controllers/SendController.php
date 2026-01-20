@@ -19,9 +19,8 @@ class SendController extends BaseApiController
     public function sendToUser(SendToUserRequest $request, $id)
     {
         $data = $request->validated();
-        /** @var User|null $user */
-        $user = auth()?->user();
-        $n = $this->service->sendToUser((int)$id, $data, $user ?? new User());
+        $user = (auth()?->user()) ?: new User();
+        $n = $this->service->sendToUser((int)$id, $data, $user);
         if (! $n) return $this->error('Not found', null, 404);
         return $this->success($n, 'admin.notifications.user.sent');
     }
