@@ -5,6 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 
+if (! class_exists('AddVersionAndAdminColumnsToPointsSettingsTable20260120')) {
 class AddVersionAndAdminColumnsToPointsSettingsTable20260120 extends Migration
 {
     public function up()
@@ -36,4 +37,11 @@ class AddVersionAndAdminColumnsToPointsSettingsTable20260120 extends Migration
             $table->dropColumn(['version','created_by_admin_id','activated_by_admin_id','activated_at']);
         });
     }
+}
+}
+
+// Laravel's migrator derives class names from file names (AddVersionAndAdminColumnsToPointsSettings).
+// Create a small alias class so the migrator can instantiate it safely.
+if (! class_exists('AddVersionAndAdminColumnsToPointsSettings')) {
+    class AddVersionAndAdminColumnsToPointsSettings extends AddVersionAndAdminColumnsToPointsSettingsTable20260120 {}
 }
