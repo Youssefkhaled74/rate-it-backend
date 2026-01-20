@@ -31,8 +31,12 @@ class RatingCriteriaController extends BaseApiController
 
     public function store(StoreRatingCriteriaRequest $request)
     {
-        $data = $request->only(['name_en','name_ar','type','is_active','sort_order']);
-        $rc = $this->service->create($data);
+        $data = $request->only(['name_en','name_ar','type','is_active','sort_order','subcategory_id','is_required']);
+        try {
+            $rc = $this->service->create($data);
+        } catch (\RuntimeException $e) {
+            return $this->error($e->getMessage(), null, 422);
+        }
         return $this->created(new RatingCriteriaResource($rc), 'rating_criteria.created');
     }
 
@@ -45,7 +49,12 @@ class RatingCriteriaController extends BaseApiController
 
     public function update(UpdateRatingCriteriaRequest $request, $id)
     {
-        $rc = $this->service->update((int) $id, $request->only(['name_en','name_ar','type','is_active','sort_order']));
+        $data = $request->only(['name_en','name_ar','type','is_active','sort_order','subcategory_id','is_required']);
+        try {
+            $rc = $this->service->update((int) $id, $data);
+        } catch (\RuntimeException $e) {
+            return $this->error($e->getMessage(), null, 422);
+        }
         if (! $rc) return $this->error('Not found', null, 404);
         return $this->success(new RatingCriteriaResource($rc), 'rating_criteria.updated');
     }

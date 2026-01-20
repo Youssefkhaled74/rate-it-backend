@@ -16,9 +16,11 @@ class UpdateRatingCriteriaRequest extends FormRequest
         return [
             'name_en' => ['sometimes','string','max:255'],
             'name_ar' => ['nullable','string','max:255'],
-            'type' => ['nullable','string','max:50'],
+            'type' => ['nullable','string','in:RATING,YES_NO,MULTIPLE_CHOICE'],
+            'subcategory_id' => ['nullable','integer','exists:subcategories,id'],
+            'is_required' => ['nullable','boolean'],
             'is_active' => ['nullable','boolean'],
-            'sort_order' => ['nullable','integer'],
+            'sort_order' => ['nullable','integer','min:0'],
         ];
     }
 }

@@ -16,9 +16,11 @@ class StoreRatingCriteriaRequest extends FormRequest
         return [
             'name_en' => ['required','string','max:255'],
             'name_ar' => ['nullable','string','max:255'],
-            'type' => ['required','string','max:50'],
+            'type' => ['required','string','in:RATING,YES_NO,MULTIPLE_CHOICE'],
+            'subcategory_id' => ['required','integer','exists:subcategories,id'],
+            'is_required' => ['nullable','boolean'],
             'is_active' => ['nullable','boolean'],
-            'sort_order' => ['nullable','integer'],
+            'sort_order' => ['nullable','integer','min:0'],
         ];
     }
 }
