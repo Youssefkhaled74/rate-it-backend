@@ -36,6 +36,10 @@ Route::prefix('v1/admin')->group(function () {
     require base_path('app/Modules/Admin/Reviews/Routes/api.php');
     // Admin Users management
     require base_path('app/Modules/Admin/Users/Routes/api.php');
+    // Admin Loyalty Settings
+    require base_path('app/Modules/Admin/LoyaltySettings/Routes/api.php');
+    // Admin Points monitoring
+    require base_path('app/Modules/Admin/Points/Routes/api.php');
 });
 
 // Demo routes for traits
