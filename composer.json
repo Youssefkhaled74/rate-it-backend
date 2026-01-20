@@ -49,6 +49,8 @@
             "@php artisan config:clear --ansi",
             "@php artisan test"
         ],
+        "test:admin": "@php artisan admin:tests",
+        "test:admin:verbose": "@php artisan test --testsuite=Feature --filter=Admin --verbose",
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
