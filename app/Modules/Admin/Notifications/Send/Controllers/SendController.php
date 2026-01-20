@@ -25,4 +25,4 @@ class SendController extends BaseApiController
         if (! $n) return $this->error('Not found', null, 404);
         return $this->success($n, 'admin.notifications.user.sent');
     }
-}}
+}
