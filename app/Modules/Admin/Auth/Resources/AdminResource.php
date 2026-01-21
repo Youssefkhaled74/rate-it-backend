@@ -15,8 +15,20 @@ class AdminResource extends JsonResource
             'phone' => $this->phone,
             'role' => $this->role,
             'is_active' => (bool) $this->is_active,
-            'created_at' => optional($this->created_at)->toISOString(),
-            'updated_at' => optional($this->updated_at)->toISOString(),
-        ];
-    }
-}
+            'timestamps' => [
+                'created_at' => [
+                    'iso' => optional($this->created_at)->toISOString(),
+                    'readable' => optional($this->created_at)->format('M d, Y H:i:s'),
+                    'relative' => optional($this->created_at)->diffForHumans(),
+                ],
+                'updated_at' => [
+                    'iso' => optional($this->updated_at)->toISOString(),
+                    'readable' => optional($this->updated_at)->format('M d, Y H:i:s'),
+                    'relative' => optional($this->updated_at)->diffForHumans(),
+                ],
+                'deleted_at' => $this->deleted_at ? [
+                    'iso' => $this->deleted_at->toISOString(),
+                    'readable' => $this->deleted_at->format('M d, Y H:i:s'),
+                    'relative' => $this->deleted_at->diffForHumans(),
+                ] : null,
+            ],
