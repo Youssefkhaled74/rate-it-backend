@@ -4,16 +4,19 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use App\Models\Admin;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class AdminAuthenticate
 {
     public function handle(Request $request, Closure $next): Response
     {
-        $token = $request->bearerToken();
-        if (! $token) {
+        // Use the admin guard to authenticate the request
+        $request->setUserResolver(function () {
+            return Auth::guard('admin')->user();
+        });
+
+        if (! Auth::guard('admin')->check()) {
             return response()->json([
                 'success' => false,
                 'message' => __('auth.unauthenticated'),
@@ -22,22 +25,9 @@ class AdminAuthenticate
             ], 401);
         }
 
-        $row = DB::table('personal_access_tokens')
-            ->where('token', $token)
-            ->where('tokenable_type', Admin::class)
-            ->first();
+        $admin = Auth::guard('admin')->user();
 
-        if (! $row) {
-            return response()->json([
-                'success' => false,
-                'message' => __('auth.unauthenticated'),
-                'data' => null,
-                'meta' => null,
-            ], 401);
-        }
-
-        $admin = Admin::find($row->tokenable_id);
-        if (! $admin || ! $admin->is_active) {
+        if (! $admin->is_active) {
             return response()->json([
                 'success' => false,
                 'message' => __('auth.unauthenticated'),
