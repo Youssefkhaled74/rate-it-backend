@@ -3,6 +3,7 @@
 namespace App\Modules\Admin\Catalog\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Support\Resources\TimestampResource;
 
 class RatingCriteriaChoiceResource extends JsonResource
 {
@@ -16,8 +17,10 @@ class RatingCriteriaChoiceResource extends JsonResource
             'value' => $this->value,
             'is_active' => (bool) $this->is_active,
             'sort_order' => $this->sort_order,
-            'created_at' => optional($this->created_at)->toDateTimeString(),
-            'updated_at' => optional($this->updated_at)->toDateTimeString(),
+            'timestamps' => [
+                'created_at' => new TimestampResource($this->created_at),
+                'updated_at' => new TimestampResource($this->updated_at),
+            ],
         ];
     }
 }
