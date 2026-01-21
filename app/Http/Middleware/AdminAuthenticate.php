@@ -11,11 +11,7 @@ class AdminAuthenticate
 {
     public function handle(Request $request, Closure $next): Response
     {
-        // Use the admin guard to authenticate the request
-        $request->setUserResolver(function () {
-            return Auth::guard('admin')->user();
-        });
-
+        // Try to authenticate using the admin guard (Sanctum)
         if (! Auth::guard('admin')->check()) {
             return response()->json([
                 'success' => false,
@@ -27,7 +23,7 @@ class AdminAuthenticate
 
         $admin = Auth::guard('admin')->user();
 
-        if (! $admin->is_active) {
+        if (! $admin || ! $admin->is_active) {
             return response()->json([
                 'success' => false,
                 'message' => __('auth.unauthenticated'),
