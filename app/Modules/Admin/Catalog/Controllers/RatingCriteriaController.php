@@ -32,6 +32,9 @@ class RatingCriteriaController extends BaseApiController
     public function store(StoreRatingCriteriaRequest $request)
     {
         $data = $request->only(['name_en','name_ar','type','is_active','sort_order','subcategory_id','is_required']);
+        // Map name_en/name_ar to question_text (use name_en as primary, with name_ar as fallback)
+        $data['question_text'] = $data['name_en'] ?? $data['name_ar'] ?? '';
+        unset($data['name_en'], $data['name_ar']);
         try {
             $rc = $this->service->create($data);
         } catch (\RuntimeException $e) {
@@ -50,6 +53,11 @@ class RatingCriteriaController extends BaseApiController
     public function update(UpdateRatingCriteriaRequest $request, $id)
     {
         $data = $request->only(['name_en','name_ar','type','is_active','sort_order','subcategory_id','is_required']);
+        // Map name_en/name_ar to question_text if provided
+        if (isset($data['name_en']) || isset($data['name_ar'])) {
+            $data['question_text'] = $data['name_en'] ?? $data['name_ar'] ?? '';
+            unset($data['name_en'], $data['name_ar']);
+        }
         try {
             $rc = $this->service->update((int) $id, $data);
         } catch (\RuntimeException $e) {

@@ -16,6 +16,7 @@ class RatingCriteria extends Model
         'question_text',
         'type',
         'is_required',
+        'is_active',
         'sort_order',
     ];
 

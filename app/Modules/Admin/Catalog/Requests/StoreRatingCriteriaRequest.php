@@ -14,8 +14,8 @@ class StoreRatingCriteriaRequest extends FormRequest
     public function rules()
     {
         return [
-            'name_en' => ['required','string','max:255'],
-            'name_ar' => ['nullable','string','max:255'],
+            'name_en' => ['required','string','max:1000'],
+            'name_ar' => ['nullable','string','max:1000'],
             'type' => ['required','string','in:RATING,YES_NO,MULTIPLE_CHOICE'],
             'subcategory_id' => ['required','integer','exists:subcategories,id'],
             'is_required' => ['nullable','boolean'],
