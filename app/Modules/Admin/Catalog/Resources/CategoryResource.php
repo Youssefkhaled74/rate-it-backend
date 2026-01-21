@@ -3,6 +3,7 @@
 namespace App\Modules\Admin\Catalog\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Support\Resources\TimestampResource;
 
 class CategoryResource extends JsonResource
 {
@@ -14,8 +15,11 @@ class CategoryResource extends JsonResource
             'name_ar' => $this->name_ar,
             'logo' => $this->logo ?? null,
             'is_active' => (bool) $this->is_active,
-            'created_at' => optional($this->created_at)->toISOString(),
-            'updated_at' => optional($this->updated_at)->toISOString(),
+            'sort_order' => $this->sort_order ?? 0,
+            'timestamps' => [
+                'created_at' => new TimestampResource($this->created_at),
+                'updated_at' => new TimestampResource($this->updated_at),
+            ],
         ];
     }
 }
