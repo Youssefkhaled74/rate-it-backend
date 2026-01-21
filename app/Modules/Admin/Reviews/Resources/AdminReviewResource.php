@@ -5,6 +5,7 @@ namespace App\Modules\Admin\Reviews\Resources;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Modules\User\Reviews\Resources\ReviewPhotoResource;
 use App\Modules\User\Reviews\Resources\ReviewAnswerResource;
+use App\Support\Resources\TimestampResource;
 
 class AdminReviewResource extends JsonResource
 {
@@ -15,18 +16,17 @@ class AdminReviewResource extends JsonResource
             'overall_rating' => $this->overall_rating,
             'review_score' => $this->review_score,
             'comment' => $this->comment,
-            'created_at' => $this->created_at,
 
             // moderation fields
             'is_hidden' => $this->is_hidden ?? false,
             'hidden_reason' => $this->hidden_reason ?? null,
-            'hidden_at' => $this->hidden_at ?? null,
+            'hidden_at' => $this->hidden_at ? new TimestampResource($this->hidden_at) : null,
 
             'is_featured' => $this->is_featured ?? false,
-            'featured_at' => $this->featured_at ?? null,
+            'featured_at' => $this->featured_at ? new TimestampResource($this->featured_at) : null,
 
             'admin_reply_text' => $this->admin_reply_text ?? null,
-            'replied_at' => $this->replied_at ?? null,
+            'replied_at' => $this->replied_at ? new TimestampResource($this->replied_at) : null,
 
             'user' => [
                 'id' => $this->user->id ?? null,
@@ -47,6 +47,9 @@ class AdminReviewResource extends JsonResource
 
             'photos' => ReviewPhotoResource::collection($this->whenLoaded('photos')),
             'answers' => ReviewAnswerResource::collection($this->whenLoaded('answers')),
+            'timestamps' => [
+                'created_at' => new TimestampResource($this->created_at),
+            ],
         ];
     }
 }

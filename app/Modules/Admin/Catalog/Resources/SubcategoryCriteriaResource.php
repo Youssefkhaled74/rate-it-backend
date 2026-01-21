@@ -4,6 +4,7 @@ namespace App\Modules\Admin\Catalog\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Modules\Admin\Catalog\Resources\RatingCriteriaChoiceResource;
+use App\Support\Resources\TimestampResource;
 
 class SubcategoryCriteriaResource extends JsonResource
 {
@@ -16,8 +17,10 @@ class SubcategoryCriteriaResource extends JsonResource
             'is_required' => (bool) $this->is_required,
             'sort_order' => $this->sort_order,
             'choices' => $this->when($this->type === 'MULTIPLE_CHOICE', RatingCriteriaChoiceResource::collection($this->whenLoaded('choices') ? $this->choices : $this->choices)),
-            'created_at' => optional($this->created_at)->toDateTimeString(),
-            'updated_at' => optional($this->updated_at)->toDateTimeString(),
+            'timestamps' => [
+                'created_at' => new TimestampResource($this->created_at),
+                'updated_at' => new TimestampResource($this->updated_at),
+            ],
         ];
     }
 }

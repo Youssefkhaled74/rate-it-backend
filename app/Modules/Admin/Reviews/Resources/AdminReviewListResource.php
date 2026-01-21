@@ -3,6 +3,7 @@
 namespace App\Modules\Admin\Reviews\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Support\Resources\TimestampResource;
 
 class AdminReviewListResource extends JsonResource
 {
@@ -13,7 +14,6 @@ class AdminReviewListResource extends JsonResource
             'overall_rating' => $this->overall_rating,
             'review_score' => $this->review_score,
             'comment' => $this->comment,
-            'created_at' => $this->created_at,
             'is_hidden' => $this->is_hidden ?? false,
             'is_featured' => $this->is_featured ?? false,
             'user' => [
@@ -29,6 +29,9 @@ class AdminReviewListResource extends JsonResource
             'branch' => [
                 'id' => $this->branch->id ?? null,
                 'name' => $this->branch->name ?? null,
+            ],
+            'timestamps' => [
+                'created_at' => new TimestampResource($this->created_at),
             ],
         ];
     }

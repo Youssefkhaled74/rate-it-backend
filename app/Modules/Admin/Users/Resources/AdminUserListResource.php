@@ -3,6 +3,7 @@
 namespace App\Modules\Admin\Users\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Support\Resources\TimestampResource;
 
 class AdminUserListResource extends JsonResource
 {
@@ -17,7 +18,9 @@ class AdminUserListResource extends JsonResource
             'is_blocked' => (bool) ($this->is_blocked ?? false),
             'reviews_count' => $this->reviews_count ?? null,
             'points_balance' => null,
-            'created_at' => $this->created_at,
+            'timestamps' => [
+                'created_at' => new TimestampResource($this->created_at),
+            ],
         ];
     }
 }

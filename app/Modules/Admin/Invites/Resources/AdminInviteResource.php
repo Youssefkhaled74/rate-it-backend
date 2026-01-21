@@ -3,6 +3,7 @@
 namespace App\Modules\Admin\Invites\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Support\Resources\TimestampResource;
 
 class AdminInviteResource extends JsonResource
 {
@@ -15,14 +16,15 @@ class AdminInviteResource extends JsonResource
             'invitee_user' => $this->invitedUser ? ['id'=>$this->invitedUser->id,'full_name'=>$this->invitedUser->full_name ?? $this->invitedUser->name,'phone'=>$this->invitedUser->phone] : null,
             'status' => $this->status,
             'reward_points' => $this->reward_points,
-            'sent_at' => $this->created_at,
-            'accepted_at' => $this->updated_at ?? null,
-            'registered_at' => $this->created_at ?? null,
-            'rewarded_at' => $this->rewarded_at,
             'channel' => $this->channel ?? null,
             'meta' => null,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'rewarded_at' => $this->rewarded_at ? new TimestampResource($this->rewarded_at) : null,
+            'timestamps' => [
+                'sent_at' => new TimestampResource($this->created_at),
+                'accepted_at' => $this->updated_at ? new TimestampResource($this->updated_at) : null,
+                'created_at' => new TimestampResource($this->created_at),
+                'updated_at' => $this->updated_at ? new TimestampResource($this->updated_at) : null,
+            ],
         ];
     }
 }

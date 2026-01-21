@@ -3,6 +3,7 @@
 namespace App\Modules\Admin\LoyaltySettings\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Support\Resources\TimestampResource;
 
 class AdminLoyaltySettingResource extends JsonResource
 {
@@ -17,8 +18,10 @@ class AdminLoyaltySettingResource extends JsonResource
             'is_active' => (bool) $this->is_active,
             'created_by_admin_id' => $this->created_by_admin_id ?? null,
             'activated_by_admin_id' => $this->activated_by_admin_id ?? null,
-            'activated_at' => $this->activated_at ?? null,
-            'created_at' => $this->created_at,
+            'activated_at' => $this->activated_at ? new TimestampResource($this->activated_at) : null,
+            'timestamps' => [
+                'created_at' => new TimestampResource($this->created_at),
+            ],
         ];
     }
 }

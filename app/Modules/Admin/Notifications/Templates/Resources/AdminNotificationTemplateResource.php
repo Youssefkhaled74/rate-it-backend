@@ -3,6 +3,7 @@
 namespace App\Modules\Admin\Notifications\Templates\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Support\Resources\TimestampResource;
 
 class AdminNotificationTemplateResource extends JsonResource
 {
@@ -19,8 +20,10 @@ class AdminNotificationTemplateResource extends JsonResource
             'variables_schema' => $this->variables_schema,
             'channel' => $this->channel,
             'is_active' => (bool) $this->is_active,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'timestamps' => [
+                'created_at' => new TimestampResource($this->created_at),
+                'updated_at' => new TimestampResource($this->updated_at),
+            ],
         ];
     }
 }

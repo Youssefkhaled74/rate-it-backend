@@ -3,6 +3,7 @@
 namespace App\Modules\Admin\Subscriptions\Plans\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Support\Resources\TimestampResource;
 
 class AdminSubscriptionPlanResource extends JsonResource
 {
@@ -22,8 +23,10 @@ class AdminSubscriptionPlanResource extends JsonResource
             'trial_days' => $this->trial_days,
             'is_active' => (bool)$this->is_active,
             'metadata' => $this->metadata,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'timestamps' => [
+                'created_at' => new TimestampResource($this->created_at),
+                'updated_at' => new TimestampResource($this->updated_at),
+            ],
         ];
     }
 }
