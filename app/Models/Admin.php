@@ -33,6 +33,8 @@ class Admin extends Model
 
     public function permissions()
     {
-        return $this->roles()->flatMap->permissions()->unique();
+        return $this->roles()->with('permissions')->get()->flatMap(function($role) {
+            return $role->permissions;
+        })->unique('id');
     }
 }

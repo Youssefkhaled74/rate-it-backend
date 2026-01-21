@@ -27,4 +27,6 @@ class PlaceResource extends JsonResource
             'timestamps' => [
                 'created_at' => new TimestampResource($this->created_at),
                 'updated_at' => new TimestampResource($this->updated_at),
-            ],
+            ],        ];
+    }
+}
