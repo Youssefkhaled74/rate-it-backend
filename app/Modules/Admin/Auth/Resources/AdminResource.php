@@ -15,6 +15,16 @@ class AdminResource extends JsonResource
             'phone' => $this->phone,
             'role' => $this->role,
             'is_active' => (bool) $this->is_active,
+            'roles' => $this->roles->map(fn($role) => [
+                'id' => $role->id,
+                'name' => $role->name,
+                'description' => $role->description,
+            ])->values(),
+            'permissions' => $this->roles->flatMap->permissions->map(fn($permission) => [
+                'id' => $permission->id,
+                'name' => $permission->name,
+                'description' => $permission->description,
+            ])->unique('id')->values(),
             'timestamps' => [
                 'created_at' => [
                     'iso' => optional($this->created_at)->toISOString(),
@@ -32,3 +42,6 @@ class AdminResource extends JsonResource
                     'relative' => $this->deleted_at->diffForHumans(),
                 ] : null,
             ],
+        ];
+    }
+}

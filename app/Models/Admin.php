@@ -25,4 +25,14 @@ class Admin extends Model
     {
         return Hash::check($password, $this->password_hash);
     }
+
+    public function roles()
+    {
+        return $this->morphToMany(Role::class, 'model', 'model_has_roles');
+    }
+
+    public function permissions()
+    {
+        return $this->roles()->flatMap->permissions()->unique();
+    }
 }
