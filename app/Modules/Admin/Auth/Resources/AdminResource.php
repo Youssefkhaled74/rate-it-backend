@@ -3,6 +3,7 @@
 namespace App\Modules\Admin\Auth\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Support\Resources\TimestampResource;
 
 class AdminResource extends JsonResource
 {
@@ -26,21 +27,9 @@ class AdminResource extends JsonResource
                 'description' => $permission->description,
             ])->unique('id')->values(),
             'timestamps' => [
-                'created_at' => [
-                    'iso' => optional($this->created_at)->toISOString(),
-                    'readable' => optional($this->created_at)->format('M d, Y H:i:s'),
-                    'relative' => optional($this->created_at)->diffForHumans(),
-                ],
-                'updated_at' => [
-                    'iso' => optional($this->updated_at)->toISOString(),
-                    'readable' => optional($this->updated_at)->format('M d, Y H:i:s'),
-                    'relative' => optional($this->updated_at)->diffForHumans(),
-                ],
-                'deleted_at' => $this->deleted_at ? [
-                    'iso' => $this->deleted_at->toISOString(),
-                    'readable' => $this->deleted_at->format('M d, Y H:i:s'),
-                    'relative' => $this->deleted_at->diffForHumans(),
-                ] : null,
+                'created_at' => new TimestampResource($this->created_at),
+                'updated_at' => new TimestampResource($this->updated_at),
+                'deleted_at' => new TimestampResource($this->deleted_at),
             ],
         ];
     }
