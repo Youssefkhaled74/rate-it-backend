@@ -11,7 +11,7 @@ class RatingCriteriaService
 
     public function list(array $filters = [])
     {
-        $query = RatingCriteria::query();
+        $query = RatingCriteria::with('subcategory', 'choices', 'reviewAnswers');
         if (isset($filters['active'])) {
             $query->where('is_active', (bool) $filters['active']);
         }
@@ -40,7 +40,7 @@ class RatingCriteriaService
 
     public function find(int $id): ?RatingCriteria
     {
-        return RatingCriteria::find($id);
+        return RatingCriteria::with('subcategory', 'choices', 'reviewAnswers')->find($id);
     }
 
     public function update(int $id, array $data): ?RatingCriteria
