@@ -16,6 +16,7 @@ class RatingCriteriaChoice extends Model
         'choice_text',
         'value',
         'sort_order',
+        'is_active',
     ];
 
     protected $casts = [

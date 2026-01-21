@@ -38,6 +38,11 @@ class RatingCriteriaChoicesController extends BaseApiController
         $criteria = $this->criteriaService->find((int) $criteria_id);
         if (! $criteria) return $this->error('Criteria not found', null, 404);
         $data = $request->only(['name_en','name_ar','value','is_active','sort_order']);
+        // Map name_en/name_ar to choice_text/choice_en/choice_ar
+        $data['choice_text'] = $data['name_en'] ?? $data['name_ar'] ?? '';
+        $data['choice_en'] = $data['name_en'] ?? '';
+        $data['choice_ar'] = $data['name_ar'] ?? null;
+        unset($data['name_en'], $data['name_ar']);
         $choice = $this->choiceService->create((int) $criteria_id, $data);
         return $this->created(new RatingCriteriaChoiceResource($choice));
     }
@@ -48,7 +53,15 @@ class RatingCriteriaChoicesController extends BaseApiController
         if (! $criteria) return $this->error('Criteria not found', null, 404);
         $choice = $this->choiceService->find((int) $choice_id);
         if (! $choice) return $this->error('Choice not found', null, 404);
-        $choice = $this->choiceService->update((int) $choice_id, $request->only(['name_en','name_ar','value','is_active','sort_order']));
+        $data = $request->only(['name_en','name_ar','value','is_active','sort_order']);
+        // Map name_en/name_ar to choice_text/choice_en/choice_ar if provided
+        if (isset($data['name_en']) || isset($data['name_ar'])) {
+            $data['choice_text'] = $data['name_en'] ?? $data['name_ar'] ?? '';
+            $data['choice_en'] = $data['name_en'] ?? null;
+            $data['choice_ar'] = $data['name_ar'] ?? null;
+            unset($data['name_en'], $data['name_ar']);
+        }
+        $choice = $this->choiceService->update((int) $choice_id, $data);
         return $this->success(new RatingCriteriaChoiceResource($choice));
     }
 

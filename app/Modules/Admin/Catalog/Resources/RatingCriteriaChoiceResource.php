@@ -11,9 +11,9 @@ class RatingCriteriaChoiceResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'rating_criteria_id' => $this->rating_criteria_id,
-            'name_en' => $this->name_en,
-            'name_ar' => $this->name_ar,
+            'rating_criteria_id' => $this->criteria_id,
+            'name_en' => $this->choice_en ?? $this->choice_text,
+            'name_ar' => $this->choice_ar,
             'value' => $this->value,
             'is_active' => (bool) $this->is_active,
             'sort_order' => $this->sort_order,

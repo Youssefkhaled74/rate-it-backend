@@ -14,6 +14,8 @@ class RatingCriteria extends Model
     protected $fillable = [
         'subcategory_id',
         'question_text',
+        'question_en',
+        'question_ar',
         'type',
         'is_required',
         'is_active',
