@@ -14,6 +14,7 @@ class Category extends Model
         'name_ar',
         'logo',
         'is_active',
+        'sort_order',
     ];
 
     protected $casts = [

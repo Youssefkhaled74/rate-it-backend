@@ -32,6 +32,8 @@ Route::prefix('v1/user')->group(function () {
 // API v1 - Admin module routes
 Route::prefix('v1/admin')->group(function () {
     require base_path('app/Modules/Admin/Auth/Routes/api.php');
+    // Admin Catalog (Categories, Brands, Places, etc.)
+    require base_path('app/Modules/Admin/Catalog/Routes/api.php');
     // Admin Dashboard
     require base_path('app/Modules/Admin/Dashboard/Routes/api.php');
     // Admin Reviews moderation
