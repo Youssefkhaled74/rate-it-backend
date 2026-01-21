@@ -15,5 +15,5 @@ return [
     'email_taken' => 'Email is already in use.',
     'phone_taken' => 'Phone number is already in use.',
     'registered' => 'Registration successful',
-    'registered' => 'Registration successful',
+    'unauthenticated' => 'Unauthenticated. Please provide valid authentication credentials.',
 ];
