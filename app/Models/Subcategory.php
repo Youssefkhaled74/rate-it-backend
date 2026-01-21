@@ -15,6 +15,7 @@ class Subcategory extends Model
         'name_ar',
         'image',
         'is_active',
+        'sort_order',
     ];
 
     protected $casts = [
