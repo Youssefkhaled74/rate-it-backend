@@ -33,4 +33,7 @@ return [
         'voucher_expired' => 'Voucher has expired',
         'redemptions_list' => 'Voucher redemptions list',
     ],
+    'dashboard' => [
+        'summary' => 'Dashboard summary',
+    ],
 ];

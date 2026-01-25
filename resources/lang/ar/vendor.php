@@ -33,4 +33,7 @@ return [
         'voucher_expired' => 'انتهت صلاحية الكوبون',
         'redemptions_list' => 'قائمة استرجاع الكوبونات',
     ],
+    'dashboard' => [
+        'summary' => 'ملخص لوحة التحكم',
+    ],
 ];

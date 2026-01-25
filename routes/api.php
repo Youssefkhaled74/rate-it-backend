@@ -63,6 +63,8 @@ Route::prefix('v1/vendor')->group(function () {
     require base_path('app/Modules/Vendor/Staff/Routes/api.php');
     // Vendor vouchers
     require base_path('app/Modules/Vendor/Vouchers/Routes/api.php');
+    // Vendor dashboard
+    require base_path('app/Modules/Vendor/Dashboard/Routes/api.php');
     // Vendor RBAC with brand/branch scoping
     require base_path('app/Modules/Vendor/Rbac/Routes/api.php');
 });
