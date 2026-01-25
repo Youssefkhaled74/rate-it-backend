@@ -1,0 +1,676 @@
+{
+  "info": {
+    "name": "Vendor API Complete (v1)",
+    "description": "Professional Postman collection for complete Vendor API - All 10 modules with comprehensive endpoints, request/response examples, and validation tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "vendor_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "vendor_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "brand_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "branch_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "staff_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "review_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "voucher_code",
+      "value": "ABC123",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "description": "Vendor authentication endpoints",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"0501234567\",\n  \"password\": \"secret\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/vendor/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vendor", "auth", "login"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has token', function() {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data.token).to.exist;",
+                  "    pm.collectionVariables.set('vendor_token', jsonData.data.token);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Me",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{vendor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/vendor/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vendor", "auth", "me"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response has vendor data', function() {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data.id).to.exist;",
+                  "    pm.expect(jsonData.data.role).to.be.oneOf(['VENDOR_ADMIN', 'BRANCH_STAFF']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{vendor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/vendor/auth/logout",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vendor", "auth", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Branches",
+      "description": "Branch management",
+      "item": [
+        {
+          "name": "List Branches",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{vendor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/vendor/branches",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vendor", "branches"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response is array with pagination', function() {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(Array.isArray(jsonData.data)).to.be.true;",
+                  "    pm.expect(jsonData.meta).to.have.property('page');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Branch Cooldown",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{vendor_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"review_cooldown_hours\": 24\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/vendor/branches/{{branch_id}}/cooldown",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vendor", "branches", "{{branch_id}}", "cooldown"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reviews",
+      "description": "Review management and filtering",
+      "item": [
+        {
+          "name": "List Reviews",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{vendor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/vendor/reviews?branch_id=&date_from=2024-01-01&date_to=2024-12-31&min_rating=3&max_rating=5&has_photos=true&keyword=&page=1&per_page=15",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vendor", "reviews"],
+              "query": [
+                {
+                  "key": "branch_id",
+                  "value": ""
+                },
+                {
+                  "key": "date_from",
+                  "value": "2024-01-01"
+                },
+                {
+                  "key": "date_to",
+                  "value": "2024-12-31"
+                },
+                {
+                  "key": "min_rating",
+                  "value": "3"
+                },
+                {
+                  "key": "max_rating",
+                  "value": "5"
+                },
+                {
+                  "key": "has_photos",
+                  "value": "true"
+                },
+                {
+                  "key": "keyword",
+                  "value": ""
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "per_page",
+                  "value": "15"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Review Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{vendor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/vendor/reviews/{{review_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vendor", "reviews", "{{review_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Staff",
+      "description": "Staff member CRUD operations",
+      "item": [
+        {
+          "name": "List Staff",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{vendor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/vendor/staff?branch_id=&is_active=true&page=1&per_page=15",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vendor", "staff"],
+              "query": [
+                {
+                  "key": "branch_id",
+                  "value": ""
+                },
+                {
+                  "key": "is_active",
+                  "value": "true"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "per_page",
+                  "value": "15"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Staff",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{vendor_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ahmed Hassan\",\n  \"phone\": \"0502345678\",\n  \"email\": \"ahmed@example.com\",\n  \"branch_id\": \"{{branch_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/vendor/staff",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vendor", "staff"]
+            }
+          }
+        },
+        {
+          "name": "Update Staff",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{vendor_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ahmed Hassan Updated\",\n  \"branch_id\": \"{{branch_id}}\",\n  \"is_active\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/vendor/staff/{{staff_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vendor", "staff", "{{staff_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Reset Staff Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{vendor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/vendor/staff/{{staff_id}}/reset-password",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vendor", "staff", "{{staff_id}}", "reset-password"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vouchers",
+      "description": "Voucher operations - check, redeem, and history",
+      "item": [
+        {
+          "name": "Check Voucher",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{vendor_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code_or_link\": \"{{voucher_code}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/vendor/vouchers/check",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vendor", "vouchers", "check"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Voucher check returns status', function() {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data.status).to.be.oneOf(['VALID', 'USED', 'EXPIRED']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Check Voucher (Invalid Code)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{vendor_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code_or_link\": \"INVALID-CODE-THAT-DOES-NOT-EXIST\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/vendor/vouchers/check",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vendor", "vouchers", "check"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Invalid code returns 404', function() {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Redeem Voucher",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{vendor_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code_or_link\": \"{{voucher_code}}\",\n  \"branch_id\": \"{{branch_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/vendor/vouchers/redeem",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vendor", "vouchers", "redeem"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Redeem successful returns status=USED', function() {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (pm.response.code === 200) {",
+                  "        pm.expect(jsonData.data.status).to.equal('USED');",
+                  "        pm.expect(jsonData.data.used_at).to.exist;",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Redeem Voucher (Already Used)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{vendor_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code_or_link\": \"{{voucher_code}}\",\n  \"branch_id\": \"{{branch_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/vendor/vouchers/redeem",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vendor", "vouchers", "redeem"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Double redeem returns 422', function() {",
+                  "    if (pm.response.code === 422) {",
+                  "        var jsonData = pm.response.json();",
+                  "        pm.expect(jsonData.message).to.include('already_redeemed');",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Redemptions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{vendor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/vendor/vouchers/redemptions?branch_id=&date_from=2024-01-01&date_to=2024-12-31&status=USED&page=1&per_page=15",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vendor", "vouchers", "redemptions"],
+              "query": [
+                {
+                  "key": "branch_id",
+                  "value": ""
+                },
+                {
+                  "key": "date_from",
+                  "value": "2024-01-01"
+                },
+                {
+                  "key": "date_to",
+                  "value": "2024-12-31"
+                },
+                {
+                  "key": "status",
+                  "value": "USED"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "per_page",
+                  "value": "15"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "description": "KPI dashboard (admin only)",
+      "item": [
+        {
+          "name": "Get Dashboard Summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{vendor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/vendor/dashboard/summary",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vendor", "dashboard", "summary"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Dashboard returns all KPIs', function() {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data).to.have.property('total_branches');",
+                  "    pm.expect(jsonData.data).to.have.property('reviews_count');",
+                  "    pm.expect(jsonData.data).to.have.property('average_rating_brand');",
+                  "    pm.expect(jsonData.data).to.have.property('top_branches_by_rating');",
+                  "    pm.expect(jsonData.data).to.have.property('vouchers_used');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Dashboard (BRANCH_STAFF - Forbidden)",
+          "description": "Verify BRANCH_STAFF cannot access admin dashboard",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{vendor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/vendor/dashboard/summary",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vendor", "dashboard", "summary"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('BRANCH_STAFF gets 403 on dashboard', function() {",
+                  "    if (pm.response.code === 403) {",
+                  "        var jsonData = pm.response.json();",
+                  "        pm.expect(jsonData.message).to.include('forbidden');",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
