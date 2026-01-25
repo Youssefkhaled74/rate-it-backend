@@ -22,4 +22,5 @@ return [
     'vendor_logout_success' => 'Vendor logged out',
     'vendor_profile' => 'Vendor profile',
     'vendor_invalid_credentials' => 'Invalid phone or password',
-    'vendor_inactive' => 'Vendor account is inactive',
+    'vendor_inactive' => 'Vendor account is inactive',    'forbidden' => 'Forbidden',
+];

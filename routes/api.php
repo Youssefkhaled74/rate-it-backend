@@ -55,6 +55,8 @@ Route::prefix('v1/admin')->group(function () {
 // API v1 - Vendor module routes
 Route::prefix('v1/vendor')->group(function () {
     require base_path('app/Modules/Vendor/Auth/Routes/api.php');
+    // Vendor branches management
+    require base_path('app/Modules/Vendor/Branches/Routes/api.php');
     // Vendor RBAC with brand/branch scoping
     require base_path('app/Modules/Vendor/Rbac/Routes/api.php');
 });

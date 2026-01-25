@@ -22,4 +22,5 @@ return [
     'vendor_logout_success' => 'تم تسجيل خروج المورد',
     'vendor_profile' => 'ملف تعريف المورد',
     'vendor_invalid_credentials' => 'رقم هاتف أو كلمة مرور غير صحيحة',
-    'vendor_inactive' => 'حساب المورد غير نشط',
+    'vendor_inactive' => 'حساب المورد غير نشط',    'forbidden' => 'ممنوع',
+];
