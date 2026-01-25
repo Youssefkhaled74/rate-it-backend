@@ -21,4 +21,10 @@ return [
         'password_reset' => 'Password reset successfully',
         'not_found' => 'Staff member not found',
     ],
+    'vouchers' => [
+        'check_success' => 'Voucher checked successfully',
+        'code_required' => 'Voucher code or link is required',
+        'invalid_code' => 'Invalid voucher code format',
+        'not_found' => 'Voucher not found',
+    ],
 ];
