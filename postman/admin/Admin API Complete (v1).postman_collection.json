@@ -103,8 +103,8 @@
   ],
   "item": [
     {
-      "name": "01 - Auth",
-      "description": "Authentication endpoints for admin users",
+      "name": "00 - Setup & Authentication",
+      "description": "Initial setup and authentication for admin users",
       "item": [
         {
           "name": "Login",
@@ -542,8 +542,8 @@
       ]
     },
     {
-      "name": "03 - Catalog (Categories, Brands, Places, Branches, Rating Criteria)",
-      "description": "Master data management for catalog - Categories, Brands, Places, Branches, and Rating Criteria",
+      "name": "03 - Catalog - Categories",
+      "description": "Categories management - List, create, update, delete categories",
       "item": [
         {
           "name": "Categories - List",

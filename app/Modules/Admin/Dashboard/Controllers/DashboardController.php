@@ -11,6 +11,12 @@ class DashboardController extends BaseApiController
 {
     protected DashboardService $service;
 
+    /**
+     * Create a new DashboardController instance.
+     *
+     * @param  \App\Modules\Admin\Dashboard\Services\DashboardService  $service
+     * @return void
+     */
     public function __construct(DashboardService $service)
     {
         $this->service = $service;

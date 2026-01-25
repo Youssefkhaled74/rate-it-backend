@@ -11,7 +11,7 @@ trait InteractsWithAdminApi
     /**
      * Make an authenticated GET request to the admin API.
      */
-    protected function getAsAdmin(string $uri, string $token = null): \Illuminate\Testing\TestResponse
+    protected function getAsAdmin(string $uri, ?string $token = null): \Illuminate\Testing\TestResponse
     {
         $token = $token ?? $this->adminToken;
         return $this->getJson($uri, $this->adminHeadersWithToken($token));
@@ -20,7 +20,7 @@ trait InteractsWithAdminApi
     /**
      * Make an authenticated POST request to the admin API.
      */
-    protected function postAsAdmin(string $uri, array $data = [], string $token = null): \Illuminate\Testing\TestResponse
+    protected function postAsAdmin(string $uri, array $data = [], ?string $token = null): \Illuminate\Testing\TestResponse
     {
         $token = $token ?? $this->adminToken;
         return $this->postJson($uri, $data, $this->adminHeadersWithToken($token));
@@ -29,7 +29,7 @@ trait InteractsWithAdminApi
     /**
      * Make an authenticated PUT request to the admin API.
      */
-    protected function putAsAdmin(string $uri, array $data = [], string $token = null): \Illuminate\Testing\TestResponse
+    protected function putAsAdmin(string $uri, array $data = [], ?string $token = null): \Illuminate\Testing\TestResponse
     {
         $token = $token ?? $this->adminToken;
         return $this->putJson($uri, $data, $this->adminHeadersWithToken($token));
@@ -38,7 +38,7 @@ trait InteractsWithAdminApi
     /**
      * Make an authenticated PATCH request to the admin API.
      */
-    protected function patchAsAdmin(string $uri, array $data = [], string $token = null): \Illuminate\Testing\TestResponse
+    protected function patchAsAdmin(string $uri, array $data = [], ?string $token = null): \Illuminate\Testing\TestResponse
     {
         $token = $token ?? $this->adminToken;
         return $this->patchJson($uri, $data, $this->adminHeadersWithToken($token));
@@ -47,7 +47,7 @@ trait InteractsWithAdminApi
     /**
      * Make an authenticated DELETE request to the admin API.
      */
-    protected function deleteAsAdmin(string $uri, array $data = [], string $token = null): \Illuminate\Testing\TestResponse
+    protected function deleteAsAdmin(string $uri, array $data = [], ?string $token = null): \Illuminate\Testing\TestResponse
     {
         $token = $token ?? $this->adminToken;
         return $this->deleteJson($uri, $data, $this->adminHeadersWithToken($token));

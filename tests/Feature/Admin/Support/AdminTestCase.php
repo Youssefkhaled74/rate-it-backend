@@ -69,7 +69,7 @@ abstract class AdminTestCase extends TestCase
     /**
      * Assert successful API response.
      */
-    protected function assertSuccessJson($response, string $message = null)
+    protected function assertSuccessJson($response, ?string $message = null)
     {
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -103,7 +103,7 @@ abstract class AdminTestCase extends TestCase
     /**
      * Assert error API response.
      */
-    protected function assertErrorJson($response, int $status = 400, string $message = null)
+    protected function assertErrorJson($response, int $status = 400, ?string $message = null)
     {
         $response->assertStatus($status)
             ->assertJsonStructure([
