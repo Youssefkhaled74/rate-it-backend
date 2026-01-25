@@ -6,6 +6,7 @@ use App\Support\Api\BaseApiController;
 use App\Modules\Admin\Vendors\Services\VendorAdminService;
 use App\Modules\Admin\Vendors\Requests\ListVendorsRequest;
 use App\Modules\Admin\Vendors\Requests\CreateVendorRequest;
+use App\Modules\Admin\Vendors\Requests\UpdateVendorRequest;
 use App\Modules\Admin\Vendors\Resources\VendorResource;
 use App\Models\VendorUser;
 
@@ -58,7 +59,7 @@ class VendorsController extends BaseApiController
      * Update vendor details
      * PATCH /api/v1/admin/vendors/{id}
      */
-    public function update(string $id, CreateVendorRequest $request)
+    public function update(string $id, UpdateVendorRequest $request)
     {
         $vendor = $this->service->find((int)$id);
         if (!$vendor) {
