@@ -38,6 +38,115 @@
     a{color:inherit;text-decoration:none}
     .wrap{max-width:1120px;margin:0 auto;padding:22px}
 
+    /* ===== Ambient background polish ===== */
+    #page{position:relative; overflow:hidden;}
+    .ambient{
+      position:absolute;
+      inset:-120px;
+      pointer-events:none;
+      z-index:0;
+    }
+    .blob{
+      position:absolute;
+      width: 520px;
+      height: 520px;
+      border-radius: 999px;
+      filter: blur(38px);
+      opacity: .55;
+      transform: translate3d(0,0,0);
+      animation: floaty 14s ease-in-out infinite;
+    }
+    .b1{ left: 6%; top: 6%; background: radial-gradient(circle at 30% 30%, rgba(239,68,68,.55), transparent 60%); }
+    .b2{ right: 2%; top: 14%; width: 460px; height:460px; background: radial-gradient(circle at 35% 35%, rgba(245,158,11,.45), transparent 62%); animation-duration: 18s; }
+    .b3{ left: 28%; bottom: -2%; width: 560px; height:560px; background: radial-gradient(circle at 35% 35%, rgba(56,189,248,.35), transparent 65%); animation-duration: 22s; }
+
+    @keyframes floaty{
+      0%   { transform: translate(0px,0px) scale(1); }
+      50%  { transform: translate(30px,-18px) scale(1.06); }
+      100% { transform: translate(0px,0px) scale(1); }
+    }
+
+    .noise{
+      position:absolute; inset:0;
+      opacity: .06;
+      mix-blend-mode: overlay;
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+      background-size: 220px 220px;
+    }
+
+    .gridlines{
+      position:absolute; inset:0;
+      opacity: .08;
+      background:
+        linear-gradient(to right, rgba(0,0,0,.12) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0,0,0,.12) 1px, transparent 1px);
+      background-size: 72px 72px;
+      mask-image: radial-gradient(circle at 50% 20%, black 20%, transparent 70%);
+    }
+
+    .particles{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      z-index:0;
+    }
+    .particles span{
+      position:absolute;
+      width: 6px; height: 6px;
+      border-radius: 99px;
+      background: rgba(0,0,0,.12);
+      opacity: .25;
+      animation: drift linear infinite;
+    }
+    .particles span:nth-child(3n){ width:4px; height:4px; opacity:.22; }
+    .particles span:nth-child(4n){ width:8px; height:8px; opacity:.18; filter: blur(1px); }
+
+    @keyframes drift{
+      from { transform: translate3d(0, 40px, 0); }
+      to   { transform: translate3d(0,-60px, 0); }
+    }
+
+    /* position particles (manual, deterministic) */
+    .particles span:nth-child(1){ left:10%; top:70%; animation-duration: 10s; }
+    .particles span:nth-child(2){ left:18%; top:30%; animation-duration: 12s; }
+    .particles span:nth-child(3){ left:26%; top:55%; animation-duration: 14s; }
+    .particles span:nth-child(4){ left:34%; top:25%; animation-duration: 11s; }
+    .particles span:nth-child(5){ left:42%; top:78%; animation-duration: 15s; }
+    .particles span:nth-child(6){ left:50%; top:40%; animation-duration: 13s; }
+    .particles span:nth-child(7){ left:58%; top:62%; animation-duration: 16s; }
+    .particles span:nth-child(8){ left:66%; top:28%; animation-duration: 12s; }
+    .particles span:nth-child(9){ left:74%; top:74%; animation-duration: 14s; }
+    .particles span:nth-child(10){ left:82%; top:46%; animation-duration: 17s; }
+    .particles span:nth-child(11){ left:90%; top:68%; animation-duration: 12s; }
+    .particles span:nth-child(12){ left:14%; top:84%; animation-duration: 18s; }
+    .particles span:nth-child(13){ left:38%; top:88%; animation-duration: 16s; }
+    .particles span:nth-child(14){ left:62%; top:90%; animation-duration: 19s; }
+    .particles span:nth-child(15){ left:86%; top:86%; animation-duration: 15s; }
+
+    /* ensure content above background */
+    .wrap{ position:relative; z-index:1; }
+
+    /* extra micro-polish */
+    .card{
+      position:relative;
+      border:1px solid var(--line);
+      border-radius: calc(var(--r) + 6px);
+      background: var(--card);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      overflow:hidden;
+    }
+    .card::before{
+      content:"";
+      position:absolute; inset:-2px;
+      background: radial-gradient(600px 200px at 20% 0%, rgba(56,189,248,.18), transparent 60%),
+                  radial-gradient(600px 200px at 80% 10%, rgba(239,68,68,.14), transparent 60%);
+      opacity:.55;
+      pointer-events:none;
+    }
+    .card > *{ position:relative; z-index:1; }
+
     .top{display:flex;align-items:center;justify-content:space-between;gap:12px}
     .brand{display:flex;align-items:center;gap:12px}
     .logo{
@@ -82,13 +191,6 @@
 
     .grid{margin-top:18px;display:grid;grid-template-columns:1.15fr .85fr;gap:16px}
 
-    .card{
-      border:1px solid var(--line);
-      border-radius: calc(var(--r) + 6px);
-      background: var(--card);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(14px);
-    }
     .pad{padding:22px}
 
     .heroBadge{margin-bottom:14px}
@@ -150,6 +252,11 @@
       .twoBtn{grid-template-columns:1fr}
     }
 
+    /* Reduce motion accessibility */
+    @media (prefers-reduced-motion: reduce){
+      .blob, .particles span{ animation: none !important; }
+    }
+
     /* =========================
        DARK MODE FIX (High contrast)
        ========================= */
@@ -181,11 +288,34 @@
     #page.dark .mini{ background: rgba(255,255,255,.06); }
     #page.dark .badge{ background: rgba(255,255,255,.08); }
     #page.dark .pill{ background: rgba(255,255,255,.07); }
+
+    #page.dark .particles span{ background: rgba(255,255,255,.18); }
+    #page.dark .gridlines{
+      background:
+        linear-gradient(to right, rgba(255,255,255,.14) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,.14) 1px, transparent 1px);
+      opacity:.07;
+    }
   </style>
 </head>
 
 <body>
   <div id="page">
+    <!-- Ambient background layers -->
+    <div class="ambient" aria-hidden="true">
+      <span class="blob b1"></span>
+      <span class="blob b2"></span>
+      <span class="blob b3"></span>
+      <span class="noise"></span>
+      <span class="gridlines"></span>
+    </div>
+
+    <div class="particles" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+
     <div class="wrap">
       <header class="top">
         <div class="brand">

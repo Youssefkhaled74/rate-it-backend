@@ -11,7 +11,7 @@ Route::prefix('vendors')->group(function () {
     Route::post('/', [\App\Modules\Admin\Vendors\Controllers\VendorsController::class, 'store']);
 
     // Update vendor
-    Route::patch('/{id}', [\App\Modules\Admin\Vendors\Controllers\VendorsController::class, 'update']);
+    Route::put('/{id}', [\App\Modules\Admin\Vendors\Controllers\VendorsController::class, 'update']);
 
     // Delete vendor
     Route::delete('/{id}', [\App\Modules\Admin\Vendors\Controllers\VendorsController::class, 'destroy']);
