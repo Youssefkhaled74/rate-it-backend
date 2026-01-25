@@ -1,6 +1,6 @@
 {{-- resources/views/welcome.blade.php --}}
 <!DOCTYPE html>
-<html lang="en" dir="ltr" class="h-full scroll-smooth">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -11,22 +11,15 @@
     :root{
       --bg: #fafafa;
       --fg: #0a0a0a;
-      --muted: rgba(0,0,0,.65);
-      --muted2: rgba(0,0,0,.45);
-      --card: rgba(255,255,255,.70);
+      --muted: rgba(0,0,0,.66);
+      --muted2: rgba(0,0,0,.46);
+
+      --card: rgba(255,255,255,.72);
       --line: rgba(0,0,0,.10);
       --shadow: 0 30px 90px rgba(0,0,0,.12);
+
       --red1:#b91c1c; --red2:#ef4444; --amber:#f59e0b; --sky:#38bdf8; --green:#34d399;
       --r: 24px;
-    }
-    .dark{
-      --bg: #09090b;
-      --fg: #fafafa;
-      --muted: rgba(255,255,255,.70);
-      --muted2: rgba(255,255,255,.50);
-      --card: rgba(255,255,255,.06);
-      --line: rgba(255,255,255,.10);
-      --shadow: 0 40px 120px rgba(0,0,0,.55);
     }
 
     *{box-sizing:border-box}
@@ -34,55 +27,61 @@
     body{
       margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      background:
-        radial-gradient(1200px 600px at 18% 10%, rgba(239,68,68,.14), transparent 60%),
-        radial-gradient(900px 500px at 85% 15%, rgba(245,158,11,.12), transparent 60%),
-        radial-gradient(900px 650px at 50% 120%, rgba(56,189,248,.10), transparent 60%),
-        linear-gradient(180deg, var(--bg), var(--bg));
       color: var(--fg);
+      background:
+        radial-gradient(1200px 600px at 18% 10%, rgba(239,68,68,.12), transparent 60%),
+        radial-gradient(900px 500px at 85% 15%, rgba(245,158,11,.10), transparent 60%),
+        radial-gradient(900px 650px at 50% 120%, rgba(56,189,248,.08), transparent 60%),
+        linear-gradient(180deg, var(--bg), var(--bg));
     }
+
     a{color:inherit;text-decoration:none}
     .wrap{max-width:1120px;margin:0 auto;padding:22px}
+
     .top{display:flex;align-items:center;justify-content:space-between;gap:12px}
     .brand{display:flex;align-items:center;gap:12px}
     .logo{
       width:44px;height:44px;border-radius:16px;
       background: linear-gradient(135deg,var(--red1),var(--amber));
-      box-shadow: 0 18px 60px rgba(0,0,0,.25);
+      box-shadow: 0 18px 60px rgba(0,0,0,.20);
       display:grid;place-items:center;color:white;
     }
     .kicker{font-size:12px;color:var(--muted2);margin-bottom:2px}
     .name{font-size:16px;font-weight:750;letter-spacing:-.02em}
+
     .actions{display:flex;gap:10px;align-items:center}
     .btn{
       display:inline-flex;align-items:center;gap:10px;justify-content:center;
       padding:10px 14px;border-radius:16px;border:1px solid var(--line);
-      background: rgba(255,255,255,.55);
+      background: rgba(255,255,255,.60);
       color: var(--fg);
       cursor:pointer;
       transition: transform .15s ease, background .15s ease, border-color .15s ease;
       user-select:none;
     }
-    .dark .btn{background: rgba(255,255,255,.06)}
     .btn:hover{transform: translateY(-1px)}
+    .btn:focus{outline: none; box-shadow: 0 0 0 3px rgba(56,189,248,.25);}
+
     .btnPrimary{
       border-color: transparent;
       background: linear-gradient(135deg,var(--red1),var(--red2));
       color:white;
-      box-shadow: 0 18px 50px rgba(185,28,28,.22);
+      box-shadow: 0 18px 50px rgba(185,28,28,.18);
       font-weight: 750;
     }
+
     .badge{
       display:inline-flex;align-items:center;gap:8px;
       padding:8px 12px;border-radius:999px;
       border:1px solid var(--line);
-      background: rgba(255,255,255,.45);
+      background: rgba(255,255,255,.55);
       color: var(--muted);
       font-size:12px;font-weight:650;
     }
-    .dark .badge{background: rgba(0,0,0,.18)}
     .dot{width:9px;height:9px;border-radius:99px;background:var(--green);box-shadow:0 0 0 6px rgba(52,211,153,.14)}
+
     .grid{margin-top:18px;display:grid;grid-template-columns:1.15fr .85fr;gap:16px}
+
     .card{
       border:1px solid var(--line);
       border-radius: calc(var(--r) + 6px);
@@ -91,6 +90,7 @@
       backdrop-filter: blur(14px);
     }
     .pad{padding:22px}
+
     .heroBadge{margin-bottom:14px}
     .h1{
       margin:0;
@@ -99,52 +99,93 @@
       letter-spacing:-.03em;
     }
     .sub{margin:14px 0 0;color:var(--muted);line-height:1.7}
+
     .cta{margin-top:18px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
     .hint{font-size:12px;color:var(--muted2)}
+
     .miniGrid{margin-top:18px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
     .mini{
       padding:14px;border-radius:18px;border:1px solid var(--line);
       background: rgba(0,0,0,.03);
       transition: transform .15s ease, background .15s ease, border-color .15s ease;
     }
-    .dark .mini{background: rgba(0,0,0,.18)}
     .mini:hover{transform: translateY(-1px);border-color: rgba(127,127,127,.25)}
     .mini b{display:block;margin-bottom:6px}
+
     .sep{height:1px;background:var(--line);margin:18px 0}
+
     .pillRow{display:flex;flex-wrap:wrap;gap:10px}
     .pill{
       display:inline-flex;align-items:center;gap:8px;
       padding:8px 12px;border-radius:999px;border:1px solid var(--line);
-      background: rgba(255,255,255,.45);
+      background: rgba(255,255,255,.55);
       color: var(--muted);
       font-size:13px;font-weight:650;
     }
-    .dark .pill{background: rgba(255,255,255,.05)}
     .pDot{width:8px;height:8px;border-radius:99px}
+
     .rightTitle{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
     .small{font-size:12px;color:var(--muted2)}
     .title{font-size:18px;font-weight:750}
+
     .list{margin:12px 0 0;padding:0;list-style:none;display:grid;gap:10px;color:var(--muted)}
     .li{display:flex;gap:10px}
     .li span{margin-top:7px;width:9px;height:9px;border-radius:99px;flex:0 0 auto}
+
     .twoBtn{margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
     .footer{
       margin-top:18px;padding-top:16px;border-top:1px solid var(--line);
       display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
       color:var(--muted2);font-size:13px
     }
+
+    /* RTL helper */
     .rtl{direction:rtl}
+
     @media (max-width: 980px){
       .grid{grid-template-columns:1fr}
       .h1{font-size:40px}
       .miniGrid{grid-template-columns:1fr}
       .twoBtn{grid-template-columns:1fr}
     }
+
+    /* =========================
+       DARK MODE FIX (High contrast)
+       ========================= */
+    #page.dark{
+      --bg:#07070a;
+      --fg:#f9fafb;
+      --muted: rgba(255,255,255,.78);
+      --muted2: rgba(255,255,255,.58);
+
+      --card: rgba(10,10,12,.80);
+      --line: rgba(255,255,255,.12);
+      --shadow: 0 40px 120px rgba(0,0,0,.70);
+    }
+
+    #page.dark body{
+      background:
+        radial-gradient(1200px 600px at 18% 10%, rgba(239,68,68,.18), transparent 62%),
+        radial-gradient(900px 500px at 85% 15%, rgba(245,158,11,.14), transparent 62%),
+        radial-gradient(900px 650px at 50% 120%, rgba(56,189,248,.10), transparent 62%),
+        linear-gradient(180deg, var(--bg), var(--bg));
+    }
+
+    #page.dark .btn{
+      background: rgba(255,255,255,.08);
+      border-color: rgba(255,255,255,.14);
+    }
+    #page.dark .btn:hover{ background: rgba(255,255,255,.12); }
+
+    #page.dark .mini{ background: rgba(255,255,255,.06); }
+    #page.dark .badge{ background: rgba(255,255,255,.08); }
+    #page.dark .pill{ background: rgba(255,255,255,.07); }
   </style>
 </head>
 
 <body>
-  <div id="page" class="">
+  <div id="page">
     <div class="wrap">
       <header class="top">
         <div class="brand">

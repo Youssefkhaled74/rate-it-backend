@@ -112,7 +112,6 @@ class VendorAdminService
 
         return $vendor->fresh();
     }
-    }
 
     /**
      * Delete vendor (soft delete)
