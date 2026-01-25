@@ -105,11 +105,13 @@ class VendorAdminService
             }
         }
 
+        // Never allow updating immutable fields
         if (!empty($updates)) {
             $vendor->update($updates);
         }
 
-        return $vendor;
+        return $vendor->fresh();
+    }
     }
 
     /**
