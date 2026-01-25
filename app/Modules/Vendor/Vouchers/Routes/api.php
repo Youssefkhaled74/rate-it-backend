@@ -9,4 +9,5 @@ Route::middleware([VendorAuthenticate::class])
     ->group(function () {
         Route::post('check', [VouchersController::class, 'check']);
         Route::post('redeem', [VouchersController::class, 'redeem']);
+        Route::get('redemptions', [VouchersController::class, 'redemptions']);
     });

@@ -31,5 +31,6 @@ return [
         'already_redeemed' => 'تم استرجاع الكوبون بالفعل',
         'already_expired' => 'انتهت صلاحية الكوبون بالفعل',
         'voucher_expired' => 'انتهت صلاحية الكوبون',
+        'redemptions_list' => 'قائمة استرجاع الكوبونات',
     ],
 ];

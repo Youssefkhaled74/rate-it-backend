@@ -31,5 +31,6 @@ return [
         'already_redeemed' => 'Voucher has already been redeemed',
         'already_expired' => 'Voucher has already expired',
         'voucher_expired' => 'Voucher has expired',
+        'redemptions_list' => 'Voucher redemptions list',
     ],
 ];

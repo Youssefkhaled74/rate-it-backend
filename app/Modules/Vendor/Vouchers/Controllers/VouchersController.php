@@ -5,10 +5,13 @@ namespace App\Modules\Vendor\Vouchers\Controllers;
 use App\Support\Api\BaseApiController;
 use App\Modules\Vendor\Vouchers\Services\VoucherCheckService;
 use App\Modules\Vendor\Vouchers\Services\VoucherRedeemService;
+use App\Modules\Vendor\Vouchers\Services\VoucherRedemptionHistoryService;
 use App\Modules\Vendor\Vouchers\Requests\CheckVoucherRequest;
 use App\Modules\Vendor\Vouchers\Requests\RedeemVoucherRequest;
+use App\Modules\Vendor\Vouchers\Requests\ListRedemptionsRequest;
 use App\Modules\Vendor\Vouchers\Resources\VoucherCheckResource;
 use App\Modules\Vendor\Vouchers\Resources\VoucherRedeemResource;
+use App\Modules\Vendor\Vouchers\Resources\VoucherRedemptionResource;
 use App\Support\Exceptions\ApiException;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,11 +19,17 @@ class VouchersController extends BaseApiController
 {
     protected VoucherCheckService $checkService;
     protected VoucherRedeemService $redeemService;
+    protected VoucherRedemptionHistoryService $historyService;
 
-    public function __construct(VoucherCheckService $checkService, VoucherRedeemService $redeemService)
+    public function __construct(
+        VoucherCheckService $checkService,
+        VoucherRedeemService $redeemService,
+        VoucherRedemptionHistoryService $historyService
+    )
     {
         $this->checkService = $checkService;
         $this->redeemService = $redeemService;
+        $this->historyService = $historyService;
     }
 
     /**
@@ -62,5 +71,35 @@ class VouchersController extends BaseApiController
         } catch (ApiException $e) {
             return $this->error($e->getMessage(), null, $e->getStatusCode());
         }
+    }
+
+    /**
+     * List voucher redemption history
+     * Both VENDOR_ADMIN and BRANCH_STAFF can access
+     * 
+     * VENDOR_ADMIN: can filter by branch_id (all brand branches)
+     * BRANCH_STAFF: only sees their branch redemptions
+     */
+    public function redemptions(ListRedemptionsRequest $request)
+    {
+        $vendor = Auth::guard('vendor')->user();
+        $filters = $request->validated();
+
+        $paginator = $this->historyService->list($vendor, $filters);
+        
+        // Transform items to resources
+        $resourceItems = $paginator->getCollection()->map(fn($v) => new VoucherRedemptionResource($v));
+        
+        return $this->success(
+            $resourceItems,
+            'vendor.vouchers.redemptions_list',
+            [
+                'page' => $paginator->currentPage(),
+                'limit' => $paginator->perPage(),
+                'total' => $paginator->total(),
+                'has_next' => $paginator->hasMorePages(),
+                'last_page' => $paginator->lastPage(),
+            ]
+        );
     }
 }
