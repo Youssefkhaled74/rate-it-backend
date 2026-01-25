@@ -91,6 +91,11 @@
       "type": "string"
     },
     {
+      "key": "vendor_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
       "key": "from",
       "value": "2024-01-01",
       "type": "string"
@@ -102,6 +107,188 @@
     }
   ],
   "item": [
+    {
+      "name": "01 - Vendors Management",
+      "description": "Admin vendor account management - CRUD operations for creating and managing vendor accounts",
+      "item": [
+        {
+          "name": "List Vendors",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Response is array', function () { pm.expect(pm.response.json().data).to.be.an('array'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/vendors",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "vendors"]
+            },
+            "description": "List all vendor accounts with pagination and filtering"
+          }
+        },
+        {
+          "name": "Get Vendor Details",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Response has vendor data', function () { var json = pm.response.json(); pm.expect(json.data).to.have.property('id'); pm.expect(json.data).to.have.property('name'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/vendors/{{vendor_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "vendors", "{{vendor_id}}"]
+            },
+            "description": "Get single vendor account details with brand information"
+          }
+        },
+        {
+          "name": "Create Vendor",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('Response has vendor data', function () { pm.expect(pm.response.json().data).to.have.property('id'); });",
+                  "var json = pm.response.json(); if (json.data && json.data.id) { pm.environment.set('vendor_id', json.data.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"brand_id\": \"{{brand_id}}\",\n  \"name\": \"Ahmed Al-Khaldi\",\n  \"phone\": \"+971501234567\",\n  \"email\": \"vendor@example.com\",\n  \"password\": \"SecurePass123\",\n  \"password_confirmation\": \"SecurePass123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/vendors",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "vendors"]
+            },
+            "description": "Create new vendor account - password must be at least 6 characters"
+          }
+        },
+        {
+          "name": "Update Vendor",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ahmed Al-Khaldi Updated\",\n  \"email\": \"vendor.updated@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/vendors/{{vendor_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "vendors", "{{vendor_id}}"]
+            },
+            "description": "Update vendor account details (name, email, password, is_active)"
+          }
+        },
+        {
+          "name": "Delete Vendor",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/vendors/{{vendor_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "vendors", "{{vendor_id}}"]
+            },
+            "description": "Delete (soft delete) vendor account - can be restored later"
+          }
+        },
+        {
+          "name": "Restore Vendor",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/vendors/{{vendor_id}}/restore",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "vendors", "{{vendor_id}}", "restore"]
+            },
+            "description": "Restore deleted vendor account - reverses soft delete"
+          }
+        }
+      ]
+    },
     {
       "name": "00 - Setup & Authentication",
       "description": "Initial setup and authentication for admin users",
