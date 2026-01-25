@@ -28,5 +28,8 @@ return [
         'password_required' => 'كلمة المرور مطلوبة',
         'password_min' => 'يجب أن تكون كلمة المرور 6 أحرف على الأقل',
         'password_confirmation_failed' => 'تأكيد كلمة المرور غير متطابق',
+        'photo_invalid' => 'الصورة يجب أن تكون صورة صحيحة',
+        'photo_invalid_format' => 'الصورة يجب أن تكون بصيغة JPEG أو PNG أو JPG أو GIF',
+        'photo_too_large' => 'حجم الصورة يجب ألا يتجاوز 5 MB',
     ],
 ];

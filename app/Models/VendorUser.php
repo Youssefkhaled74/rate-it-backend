@@ -22,6 +22,7 @@ class VendorUser extends Authenticatable
         'phone',
         'email',
         'password_hash',
+        'photo',
         'role',
         'is_active',
     ];

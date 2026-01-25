@@ -28,5 +28,8 @@ return [
         'password_required' => 'Password is required',
         'password_min' => 'Password must be at least 6 characters',
         'password_confirmation_failed' => 'Password confirmation does not match',
+        'photo_invalid' => 'Photo must be a valid image',
+        'photo_invalid_format' => 'Photo must be in JPEG, PNG, JPG, or GIF format',
+        'photo_too_large' => 'Photo size must not exceed 5MB',
     ],
 ];

@@ -4,6 +4,7 @@ namespace App\Modules\Admin\Vendors\Services;
 
 use App\Models\VendorUser;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class VendorAdminService
@@ -89,6 +90,19 @@ class VendorAdminService
 
         if (isset($data['password'])) {
             $updates['password_hash'] = Hash::make($data['password']);
+        }
+
+        if (isset($data['photo'])) {
+            // Delete old photo if exists
+            if ($vendor->photo && Storage::exists($vendor->photo)) {
+                Storage::delete($vendor->photo);
+            }
+
+            // Store new photo
+            if ($data['photo']) {
+                $path = $data['photo']->store('vendors', 'public');
+                $updates['photo'] = $path;
+            }
         }
 
         if (!empty($updates)) {
