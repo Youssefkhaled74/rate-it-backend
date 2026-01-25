@@ -50,6 +50,8 @@ Route::prefix('v1/admin')->group(function () {
     require base_path('app/Modules/Admin/Invites/Routes/api.php');
     // Admin Subscriptions
     require base_path('app/Modules/Admin/Subscriptions/Routes/api.php');
+    // Admin Vendors management
+    require base_path('app/Modules/Admin/Vendors/Routes/api.php');
 });
 
 // API v1 - Vendor module routes
