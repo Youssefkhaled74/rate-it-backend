@@ -52,8 +52,8 @@ Route::prefix('v1/admin')->group(function () {
     require base_path('app/Modules/Admin/Subscriptions/Routes/api.php');
 });
 
-// Demo routes for traits
-Route::prefix('v1/demo')->group(function () {
-    Route::get('ping', [\App\Http\Controllers\Api\DemoTraitController::class, 'ping']);
-    Route::post('upload', [\App\Http\Controllers\Api\DemoTraitController::class, 'upload']);
+// API v1 - Vendor module routes
+Route::prefix('v1/vendor')->group(function () {
+    require base_path('app/Modules/Vendor/Auth/Routes/api.php');
 });
+

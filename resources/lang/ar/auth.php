@@ -16,4 +16,10 @@ return [
     'phone_taken' => 'رقم الهاتف مستخدم بالفعل.',
     'registered' => 'تم إنشاء الحساب بنجاح',
     'unauthenticated' => 'غير مصرح. يرجى تقديم بيانات اعتماد صحيحة.',
-];
+
+    // Vendor auth
+    'vendor_login_success' => 'تم تسجيل دخول المورد بنجاح',
+    'vendor_logout_success' => 'تم تسجيل خروج المورد',
+    'vendor_profile' => 'ملف تعريف المورد',
+    'vendor_invalid_credentials' => 'رقم هاتف أو كلمة مرور غير صحيحة',
+    'vendor_inactive' => 'حساب المورد غير نشط',
