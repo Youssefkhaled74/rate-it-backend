@@ -26,5 +26,10 @@ return [
         'code_required' => 'Voucher code or link is required',
         'invalid_code' => 'Invalid voucher code format',
         'not_found' => 'Voucher not found',
+        'redeemed' => 'Voucher redeemed successfully',
+        'branch_id_required' => 'Branch ID is required for admins',
+        'already_redeemed' => 'Voucher has already been redeemed',
+        'already_expired' => 'Voucher has already expired',
+        'voucher_expired' => 'Voucher has expired',
     ],
 ];

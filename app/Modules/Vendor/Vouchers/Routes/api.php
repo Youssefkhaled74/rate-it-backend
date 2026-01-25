@@ -8,4 +8,5 @@ Route::middleware([VendorAuthenticate::class])
     ->prefix('vouchers')
     ->group(function () {
         Route::post('check', [VouchersController::class, 'check']);
+        Route::post('redeem', [VouchersController::class, 'redeem']);
     });
