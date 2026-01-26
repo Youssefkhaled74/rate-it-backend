@@ -67,7 +67,9 @@ class AdminModuleServiceProvider extends ServiceProvider
      */
     protected function registerPolicies(): void
     {
-        $this->app['auth']->policy(Admin::class, AdminPolicy::class);
+        // Register authorization policies
+        // Use Gate::policy() in Laravel 11+ or update config/auth.php
+        \Illuminate\Support\Facades\Gate::policy(Admin::class, AdminPolicy::class);
     }
 
     /**
@@ -75,7 +77,39 @@ class AdminModuleServiceProvider extends ServiceProvider
      */
     protected function registerRoutes(): void
     {
-        $this->loadRoutesFrom(__DIR__ . '/routes/web.php');
+        // Register web routes (Blade dashboard)
+        $this->registerWebRoutes();
+        
+        // Register API routes (AJAX endpoints)
+        $this->registerApiRoutes();
+    }
+
+    /**
+     * Register web routes (Blade dashboard pages).
+     */
+    private function registerWebRoutes(): void
+    {
+        \Illuminate\Support\Facades\Route::group([
+            'middleware' => ['web'],
+            'prefix' => 'admin',
+            'as' => 'admin.',
+        ], function () {
+            $this->loadRoutesFrom(base_path('Modules/Admin/routes/web.php'));
+        });
+    }
+
+    /**
+     * Register API routes (AJAX/JSON endpoints).
+     */
+    private function registerApiRoutes(): void
+    {
+        \Illuminate\Support\Facades\Route::group([
+            'middleware' => ['api'],
+            'prefix' => 'admin/api',
+            'as' => 'admin.api.',
+        ], function () {
+            $this->loadRoutesFrom(base_path('Modules/Admin/routes/api.php'));
+        });
     }
 
     /**
