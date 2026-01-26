@@ -1,0 +1,12 @@
+[33m535e37e[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m feat: Switch to CDN for admin login and layout; resolve Vite manifest error
+[33m63c0433[m feat: Revamp admin login page layout and styling; switch to CDN for immediate testing
+[33m072d74b[m Add comprehensive documentation for Admin UI Kit, Auth Module, and styling fixes
+[33mcb5c75c[m feat: Update language files and enhance asset loading for admin layout
+[33mb9178a1[m feat: Implement Dashboard API Controller and Blade view for admin dashboard with KPIs, charts, and top places
+[33ma5392e7[m feat: Add API routes for Admin Dashboard with authentication and CRUD operations for categories
+[33me928f4d[m feat: Add AdminModuleServiceProvider with service registration and boot methods; update authorization requests
+[33mf9aba1e[m feat: Refactor admin authorization and session handling; add setup guide
+[33m31b805f[m feat: Add admin management and authentication views
+[33m73dd3a1[m feat: Implement Admin Module with Authentication, Localization, and CRUD Functionality
+[33m8f5e923[m feat: add comprehensive documentation for Admin UI Kit and Alpine.js helpers
+[33m4b5fec6[m Add admin panel UI components and styles
