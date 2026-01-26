@@ -182,6 +182,147 @@
           ]
         },
         {
+          "name": "Get Branch Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{vendor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/vendor/branches/{{branch_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vendor", "branches", "{{branch_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response has branch data', function() {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data).to.have.property('id');",
+                  "    pm.expect(jsonData.data).to.have.property('name');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Branch",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{vendor_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"place_id\": 1,\n  \"name\": \"New Branch\",\n  \"phone\": \"+971501234567\",\n  \"email\": \"branch@example.com\",\n  \"address\": \"123 Main Street, Dubai\",\n  \"working_hours\": {\n    \"monday\": \"09:00-22:00\",\n    \"tuesday\": \"09:00-22:00\",\n    \"wednesday\": \"09:00-22:00\",\n    \"thursday\": \"09:00-22:00\",\n    \"friday\": \"10:00-23:00\",\n    \"saturday\": \"10:00-23:00\",\n    \"sunday\": \"10:00-22:00\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/vendor/branches",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vendor", "branches"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function() {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.id) {",
+                  "    pm.environment.set('branch_id', jsonData.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Branch",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{vendor_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Branch Name\",\n  \"phone\": \"+971509876543\",\n  \"email\": \"updated@example.com\",\n  \"address\": \"456 New Street, Dubai\",\n  \"working_hours\": {\n    \"monday\": \"08:00-23:00\",\n    \"tuesday\": \"08:00-23:00\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/vendor/branches/{{branch_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vendor", "branches", "{{branch_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Branch",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{vendor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/vendor/branches/{{branch_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vendor", "branches", "{{branch_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
           "name": "Update Branch Cooldown",
           "request": {
             "method": "PATCH",

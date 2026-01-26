@@ -1,5 +1,9 @@
 <?php
 
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Middleware\AdminAuthenticate;
+
 Route::prefix('vendors')->group(function () {
     // List all vendors
     Route::get('/', [\App\Modules\Admin\Vendors\Controllers\VendorsController::class, 'index']);
