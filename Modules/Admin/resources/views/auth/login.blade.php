@@ -19,10 +19,10 @@
             <!-- Heading -->
             <div class="text-center space-y-2">
                 <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
-                    {{ __('admin.welcome_back', 'Welcome Back') }}
+                    {{ __('admin.welcome_back') }}
                 </h2>
                 <p class="text-gray-600 dark:text-gray-400 text-sm">
-                    {{ __('admin.login_description', 'Sign in to your admin account') }}
+                    {{ __('admin.login_description') }}
                 </p>
             </div>
 
@@ -33,7 +33,7 @@
                 <!-- Email Field -->
                 <div class="space-y-2">
                     <label for="email" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
-                        {{ __('admin.email', 'Email Address') }}
+                        {{ __('admin.email') }}
                     </label>
                     <input type="email" 
                            id="email"
@@ -41,7 +41,7 @@
                            value="{{ old('email') }}"
                            required
                            class="w-full px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900 transition-all"
-                           placeholder="{{ __('admin.enter_email', 'you@example.com') }}">
+                           placeholder="{{ __('admin.enter_email') }}">
                     @error('email')
                         <p class="text-red-600 dark:text-red-400 text-sm font-medium">{{ $message }}</p>
                     @enderror
