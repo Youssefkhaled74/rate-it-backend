@@ -8,6 +8,7 @@ return [
     'demo_credentials' => 'Demo Credentials',
     
     // Auth
+    'login' => 'Login',
     'welcome_back' => 'Welcome Back',
     'login_description' => 'Sign in to your account to continue',
     'email' => 'Email',

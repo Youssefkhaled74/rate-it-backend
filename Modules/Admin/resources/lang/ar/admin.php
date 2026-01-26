@@ -8,6 +8,7 @@ return [
     'demo_credentials' => 'بيانات التجريب',
     
     // Auth
+    'login' => 'تسجيل الدخول',
     'welcome_back' => 'أهلا بعودتك',
     'login_description' => 'قم بتسجيل الدخول إلى حسابك للمتابعة',
     'email' => 'البريد الإلكتروني',
