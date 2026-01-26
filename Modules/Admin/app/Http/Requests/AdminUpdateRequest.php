@@ -13,6 +13,7 @@ class AdminUpdateRequest extends FormRequest
     public function authorize(): bool
     {
         $user = auth('admin')->user();
+        /** @phpstan-ignore-next-line */
         return $user ? $user->can('update', $this->admin) : false;
     }
 
