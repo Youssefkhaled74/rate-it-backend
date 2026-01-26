@@ -19,7 +19,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         // Register Admin Module
-        $this->app->register(\App\Providers\AdminModuleServiceProvider::class);
+        // $this->app->register(\App\Providers\AdminModuleServiceProvider::class);
 
         // Bind module service interfaces to implementations
         $this->app->bind(OnboardingServiceInterface::class, OnboardingService::class);
