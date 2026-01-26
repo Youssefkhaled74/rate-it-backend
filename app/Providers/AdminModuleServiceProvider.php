@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Admin;
+namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Modules\Admin\app\Models\Admin;
