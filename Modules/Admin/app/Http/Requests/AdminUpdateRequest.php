@@ -12,7 +12,8 @@ class AdminUpdateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth('admin')->user()?->can('update', $this->admin);
+        $user = auth('admin')->user();
+        return $user ? $user->can('update', $this->admin) : false;
     }
 
     /**

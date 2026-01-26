@@ -4,6 +4,7 @@ namespace Modules\Admin\app\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class EnsureAdminGuard
@@ -22,7 +23,8 @@ class EnsureAdminGuard
 
         // Check if admin is active
         if (auth('admin')->user()->status !== 'active') {
-            auth('admin')->logout();
+            Auth::guard('admin')->logout();
+            $request->session()->invalidate();
             return redirect()->route('admin.login')
                 ->with('error', __('admin.account_inactive'));
         }

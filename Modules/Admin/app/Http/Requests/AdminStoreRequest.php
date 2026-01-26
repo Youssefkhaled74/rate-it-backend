@@ -12,7 +12,8 @@ class AdminStoreRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth('admin')->user()?->can('create', \Modules\Admin\app\Models\Admin::class);
+        $user = auth('admin')->user();
+        return $user ? $user->can('create', \Modules\Admin\app\Models\Admin::class) : false;
     }
 
     /**

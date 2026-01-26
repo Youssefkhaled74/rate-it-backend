@@ -31,6 +31,7 @@ class LoginController extends Controller
             $remember
         )) {
             // Update last login timestamp
+            /** @phpstan-ignore-next-line */
             auth('admin')->user()->recordLogin();
 
             return redirect()->route('admin.dashboard')
