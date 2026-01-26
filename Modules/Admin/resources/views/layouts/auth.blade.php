@@ -30,7 +30,12 @@
         })();
     </script>
 </head>
-<body class="font-sans antialiased bg-[var(--bg-secondary)]">
+<body class="font-sans antialiased bg-white dark:bg-slate-950 text-gray-900 dark:text-white">
+    <!-- Background gradient (optional) -->
+    <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-red-100 dark:bg-red-900/30 rounded-full blur-3xl opacity-30"></div>
+        <div class="absolute bottom-0 left-0 w-96 h-96 bg-blue-100 dark:bg-blue-900/30 rounded-full blur-3xl opacity-30"></div>
+    </div>
     <div x-data="{ theme: 'light', rtl: false }" @alpine:init="theme = document.documentElement.getAttribute('data-theme'); rtl = document.documentElement.getAttribute('dir') === 'rtl'">
         <!-- Minimal Topbar for Auth Pages -->
         <header class="fixed top-0 left-0 right-0 bg-[var(--surface)] border-b border-[var(--border)] z-50">
