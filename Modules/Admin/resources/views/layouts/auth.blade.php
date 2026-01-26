@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ session('rtl') ? 'rtl' : 'ltr' }}" data-theme="{{ session('theme', 'light') }}">
+<html lang="{{ app()->getLocale() }}" dir="{{ session('admin_locale', 'ar') === 'ar' ? 'rtl' : 'ltr' }}" data-theme="{{ session('theme', 'light') }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Login') - Rate It Admin</title>
+    <title>@yield('title', 'Admin') - Rate It</title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,17 +12,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Styles -->
-    @vite(['resources/css/admin-theme.css', 'resources/css/app.css'])
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{{ asset('css/admin-theme.css') }}">
     @yield('css')
     
-    <!-- Theme Script -->
+    <!-- Theme Script (inline to prevent FOUC) -->
     <script>
         (function() {
+            const locale = '{{ session("admin_locale", "ar") }}';
             const theme = localStorage.getItem('admin_theme') || 'light';
-            const direction = localStorage.getItem('admin_direction') || 'ltr';
+            const dir = locale === 'ar' ? 'rtl' : 'ltr';
             document.documentElement.setAttribute('data-theme', theme);
-            document.documentElement.setAttribute('dir', direction);
-            document.documentElement.lang = direction === 'rtl' ? 'ar' : 'en';
+            document.documentElement.setAttribute('dir', dir);
+            document.documentElement.lang = locale;
         })();
     </script>
 </head>
