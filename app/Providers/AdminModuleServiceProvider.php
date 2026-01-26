@@ -35,7 +35,7 @@ class AdminModuleServiceProvider extends ServiceProvider
      */
     protected function loadViews(): void
     {
-        $this->loadViewsFrom(__DIR__ . '/resources/views', 'admin');
+        $this->loadViewsFrom(base_path('Modules/Admin/resources/views'), 'admin');
     }
 
     /**
@@ -43,7 +43,7 @@ class AdminModuleServiceProvider extends ServiceProvider
      */
     protected function loadTranslations(): void
     {
-        $this->loadTranslationsFrom(__DIR__ . '/resources/lang', 'admin');
+        $this->loadTranslationsFrom(base_path('Modules/Admin/resources/lang'), 'admin');
     }
 
     /**
@@ -51,7 +51,7 @@ class AdminModuleServiceProvider extends ServiceProvider
      */
     protected function loadMigrations(): void
     {
-        $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
+        $this->loadMigrationsFrom(base_path('Modules/Admin/database/migrations'));
     }
 
     /**
