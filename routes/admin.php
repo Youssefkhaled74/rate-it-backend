@@ -1,0 +1,42 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\Auth\AdminAuthController;
+use App\Http\Controllers\Admin\DashboardController;
+
+Route::prefix('admin')->name('admin.')->group(function () {
+
+    Route::get('login', [AdminAuthController::class, 'show'])
+        ->middleware('guest:admin_web')
+        ->name('login');
+
+    Route::post('login', [AdminAuthController::class, 'login'])
+        ->middleware(['guest:admin_web', 'throttle:6,1'])
+        ->name('login.submit');
+
+    Route::post('logout', [AdminAuthController::class, 'logout'])
+        ->middleware('auth:admin_web')
+        ->name('logout');
+
+    Route::get('/', [DashboardController::class, 'index'])
+        ->middleware('auth:admin_web')
+        ->name('dashboard');
+
+    // Admin management
+    Route::middleware('auth:admin_web')->group(function () {
+        Route::get('admins', [\App\Http\Controllers\Admin\AdminsController::class, 'index'])->name('admins.index');
+        Route::get('admins/create', [\App\Http\Controllers\Admin\AdminsController::class, 'create'])->name('admins.create');
+        Route::post('admins', [\App\Http\Controllers\Admin\AdminsController::class, 'store'])->name('admins.store');
+        Route::get('admins/{admin}/edit', [\App\Http\Controllers\Admin\AdminsController::class, 'edit'])->name('admins.edit');
+        Route::match(['put','patch'],'admins/{admin}', [\App\Http\Controllers\Admin\AdminsController::class, 'update'])->name('admins.update');
+        Route::patch('admins/{admin}/toggle', [\App\Http\Controllers\Admin\AdminsController::class, 'toggle'])->name('admins.toggle');
+        Route::delete('admins/{admin}', [\App\Http\Controllers\Admin\AdminsController::class, 'destroy'])->name('admins.destroy');
+    });
+
+    // Profile routes (self)
+    Route::middleware('auth:admin_web')->group(function () {
+        Route::get('profile', [\App\Http\Controllers\Admin\AdminProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('profile/photo', [\App\Http\Controllers\Admin\AdminProfileController::class, 'updatePhoto'])->name('profile.photo.update');
+        Route::delete('profile/photo', [\App\Http\Controllers\Admin\AdminProfileController::class, 'removePhoto'])->name('profile.photo.remove');
+    });
+});

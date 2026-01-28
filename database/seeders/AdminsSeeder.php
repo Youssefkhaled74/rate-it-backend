@@ -10,25 +10,37 @@ class AdminsSeeder extends Seeder
 {
     public function run()
     {
-        $existing = DB::table('admins')->where('email', 'admin@example.com')->first();
+        // Ensure the default super admin exists
+        $this->upsertAdmin([
+            'name' => 'Super Admin',
+            'email' => 'admin@example.com',
+            'phone' => null,
+            'password_hash' => bcrypt('password'),
+            'role' => 'SUPER_ADMIN',
+        ]);
+
+        // Ensure the requested test admin exists (youssef@rateit.com)
+        $this->upsertAdmin([
+            'name' => 'Youssef Test',
+            'email' => 'youssef@rateit.com',
+            'phone' => null,
+            'password_hash' => bcrypt('12345678#Rr'),
+            'role' => 'SUPER_ADMIN',
+            'is_active' => 1,
+        ]);
+    }
+
+    private function upsertAdmin(array $data)
+    {
+        $existing = DB::table('admins')->where('email', $data['email'])->first();
+        $now = now();
+
         if ($existing) {
-            DB::table('admins')->where('id', $existing->id)->update([
-                'name' => 'Super Admin',
-                'phone' => null,
-                'password_hash' => bcrypt('password'),
-                'role' => 'SUPER_ADMIN',
-                'updated_at' => now(),
-            ]);
+            $update = array_merge($data, ['updated_at' => $now]);
+            DB::table('admins')->where('id', $existing->id)->update($update);
         } else {
-            DB::table('admins')->insert([
-                'name' => 'Super Admin',
-                'email' => 'admin@example.com',
-                'phone' => null,
-                'password_hash' => bcrypt('password'),
-                'role' => 'SUPER_ADMIN',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            $insert = array_merge($data, ['created_at' => $now, 'updated_at' => $now]);
+            DB::table('admins')->insert($insert);
         }
     }
 }
