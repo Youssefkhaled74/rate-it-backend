@@ -11,4 +11,8 @@ use App\Http\Controllers\PublicAssetController;
 Route::get('storage-proxy/{path}', [PublicAssetController::class, 'storageProxy'])->where('path', '.*')->name('storage.proxy');
 
 // Load admin panel routes (session-driven Blade dashboard)
-require __DIR__ . '/admin.php';
+// Ensure the `admin.guard` middleware runs before the admin auth middleware so
+// authorization uses the `admin_web` guard (necessary for Gate::before to receive Admin).
+Route::middleware(['web', 'admin.guard'])->group(function () {
+    require __DIR__ . '/admin.php';
+});

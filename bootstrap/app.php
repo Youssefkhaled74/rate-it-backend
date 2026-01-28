@@ -14,6 +14,10 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // Append global middleware
         $middleware->append(\App\Http\Middleware\SetLocaleMiddleware::class);
+        // Register admin guard alias for admin routes
+        $middleware->alias([
+            'admin.guard' => \App\Http\Middleware\UseAdminGuard::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
