@@ -2,10 +2,10 @@
 
 namespace App\Providers;
 
-use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Gate;
 use App\Models\Admin;
 use App\Policies\AdminPolicy;
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -13,46 +13,51 @@ class AuthServiceProvider extends ServiceProvider
         Admin::class => AdminPolicy::class,
     ];
 
-    public function boot()
+    public function boot(): void
     {
         $this->registerPolicies();
 
-        // Development-friendly global bypass for admin authorization.
-        // Allows any ability when:
-        // - the authenticated user is an Admin with a SUPER_ADMIN role, OR
-        // - the environment flag ADMIN_BYPASS_AUTH is true and the authenticated user is an Admin.
-        // This only affects Admin model instances and therefore normal application users are not impacted.
-        Gate::before(function ($user, $ability) {
-            if (empty($user)) {
+        /**
+         * Global bypass for Admin authorization:
+         * - ALWAYS allow everything for SUPER_ADMIN admins.
+         * - Optionally allow everything for any admin when ADMIN_BYPASS_AUTH=true (NON-PRODUCTION only).
+         * - Does NOT affect normal "User" accounts because we only act on App\Models\Admin.
+         */
+        Gate::before(function ($user, string $ability) {
+
+            // If not authenticated, do nothing
+            if (! $user) {
                 return null;
             }
 
-            // Only consider Admin model instances for this bypass
-            if (! ($user instanceof \App\Models\Admin)) {
+            // Only apply to Admin model instances
+            if (! ($user instanceof Admin)) {
                 return null;
             }
 
-            // ENV bypass for development/testing. Set ADMIN_BYPASS_AUTH=true in .env to enable.
-            if (env('ADMIN_BYPASS_AUTH', false)) {
+            // ✅ 1) SUPER_ADMIN bypass (always)
+            // Prefer role field if exists
+            if (strtoupper((string) ($user->role ?? '')) === 'SUPER_ADMIN') {
                 return true;
             }
 
-            // Role-based SUPER_ADMIN bypass. Checks roles relation if available, or the simple `role` field.
+            // If you have roles() relation, also support it (optional)
             try {
-                if (method_exists($user, 'roles')) {
-                    if ($user->roles()->where('name', 'SUPER_ADMIN')->exists()) {
-                        return true;
-                    }
+                if (method_exists($user, 'roles') && $user->roles()->where('name', 'SUPER_ADMIN')->exists()) {
+                    return true;
                 }
             } catch (\Throwable $e) {
-                // ignore DB issues while determining roles
+                // Ignore DB/relationship issues and continue to normal checks
             }
 
-            if (strtoupper($user->role ?? '') === 'SUPER_ADMIN') {
+            // ✅ 2) ENV bypass (non-production only)
+            $envBypass = filter_var(env('ADMIN_BYPASS_AUTH', false), FILTER_VALIDATE_BOOLEAN);
+            if ($envBypass && ! app()->environment('production')) {
                 return true;
             }
 
-            return null; // fallback to normal policy checks
+            // Continue normal policy checks
+            return null;
         });
     }
 }
