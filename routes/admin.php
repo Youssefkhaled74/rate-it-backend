@@ -33,6 +33,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('admins/{admin}', [\App\Http\Controllers\Admin\AdminsController::class, 'destroy'])->name('admins.destroy');
     });
 
+    // Users module
+    Route::middleware('auth:admin_web')->group(function () {
+        Route::get('users', [\App\Http\Controllers\Admin\UsersController::class, 'index'])->name('users.index');
+        Route::get('users/{user}', [\App\Http\Controllers\Admin\UsersController::class, 'show'])->name('users.show');
+    });
+
     // Profile routes (self)
     Route::middleware('auth:admin_web')->group(function () {
         Route::get('profile', [\App\Http\Controllers\Admin\AdminProfileController::class, 'edit'])->name('profile.edit');
