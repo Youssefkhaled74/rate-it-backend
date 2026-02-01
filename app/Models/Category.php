@@ -20,4 +20,10 @@ class Category extends Model
     protected $casts = [
         'is_active' => 'boolean',
     ];
+    
+    public function subcategories()
+    {
+        return $this->hasMany(Subcategory::class);
+    }
+
 }
