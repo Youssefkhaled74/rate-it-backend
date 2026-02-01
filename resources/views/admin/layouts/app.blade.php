@@ -5,10 +5,35 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>@yield('title', 'Admin')</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            // This sets Inter as the default sans-serif font
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    /* Ensures the font looks crisp on all browsers */
+    body {
+      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    }
+  </style>
 </head>
 
-<body class="bg-gray-100 text-gray-900">
+<body class="bg-gray-100 text-gray-900 font-sans antialiased">
   <div class="min-h-screen flex">
     {{-- Sidebar --}}
     @include('admin.partials.sidebar')
