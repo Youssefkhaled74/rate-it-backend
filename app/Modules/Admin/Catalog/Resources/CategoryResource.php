@@ -14,6 +14,8 @@ class CategoryResource extends JsonResource
             'name_en' => $this->name_en,
             'name_ar' => $this->name_ar,
             'logo' => $this->logo ?? null,
+            'icon' => $this->icon ?? null,
+            'icon_url' => $this->icon ? asset($this->icon) : null,
             'is_active' => (bool) $this->is_active,
             'sort_order' => $this->sort_order ?? 0,
             'timestamps' => [
