@@ -92,11 +92,18 @@
         <div class="p-4">
           <div class="flex items-center justify-between gap-2">
             <div class="min-w-0">
-              <div class="text-sm font-semibold text-gray-900 truncate">
-                {{ $c->name_en }}
-              </div>
-              <div class="text-[11px] text-gray-500 truncate">
-                {{ $c->name_ar ?: '—' }}
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-gray-50 overflow-hidden border border-gray-100 grid place-items-center flex-shrink-0">
+                  <img src="{{ $c->icon ? asset($c->icon) : asset('assets/images/category-icon-placeholder.png') }}" class="w-9 h-9 object-cover" alt="icon">
+                </div>
+                <div class="min-w-0">
+                  <div class="text-sm font-semibold text-gray-900 truncate">
+                    {{ $c->name_en }}
+                  </div>
+                  <div class="text-[11px] text-gray-500 truncate">
+                    {{ $c->name_ar ?: '—' }}
+                  </div>
+                </div>
               </div>
             </div>
 

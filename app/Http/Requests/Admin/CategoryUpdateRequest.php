@@ -17,6 +17,7 @@ class CategoryUpdateRequest extends FormRequest
             'name_en' => ['required','string','max:255'],
             'name_ar' => ['nullable','string','max:255'],
             'logo' => ['nullable','image','mimes:png,jpg,jpeg,webp','max:4096'],
+            'icon' => ['nullable','image','mimes:png,jpg,jpeg,webp','max:2048'],
             'is_active' => ['nullable','boolean'],
             'sort_order' => ['nullable','integer','min:0','max:999999'],
         ];

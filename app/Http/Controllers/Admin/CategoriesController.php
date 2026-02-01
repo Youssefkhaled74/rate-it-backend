@@ -53,6 +53,8 @@ class CategoriesController extends Controller
 
         // uploads
         $data['logo'] = $this->saveImageToPublicAssets($request, 'logo', 'categories');
+        // icon (small)
+        $data['icon'] = $this->saveImageToPublicAssets($request, 'icon', 'categories/icons');
 
         $data['is_active'] = (bool) ($request->boolean('is_active', true));
 
@@ -88,6 +90,15 @@ class CategoriesController extends Controller
             unset($data['logo']);
         }
 
+        // replace icon if uploaded
+        $newIcon = $this->saveImageToPublicAssets($request, 'icon', 'categories/icons');
+        if ($newIcon) {
+            $this->deletePublicAssetIfExists($category->icon);
+            $data['icon'] = $newIcon;
+        } else {
+            unset($data['icon']);
+        }
+
         $data['is_active'] = (bool) ($request->boolean('is_active', false));
 
         if (array_key_exists('sort_order', $data) && $data['sort_order'] === '') {
@@ -116,6 +127,7 @@ class CategoriesController extends Controller
         // $this->authorize('delete', $category);
 
         $this->deletePublicAssetIfExists($category->logo);
+        $this->deletePublicAssetIfExists($category->icon);
         $category->delete();
 
         return back()->with('success', 'Category deleted.');

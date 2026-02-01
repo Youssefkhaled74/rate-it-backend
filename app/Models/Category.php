@@ -13,6 +13,7 @@ class Category extends Model
         'name_en',
         'name_ar',
         'logo',
+        'icon',
         'is_active',
         'sort_order',
     ];
