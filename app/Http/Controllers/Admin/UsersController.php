@@ -18,6 +18,14 @@ class UsersController extends Controller
 
     public function index(Request $request)
     {
+        // dd([
+        //     'default_guard_user' => auth()->check() ? get_class(auth()->user()) : null,
+        //     'default_guard_id' => auth()->id(),
+        //     'admin_web_user' => auth('admin_web')->check() ? get_class(auth('admin_web')->user()) : null,
+        //     'admin_web_id' => auth('admin_web')->id(),
+        //     'admin_role' => auth('admin_web')->user()->role ?? null,
+        // ]);
+
         $this->authorize('viewAny', User::class);
         $filters = $request->only(['q']);
         $users = $this->service->listUsers($filters, 15);

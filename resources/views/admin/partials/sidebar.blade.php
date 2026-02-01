@@ -40,11 +40,11 @@
 @endphp
 
 <aside class="w-72 p-4">
-  <div class="h-[calc(100vh-2rem)] rounded-[42px] bg-red-900 text-white shadow-[0_30px_90px_rgba(0,0,0,.18)] px-6 py-7 flex flex-col">
+  <div class="h-[calc(100vh-2rem)] fixed w-60 top-5 left-5 bottom-5 rounded-[42px] bg-red-900 text-white shadow-[0_30px_90px_rgba(0,0,0,.18)] px-6 py-7 flex flex-col">
 
     {{-- Logo --}}
     <div class="flex items-center gap-3 mb-8">
-      <div class="w-12 h-12 rounded-2xl bg-red-800 border border-white/10 grid place-items-center overflow-hidden shadow-lg shadow-black/10">
+      <div class="w-12 h-12 rounded-2xl  bg-red-800 border border-white/10 grid place-items-center overflow-hidden shadow-lg shadow-black/10">
         <img src="{{ asset('assets/images/Vector.png') }}" alt="Rateit" class="w-9 h-9 object-contain">
       </div>
       <div>
