@@ -33,7 +33,7 @@
       <form method="POST" action="{{ route('admin.profile.photo.remove') }}" class="mt-2">
         @csrf
         @method('DELETE')
-        <button type="submit" class="text-sm text-red-600" onclick="return confirm('Remove photo?')">Remove photo</button>
+        <button type="button" data-confirm="remove-photo" data-title="Remove photo?" data-message="Are you sure you want to remove your profile photo?" data-confirm-text="Remove" class="text-sm text-red-600">Remove photo</button>
       </form>
     </div>
 
