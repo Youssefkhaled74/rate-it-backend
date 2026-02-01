@@ -14,11 +14,7 @@ class CategoriesController extends Controller
 {
     public function index(Request $request)
     {
-        // لو عندك authorize/policies ممكن تفعلهم هنا بعد ما تحل موضوع الصلاحيات
-        // $this->authorize('viewAny', Category::class);
-
         $q = trim((string) $request->get('q', ''));
-        $status = $request->get('status', ''); // active | inactive | ''
 
         $categories = Category::query()
             ->withCount('subcategories')
@@ -28,15 +24,15 @@ class CategoriesController extends Controller
                        ->orWhere('name_ar', 'like', "%{$q}%");
                 });
             })
-            ->when($status !== '', function ($query) use ($status) {
-                $query->where('is_active', $status === 'active');
-            })
+            ->with(['subcategories' => function ($qq) {
+                $qq->orderBy('sort_order')->orderBy('id', 'desc');
+            }])
             ->orderByRaw("COALESCE(sort_order, 999999) asc")
             ->orderBy('id', 'desc')
             ->paginate(12)
             ->withQueryString();
 
-        return view('admin.categories.index', compact('categories', 'q', 'status'));
+        return view('admin.categories.index', compact('categories', 'q'));
     }
 
     public function create()
