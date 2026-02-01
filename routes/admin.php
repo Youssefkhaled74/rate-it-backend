@@ -48,6 +48,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware('auth:admin_web')->group(function () {
         Route::get('categories', [\App\Http\Controllers\Admin\CategoriesController::class, 'index'])->name('categories.index');
         Route::get('categories/create', [\App\Http\Controllers\Admin\CategoriesController::class, 'create'])->name('categories.create');
+        Route::get('categories/{category}', [\App\Http\Controllers\Admin\CategoriesController::class, 'show'])->name('categories.show');
         Route::post('categories', [\App\Http\Controllers\Admin\CategoriesController::class, 'store'])->name('categories.store');
         Route::get('categories/{category}/edit', [\App\Http\Controllers\Admin\CategoriesController::class, 'edit'])->name('categories.edit');
         Route::match(['put', 'patch'], 'categories/{category}', [\App\Http\Controllers\Admin\CategoriesController::class, 'update'])->name('categories.update');

@@ -76,6 +76,7 @@
             </button>
 
               <div id="catmenu-{{ $c->id }}" class="hidden absolute right-0 mt-2 w-44 rounded-2xl bg-white border border-gray-100 shadow-lg overflow-hidden">
+              <a href="{{ route('admin.categories.show', $c) }}" class="block px-4 py-3 text-sm hover:bg-gray-50">Show</a>
               <a href="{{ route('admin.categories.edit', $c) }}" class="block px-4 py-3 text-sm hover:bg-gray-50">Edit</a>
               <form method="POST" action="{{ route('admin.categories.destroy', $c) }}">
                 @csrf

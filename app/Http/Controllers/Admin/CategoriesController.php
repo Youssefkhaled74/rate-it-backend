@@ -71,6 +71,16 @@ class CategoriesController extends Controller
         return view('admin.categories.edit', compact('category'));
     }
 
+    public function show(Category $category)
+    {
+        // load subcategories ordered
+        $category->load(['subcategories' => function ($q) {
+            $q->orderBy('sort_order')->orderBy('id', 'desc');
+        }]);
+
+        return view('admin.categories.show', compact('category'));
+    }
+
     public function update(CategoryUpdateRequest $request, Category $category)
     {
         // $this->authorize('update', $category);
