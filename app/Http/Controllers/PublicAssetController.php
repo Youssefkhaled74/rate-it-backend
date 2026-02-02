@@ -19,8 +19,20 @@ class PublicAssetController extends BaseController
         }
 
         try {
-            $mime = Storage::disk('public')->mimeType($path) ?: 'application/octet-stream';
-            $content = Storage::disk('public')->get($path);
+            $disk = Storage::disk('public');
+            /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+
+            // Prefer the storage disk mimeType() if available (typical), otherwise fall back
+            // to PHP's mime_content_type on the actual storage file path or a safe default.
+            if (method_exists($disk, 'mimeType')) {
+                $mime = $disk->mimeType($path) ?: 'application/octet-stream';
+            } else {
+                $publicFile = storage_path('app/public/' . ltrim($path, '/'));
+                $mime = function_exists('mime_content_type') ? @mime_content_type($publicFile) : null;
+                $mime = $mime ?: 'application/octet-stream';
+            }
+
+            $content = $disk->get($path);
             return response($content, 200)
                 ->header('Content-Type', $mime)
                 ->header('Cache-Control', 'public, max-age=31536000');
