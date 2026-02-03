@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title','User Profile')
+@section('title', __('admin.user_profile'))
 
 @section('content')
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -37,21 +37,21 @@
             <div class="text-sm font-semibold text-gray-900">
               {{ $stats['wallet'] ?? 0 }} <span class="text-xs font-medium text-gray-700">EGP</span>
             </div>
-            <div class="text-[11px] text-gray-600 mt-0.5">Wallet</div>
+          <div class="text-[11px] text-gray-600 mt-0.5">{{ __('admin.wallet') }}</div>
           </div>
 
           <div class="rounded-full bg-[#F3E9D1] px-5 py-3 text-center">
             <div class="text-sm font-semibold text-gray-900">
               {{ $stats['points'] ?? 0 }} <span class="text-xs font-medium text-gray-700">pts</span>
             </div>
-            <div class="text-[11px] text-gray-600 mt-0.5">Points</div>
+          <div class="text-[11px] text-gray-600 mt-0.5">{{ __('admin.points') }}</div>
           </div>
         </div>
       </div>
 
       {{-- Personal Information --}}
       <div class="mt-8">
-        <div class="text-sm font-semibold text-gray-900">Personal Information</div>
+        <div class="text-sm font-semibold text-gray-900">{{ __('admin.personal_information') }}</div>
 
         <div class="mt-4 space-y-4">
 
@@ -79,7 +79,7 @@
               </svg>
             </div>
             <div>
-              <div class="text-[11px] text-gray-500">phone</div>
+              <div class="text-[11px] text-gray-500">{{ __('admin.phone') }}</div>
               <div class="text-sm font-semibold text-gray-900">{{ $user->phone ?? '-' }}</div>
             </div>
           </div>
@@ -94,7 +94,7 @@
               </svg>
             </div>
             <div>
-              <div class="text-[11px] text-gray-500">Gender</div>
+              <div class="text-[11px] text-gray-500">{{ __('admin.gender') }}</div>
               <div class="text-sm font-semibold text-gray-900">{{ $genderText }}</div>
             </div>
           </div>
@@ -110,7 +110,7 @@
               </svg>
             </div>
             <div>
-              <div class="text-[11px] text-gray-500">Nationality</div>
+              <div class="text-[11px] text-gray-500">{{ __('admin.nationality') }}</div>
               <div class="text-sm font-semibold text-gray-900">{{ $nationText }}</div>
             </div>
           </div>
@@ -124,7 +124,7 @@
               </svg>
             </div>
             <div>
-              <div class="text-[11px] text-gray-500">City & Area</div>
+              <div class="text-[11px] text-gray-500">{{ __('admin.city_area') }}</div>
               <div class="text-sm font-semibold text-gray-900">{{ $cityText }}</div>
             </div>
           </div>
@@ -138,7 +138,7 @@
               </svg>
             </div>
             <div>
-              <div class="text-[11px] text-gray-500">Date Of Birth</div>
+              <div class="text-[11px] text-gray-500">{{ __('admin.date_of_birth') }}</div>
               <div class="text-sm font-semibold text-gray-900">
                 {{ $user->birth_date ? \Illuminate\Support\Carbon::parse($user->birth_date)->format('d - m - Y') : '-' }}
               </div>
@@ -159,17 +159,17 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
       {{-- Total Reviews (red) --}}
       <div class="rounded-[22px] bg-red-900 text-white p-5 shadow-soft">
-        <div class="text-xs opacity-80">Total Reviews</div>
+        <div class="text-xs opacity-80">{{ __('admin.total_reviews') }}</div>
         <div class="mt-2 text-2xl font-semibold">{{ (int)($stats['total'] ?? 0) }}</div>
       </div>
 
       <div class="rounded-[22px] bg-white border border-gray-100 p-5 shadow-soft">
-        <div class="text-xs text-gray-500">Good Reviews</div>
+        <div class="text-xs text-gray-500">{{ __('admin.good_reviews') }}</div>
         <div class="mt-2 text-2xl font-semibold text-red-900">{{ (int)($stats['good'] ?? 0) }}</div>
       </div>
 
       <div class="rounded-[22px] bg-white border border-gray-100 p-5 shadow-soft">
-        <div class="text-xs text-gray-500">Bad Reviews</div>
+        <div class="text-xs text-gray-500">{{ __('admin.bad_reviews') }}</div>
         <div class="mt-2 text-2xl font-semibold text-red-900">{{ (int)($stats['bad'] ?? 0) }}</div>
       </div>
     </div>
@@ -272,7 +272,7 @@
 
       @empty
       <div class="bg-white border border-gray-100 rounded-2xl p-6 text-center text-gray-500">
-        No reviews found for this user.
+        {{ __('admin.no_reviews_user') }}
       </div>
       @endforelse
     </div>

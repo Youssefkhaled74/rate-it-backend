@@ -6,6 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Services\Admin\UsersService;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use App\Modules\User\Lookups\Models\Gender;
+use App\Modules\User\Lookups\Models\Nationality;
 
 class UsersController extends Controller
 {
@@ -29,7 +33,52 @@ class UsersController extends Controller
         $this->authorize('viewAny', User::class);
         $filters = $request->only(['q']);
         $users = $this->service->listUsers($filters, 15);
-        return view('admin.users.index', compact('users','filters'));
+
+        $totalUsers = User::count();
+        $newUsers7 = User::where('created_at', '>=', now()->subDays(7))->count();
+        $hasBlocked = Schema::hasColumn('users', 'is_blocked');
+        $activeUsers = $hasBlocked ? User::where('is_blocked', false)->count() : $totalUsers;
+        $inactiveUsers = $hasBlocked ? User::where('is_blocked', true)->count() : 0;
+
+        $withReviews = User::has('reviews')->count();
+        $withoutReviews = max(0, $totalUsers - $withReviews);
+
+        $genderCounts = User::select('gender_id', DB::raw('count(*) as total'))
+            ->groupBy('gender_id')
+            ->orderByDesc('total')
+            ->get();
+        $genderIds = $genderCounts->pluck('gender_id')->filter()->unique()->values();
+        $genderMap = Gender::whereIn('id', $genderIds)->get()->keyBy('id');
+        $genderStats = $genderCounts->map(function ($row) use ($genderMap) {
+            $name = $row->gender_id && isset($genderMap[$row->gender_id])
+                ? $genderMap[$row->gender_id]->name
+                : __('admin.unspecified');
+            return ['name' => $name, 'total' => (int) $row->total];
+        })->take(5);
+
+        $nationCounts = User::select('nationality_id', DB::raw('count(*) as total'))
+            ->groupBy('nationality_id')
+            ->orderByDesc('total')
+            ->get();
+        $nationIds = $nationCounts->pluck('nationality_id')->filter()->unique()->values();
+        $nationMap = Nationality::whereIn('id', $nationIds)->get()->keyBy('id');
+        $nationalityStats = $nationCounts->map(function ($row) use ($nationMap) {
+            $name = $row->nationality_id && isset($nationMap[$row->nationality_id])
+                ? $nationMap[$row->nationality_id]->name
+                : __('admin.unspecified');
+            return ['name' => $name, 'total' => (int) $row->total];
+        })->take(5);
+
+        $stats = [
+            'total' => $totalUsers,
+            'new_7' => $newUsers7,
+            'active' => $activeUsers,
+            'inactive' => $inactiveUsers,
+            'with_reviews' => $withReviews,
+            'without_reviews' => $withoutReviews,
+        ];
+
+        return view('admin.users.index', compact('users','filters','stats','genderStats','nationalityStats'));
     }
 
     public function show(User $user)
