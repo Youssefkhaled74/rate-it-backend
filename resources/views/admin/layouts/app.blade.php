@@ -34,8 +34,8 @@
     [dir="rtl"] .admin-shell { flex-direction: row-reverse; }
     [dir="rtl"] .admin-sidebar-fixed { right: 1.25rem; left: auto; }
     .admin-main { margin-left: 17rem; }
-    [dir="rtl"] .admin-main { margin-left: 0; margin-right: 17rem; padding-right: 1.5rem; padding-left: 0; }
-    [dir="rtl"] .admin-main .max-w-md { margin-right: 0; margin-left: auto; }
+    [dir="rtl"] .admin-main { margin-right: 0; margin-left: 17rem; padding-right: 1.5rem; padding-left: 0; }
+    [dir="rtl"] .admin-main .max-w-md { margin-right: auto; margin-left: 0; }
     [dir="rtl"] .admin-main input,
     [dir="rtl"] .admin-main textarea,
     [dir="rtl"] .admin-main select { text-align: right; }
