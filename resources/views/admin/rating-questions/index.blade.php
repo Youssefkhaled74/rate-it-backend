@@ -9,51 +9,50 @@
   <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
     <h2 class="text-2xl font-semibold text-gray-900">{{ __('admin.questions') }}</h2>
 
-    <div class="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
-      <div class="w-full max-w-md">
-        <form method="get" class="relative">
-          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 rtl-search-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <circle cx="11" cy="11" r="7"></circle>
-              <path d="M21 21l-4.3-4.3"></path>
-            </svg>
-          </span>
-          <input
-            name="q"
-            value="{{ request('q') }}"
-            placeholder="{{ __('admin.search') }}"
-            class="w-full rounded-2xl border border-gray-200 bg-white/80 pl-11 pr-4 py-3 text-sm outline-none rtl-search-input
-                   focus:border-red-300 focus:ring-4 focus:ring-red-100 transition"
-          >
-        </form>
-      </div>
+    <div class="w-full lg:w-auto">
+      <div class="bg-white border border-gray-100 rounded-3xl shadow-soft p-3">
+        <div class="flex flex-col gap-3 lg:flex-row lg:items-center">
+          <form method="get" class="flex flex-1 flex-col gap-3 lg:flex-row lg:items-center">
+            <div class="relative w-full lg:w-[360px]">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 rtl-search-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <circle cx="11" cy="11" r="7"></circle>
+                  <path d="M21 21l-4.3-4.3"></path>
+                </svg>
+              </span>
+              <input
+                name="q"
+                value="{{ request('q') }}"
+                placeholder="{{ __('admin.search') }}"
+                class="w-full rounded-2xl border border-gray-200 bg-white pl-11 pr-4 py-3 text-sm outline-none rtl-search-input
+                       focus:border-red-300 focus:ring-4 focus:ring-red-100 transition"
+              >
+            </div>
 
-      <div class="flex items-center gap-3">
-        <form method="get" class="flex items-center gap-3">
-          <input type="hidden" name="q" value="{{ request('q') }}">
-          <select name="subcategory_id" onchange="this.form.submit()"
-                  class="h-11 rounded-2xl border border-gray-200 bg-white px-4 text-sm text-gray-700">
-            <option value="">{{ __('admin.all_subcategories') }}</option>
-            @foreach($subcategories as $sub)
-              <option value="{{ $sub->id }}" {{ (string) $subcategoryId === (string) $sub->id ? 'selected' : '' }}>
-                {{ $sub->name_en }} {{ $sub->category?->name_en ? '— ' . $sub->category->name_en : '' }}
-              </option>
-            @endforeach
-          </select>
+            <select name="subcategory_id" onchange="this.form.submit()"
+                    class="h-11 w-full lg:w-[260px] rounded-2xl border border-gray-200 bg-white px-4 text-sm text-gray-700">
+              <option value="">{{ __('admin.all_subcategories') }}</option>
+              @foreach($subcategories as $sub)
+                <option value="{{ $sub->id }}" {{ (string) $subcategoryId === (string) $sub->id ? 'selected' : '' }}>
+                  {{ $sub->name_en }} {{ $sub->category?->name_en ? '— ' . $sub->category->name_en : '' }}
+                </option>
+              @endforeach
+            </select>
 
-          <select name="type" onchange="this.form.submit()"
-                  class="h-11 rounded-2xl border border-gray-200 bg-white px-4 text-sm text-gray-700">
-            <option value="">{{ __('admin.all_types') }}</option>
-            <option value="RATING" {{ request('type') === 'RATING' ? 'selected' : '' }}>{{ __('admin.rating') }}</option>
-            <option value="YES_NO" {{ request('type') === 'YES_NO' ? 'selected' : '' }}>{{ __('admin.yes_no') }}</option>
-            <option value="MULTIPLE_CHOICE" {{ request('type') === 'MULTIPLE_CHOICE' ? 'selected' : '' }}>{{ __('admin.multiple_choice') }}</option>
-          </select>
-        </form>
+            <select name="type" onchange="this.form.submit()"
+                    class="h-11 w-full lg:w-[180px] rounded-2xl border border-gray-200 bg-white px-4 text-sm text-gray-700">
+              <option value="">{{ __('admin.all_types') }}</option>
+              <option value="RATING" {{ request('type') === 'RATING' ? 'selected' : '' }}>{{ __('admin.rating') }}</option>
+              <option value="YES_NO" {{ request('type') === 'YES_NO' ? 'selected' : '' }}>{{ __('admin.yes_no') }}</option>
+              <option value="MULTIPLE_CHOICE" {{ request('type') === 'MULTIPLE_CHOICE' ? 'selected' : '' }}>{{ __('admin.multiple_choice') }}</option>
+            </select>
+          </form>
 
-        <a href="{{ route('admin.rating-questions.create') }}"
-           class="h-11 inline-flex items-center rounded-2xl bg-red-900 px-4 text-sm font-semibold text-white shadow-lg shadow-red-900/20 hover:bg-red-950 transition">
-          {{ __('admin.add_question') }}
-        </a>
+          <a href="{{ route('admin.rating-questions.create') }}"
+             class="h-11 inline-flex items-center justify-center rounded-2xl bg-red-900 px-5 text-sm font-semibold text-white shadow-lg shadow-red-900/20 hover:bg-red-950 transition">
+            {{ __('admin.add_question') }}
+          </a>
+        </div>
       </div>
     </div>
   </div>
