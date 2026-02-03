@@ -12,7 +12,7 @@
     <div class="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
       <div class="w-full max-w-md">
         <form method="get" class="relative">
-          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 rtl-search-icon">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
               <circle cx="11" cy="11" r="7"></circle>
               <path d="M21 21l-4.3-4.3"></path>
@@ -22,7 +22,7 @@
             name="q"
             value="{{ request('q') }}"
             placeholder="{{ __('admin.search') }}"
-            class="w-full rounded-2xl border border-gray-200 bg-white/80 pl-11 pr-4 py-3 text-sm outline-none
+            class="w-full rounded-2xl border border-gray-200 bg-white/80 pl-11 pr-4 py-3 text-sm outline-none rtl-search-input
                    focus:border-red-300 focus:ring-4 focus:ring-red-100 transition"
           >
         </form>
@@ -91,7 +91,7 @@
         <div class="relative h-32 bg-gray-100">
           <img src="{{ $cover }}" alt="{{ $b->name_en }}" class="w-full h-full object-cover">
 
-          <form method="POST" action="{{ route('admin.brands.toggle', $b) }}" class="absolute top-3 left-3">
+          <form method="POST" action="{{ route('admin.brands.toggle', $b) }}" class="absolute top-3 left-3 rtl-toggle">
             @csrf
             @method('PATCH')
             <button type="submit"
@@ -100,7 +100,7 @@
             </button>
           </form>
 
-          <div class="absolute top-3 right-3">
+          <div class="absolute top-3 right-3 rtl-dots">
             <button type="button" class="w-9 h-9 rounded-full bg-white/90 border border-gray-100 grid place-items-center text-gray-700 hover:bg-white"
                     onclick="toggleMenu('brandmenu-{{ $b->id }}')">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
@@ -108,7 +108,7 @@
               </svg>
             </button>
 
-            <div id="brandmenu-{{ $b->id }}" class="hidden absolute right-0 mt-2 w-44 rounded-2xl bg-white border border-gray-100 shadow-lg overflow-hidden">
+            <div id="brandmenu-{{ $b->id }}" class="hidden absolute right-0 mt-2 w-44 rounded-2xl bg-white border border-gray-100 shadow-lg overflow-hidden rtl-menu-right">
               <a href="{{ route('admin.brands.show', $b) }}" class="block px-4 py-3 text-sm hover:bg-gray-50">{{ __('admin.show') }}</a>
               <a href="{{ route('admin.brands.edit', $b) }}" class="block px-4 py-3 text-sm hover:bg-gray-50">{{ __('admin.edit') }}</a>
               <form method="POST" action="{{ route('admin.brands.destroy', $b) }}">

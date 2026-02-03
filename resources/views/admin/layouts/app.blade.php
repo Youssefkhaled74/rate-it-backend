@@ -33,6 +33,26 @@
     /* Basic RTL layout fixes */
     [dir="rtl"] .admin-shell { flex-direction: row-reverse; }
     [dir="rtl"] .admin-sidebar-fixed { right: 1.25rem; left: auto; }
+    [dir="rtl"] .admin-main { padding-right: 1.5rem; padding-left: 0; }
+    [dir="rtl"] .admin-main .max-w-md { margin-right: 0; margin-left: auto; }
+    [dir="rtl"] .admin-main input,
+    [dir="rtl"] .admin-main textarea,
+    [dir="rtl"] .admin-main select { text-align: right; }
+
+    /* Common absolute icon + menu positions */
+    [dir="rtl"] .rtl-icon-left { left: auto !important; right: 0.75rem !important; }
+    [dir="rtl"] .rtl-icon-right { right: auto !important; left: 0.75rem !important; }
+    [dir="rtl"] .rtl-menu-right { right: auto !important; left: 0 !important; }
+
+    /* Search inputs with icon */
+    [dir="rtl"] .rtl-search-input { padding-right: 2.75rem !important; padding-left: 1rem !important; }
+    [dir="rtl"] .rtl-search-icon { left: auto !important; right: 0.75rem !important; }
+
+    /* Toggle and dots menus */
+    [dir="rtl"] .rtl-toggle { left: auto !important; right: 0.75rem !important; }
+    [dir="rtl"] .rtl-dots { right: auto !important; left: 0.75rem !important; }
+    [dir="rtl"] .rtl-chip { text-align: right; }
+    [dir="rtl"] .rtl-gap { flex-direction: row-reverse; }
   </style>
 </head>
 
