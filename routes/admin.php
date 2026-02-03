@@ -123,4 +123,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::patch('onboardings/{onboarding}/toggle', [\App\Http\Controllers\Admin\OnboardingsController::class, 'toggle'])->name('onboardings.toggle');
         Route::delete('onboardings/{onboarding}', [\App\Http\Controllers\Admin\OnboardingsController::class, 'destroy'])->name('onboardings.destroy');
     });
+
+    // Rating Questions (Criteria)
+    Route::middleware('auth:admin_web')->group(function () {
+        Route::get('rating-questions', [\App\Http\Controllers\Admin\RatingQuestionsController::class, 'index'])->name('rating-questions.index');
+        Route::get('rating-questions/create', [\App\Http\Controllers\Admin\RatingQuestionsController::class, 'create'])->name('rating-questions.create');
+        Route::post('rating-questions', [\App\Http\Controllers\Admin\RatingQuestionsController::class, 'store'])->name('rating-questions.store');
+        Route::get('rating-questions/{question}/edit', [\App\Http\Controllers\Admin\RatingQuestionsController::class, 'edit'])->name('rating-questions.edit');
+        Route::match(['put', 'patch'], 'rating-questions/{question}', [\App\Http\Controllers\Admin\RatingQuestionsController::class, 'update'])->name('rating-questions.update');
+        Route::patch('rating-questions/{question}/toggle', [\App\Http\Controllers\Admin\RatingQuestionsController::class, 'toggle'])->name('rating-questions.toggle');
+        Route::delete('rating-questions/{question}', [\App\Http\Controllers\Admin\RatingQuestionsController::class, 'destroy'])->name('rating-questions.destroy');
+    });
 });

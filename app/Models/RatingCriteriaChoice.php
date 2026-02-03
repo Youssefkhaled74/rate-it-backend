@@ -14,6 +14,8 @@ class RatingCriteriaChoice extends Model
     protected $fillable = [
         'criteria_id',
         'choice_text',
+        'choice_en',
+        'choice_ar',
         'value',
         'sort_order',
         'is_active',
