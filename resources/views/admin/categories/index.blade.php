@@ -35,18 +35,7 @@
         </form>
       </div>
 
-      <div class="flex items-center gap-2">
-        <button type="button" class="h-11 w-11 rounded-full bg-white border border-gray-100 grid place-items-center text-red-900 hover:bg-gray-50">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 8.25a3.75 3.75 0 1 0 0 7.5 3.75 3.75 0 0 0 0-7.5Zm8.25 3.75a7.96 7.96 0 0 1-.23 1.9l2.02 1.58a.75.75 0 0 1 .18 1.01l-1.92 3.32a.75.75 0 0 1-.96.32l-2.38-.95a8.1 8.1 0 0 1-3.29 1.9l-.36 2.53a.75.75 0 0 1-.74.64h-3.84a.75.75 0 0 1-.74-.64l-.36-2.53a8.1 8.1 0 0 1-3.29-1.9l-2.38.95a.75.75 0 0 1-.96-.32l-1.92-3.32a.75.75 0 0 1 .18-1.01l2.02-1.58a7.96 7.96 0 0 1-.23-1.9c0-.64.08-1.26.23-1.9L.72 8.52a.75.75 0 0 1-.18-1.01L2.46 4.2a.75.75 0 0 1 .96-.32l2.38.95a8.1 8.1 0 0 1 3.29-1.9l.36-2.53a.75.75 0 0 1 .74-.64h3.84a.75.75 0 0 1 .74.64l.36 2.53a8.1 8.1 0 0 1 3.29 1.9l2.38-.95a.75.75 0 0 1 .96.32l1.92 3.32a.75.75 0 0 1-.18 1.01l-2.02 1.58c.15.64.23 1.26.23 1.9Z"/>
-          </svg>
-        </button>
-        <button type="button" class="h-11 w-11 rounded-full bg-white border border-gray-100 grid place-items-center text-red-900 hover:bg-gray-50">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 22a2.5 2.5 0 0 0 2.5-2.5h-5A2.5 2.5 0 0 0 12 22Zm7.5-6.5V11a7.5 7.5 0 1 0-15 0v4.5l-1.5 1.5v1h18v-1l-1.5-1.5Z"/>
-          </svg>
-        </button>
-      </div>
+
     </div>
   </div>
 

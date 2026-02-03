@@ -35,7 +35,7 @@
         <label class="text-sm font-medium text-gray-700">Offer Name</label>
         <input
           name="offer_name"
-          value="{{ old('offer_name', $banner->offer_name ?? '') }}"
+          value="{{ old('offer_name', $banner?->offer_name ?? '') }}"
           placeholder="Offer Name"
           class="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
                  focus:border-red-300 focus:ring-4 focus:ring-red-100"
@@ -51,7 +51,7 @@
                  focus:border-red-300 focus:ring-4 focus:ring-red-100">
           <option value="">Select vendor</option>
           @foreach($brands as $brand)
-            <option value="{{ $brand->id }}" {{ (string) old('brand_id', $banner->brand_id ?? '') === (string) $brand->id ? 'selected' : '' }}>
+            <option value="{{ $brand->id }}" {{ (string) old('brand_id', $banner?->brand_id ?? '') === (string) $brand->id ? 'selected' : '' }}>
               {{ $brand->name_en }}
             </option>
           @endforeach
@@ -64,7 +64,7 @@
           <input
             type="date"
             name="start_date"
-            value="{{ old('start_date', $banner->start_date?->format('Y-m-d') ?? '') }}"
+            value="{{ old('start_date', $banner?->start_date?->format('Y-m-d') ?? '') }}"
             class="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
                    focus:border-red-300 focus:ring-4 focus:ring-red-100"
           >
@@ -74,7 +74,7 @@
           <input
             type="date"
             name="end_date"
-            value="{{ old('end_date', $banner->end_date?->format('Y-m-d') ?? '') }}"
+            value="{{ old('end_date', $banner?->end_date?->format('Y-m-d') ?? '') }}"
             class="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
                    focus:border-red-300 focus:ring-4 focus:ring-red-100"
           >
@@ -84,7 +84,7 @@
       <div class="flex items-end">
         <label class="inline-flex items-center gap-3 cursor-pointer select-none">
           <input type="checkbox" name="is_active" value="1"
-                 {{ old('is_active', $banner->is_active ?? 1) ? 'checked' : '' }}
+                 {{ old('is_active', $banner?->is_active ?? 1) ? 'checked' : '' }}
                  class="sr-only peer">
 
           <span class="w-12 h-6 rounded-full bg-gray-200 peer-checked:bg-green-500 transition relative">
