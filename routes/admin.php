@@ -18,6 +18,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         ->middleware('auth:admin_web')
         ->name('logout');
 
+    Route::get('lang/{lang}', [\App\Http\Controllers\Admin\LocaleController::class, 'switch'])
+        ->middleware('auth:admin_web')
+        ->name('lang.switch');
+
     Route::get('/', [DashboardController::class, 'index'])
         ->middleware('auth:admin_web')
         ->name('dashboard');

@@ -64,11 +64,16 @@
 
       let pendingForm = null;
 
+      const i18n = {
+        confirm: @json(__('admin.confirm')),
+        pleaseConfirm: @json(__('admin.please_confirm')),
+      };
+
       function openModal(opts){
         pendingForm = opts.form || null;
-        titleEl.textContent = opts.title || 'Confirm';
+        titleEl.textContent = opts.title || i18n.confirm;
         descEl.textContent = opts.message || '';
-        btnConfirm.textContent = opts.confirmText || 'Confirm';
+        btnConfirm.textContent = opts.confirmText || i18n.confirm;
         modal.classList.remove('hidden');
         modal.setAttribute('aria-hidden','false');
         // focus confirm
@@ -107,7 +112,7 @@
         if (!form) return; // no form to submit
         ev.preventDefault();
         openModal({
-          title: el.getAttribute('data-title') || 'Please confirm',
+          title: el.getAttribute('data-title') || i18n.pleaseConfirm,
           message: el.getAttribute('data-message') || '',
           confirmText: el.getAttribute('data-confirm-text') || 'Confirm',
           form: form

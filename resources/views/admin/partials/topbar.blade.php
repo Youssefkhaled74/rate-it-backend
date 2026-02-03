@@ -1,9 +1,16 @@
 <div class="flex items-center justify-between">
     <div>
-        <h1 class="text-lg font-semibold">@yield('page_title','Dashboard')</h1>
+        <h1 class="text-lg font-semibold">@yield('page_title', __('admin.dashboard'))</h1>
     </div>
 
     <div class="flex items-center gap-3">
+        {{-- Language Toggle --}}
+        @php $nextLang = app()->getLocale() === 'ar' ? 'en' : 'ar'; @endphp
+        <a href="{{ route('admin.lang.switch', $nextLang) }}"
+           class="h-11 px-4 rounded-full bg-white border border-gray-200 grid place-items-center text-sm font-semibold text-gray-700 shadow-sm hover:shadow-md transition">
+            {{ strtoupper($nextLang) }}
+        </a>
+
         {{-- Settings --}}
         <button type="button"
             class="w-11 h-11 rounded-full bg-white border border-gray-200 grid place-items-center
@@ -31,7 +38,7 @@
 
                 {{-- Admin avatar / profile link --}}
                 @php $me = auth()->guard('admin_web')->user(); @endphp
-                <a href="{{ route('admin.profile.edit') }}" title="Profile"
+                <a href="{{ route('admin.profile.edit') }}" title="{{ __('admin.profile') }}"
                      class="w-10 h-10 rounded-full bg-white border border-gray-200 grid place-items-center overflow-hidden">
                     @if($me && $me->photo_url)
                         <img src="{{ $me->photo_url }}" alt="{{ $me->name }}" class="w-10 h-10 object-cover">

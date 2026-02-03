@@ -1,16 +1,16 @@
 @php
   // Sidebar items (عدل الروتس براحتك)
   $items = [
-    ['label' => 'Dashboard', 'route' => 'admin.dashboard', 'icon' => 'grid'],
-    ['label' => 'Categories', 'route' => 'admin.categories.index', 'icon' => 'layers'],
-    ['label' => 'Brands', 'route' => 'admin.brands.index', 'icon' => 'tag'],
-    ['label' => 'Places', 'route' => 'admin.places.index', 'icon' => 'layers'],
-    ['label' => 'Branches', 'route' => 'admin.branches.index', 'icon' => 'layers'],
-    ['label' => 'Users', 'route' => 'admin.users.index', 'icon' => 'users'],
-    ['label' => 'Rewards System', 'route' => 'admin.rewards.index', 'icon' => 'star'],
-    ['label' => 'Rating Questions', 'route' => 'admin.rating-questions.index', 'icon' => 'star'],
-    ['label' => 'Banners & Onboarding', 'route' => 'admin.banners.index', 'icon' => 'star'],
-    ['label' => 'Setting', 'route' => 'admin.settings.index', 'icon' => 'gear'],
+    ['label' => __('admin.dashboard'), 'route' => 'admin.dashboard', 'icon' => 'grid'],
+    ['label' => __('admin.categories'), 'route' => 'admin.categories.index', 'icon' => 'layers'],
+    ['label' => __('admin.brands'), 'route' => 'admin.brands.index', 'icon' => 'tag'],
+    ['label' => __('admin.places'), 'route' => 'admin.places.index', 'icon' => 'layers'],
+    ['label' => __('admin.branches'), 'route' => 'admin.branches.index', 'icon' => 'layers'],
+    ['label' => __('admin.users'), 'route' => 'admin.users.index', 'icon' => 'users'],
+    ['label' => __('admin.rewards_system'), 'route' => 'admin.rewards.index', 'icon' => 'star'],
+    ['label' => __('admin.rating_questions'), 'route' => 'admin.rating-questions.index', 'icon' => 'star'],
+    ['label' => __('admin.banners_onboarding'), 'route' => 'admin.banners.index', 'icon' => 'star'],
+    ['label' => __('admin.settings'), 'route' => 'admin.settings.index', 'icon' => 'gear'],
   ];
 
   // Add Admins menu if permitted
@@ -21,7 +21,7 @@
     elseif (method_exists($currentAdmin, 'permissions') && $currentAdmin->permissions()->where('name', 'admins.view')->exists()) $canViewAdmins = true;
   }
   if ($canViewAdmins) {
-    $items[] = ['label' => 'Admins', 'route' => 'admin.admins.index', 'icon' => 'users'];
+    $items[] = ['label' => __('admin.admins'), 'route' => 'admin.admins.index', 'icon' => 'users'];
   }
 
   // helper لمعرفة الـ active
@@ -53,7 +53,7 @@
       </div>
       <div>
         <div class="text-lg font-semibold leading-tight">Rateit</div>
-        <div class="text-xs text-white/70">Admin Panel</div>
+        <div class="text-xs text-white/70">{{ __('admin.admin_panel') }}</div>
       </div>
     </div>
 
@@ -85,7 +85,7 @@
               <path d="M21 12H9"/>
             </svg>
           </span>
-          <span class="text-sm font-medium">Logout</span>
+          <span class="text-sm font-medium">{{ __('admin.logout') }}</span>
         </button>
       </form>
     </div>

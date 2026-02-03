@@ -7,14 +7,14 @@
          class="w-full max-w-lg bg-white rounded-2xl shadow-soft p-6 ring-1 ring-black/5" data-modal>
 
       <header class="mb-4">
-        <h3 id="confirmModalTitle" class="text-lg font-semibold text-gray-900">Title</h3>
+        <h3 id="confirmModalTitle" class="text-lg font-semibold text-gray-900">{{ __('admin.confirm_title') }}</h3>
       </header>
 
-      <div id="confirmModalDesc" class="text-sm text-gray-600 mb-6">Message</div>
+      <div id="confirmModalDesc" class="text-sm text-gray-600 mb-6">{{ __('admin.confirm_message') }}</div>
 
       <div class="flex justify-end gap-3">
-        <button type="button" class="rounded-2xl bg-gray-100 text-gray-800 px-4 py-2 text-sm" data-modal-cancel>Cancel</button>
-        <button type="button" class="rounded-2xl bg-red-800 text-white px-4 py-2 text-sm" data-modal-confirm>Delete</button>
+        <button type="button" class="rounded-2xl bg-gray-100 text-gray-800 px-4 py-2 text-sm" data-modal-cancel>{{ __('admin.cancel') }}</button>
+        <button type="button" class="rounded-2xl bg-red-800 text-white px-4 py-2 text-sm" data-modal-confirm>{{ __('admin.delete') }}</button>
       </div>
     </div>
   </div>

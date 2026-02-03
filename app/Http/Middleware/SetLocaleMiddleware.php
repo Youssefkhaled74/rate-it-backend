@@ -11,7 +11,9 @@ class SetLocaleMiddleware
     {
         $lang = null;
 
-        if ($request->headers->has('X-Lang')) {
+        if ($request->hasSession() && $request->session()->has('lang')) {
+            $lang = $request->session()->get('lang');
+        } elseif ($request->headers->has('X-Lang')) {
             $lang = $request->header('X-Lang');
         } elseif ($request->headers->has('Accept-Language')) {
             $al = $request->header('Accept-Language');
