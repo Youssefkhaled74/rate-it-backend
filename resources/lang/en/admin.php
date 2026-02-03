@@ -17,6 +17,7 @@ return [
     'back' => 'Back',
     'save' => 'Save',
     'save_changes' => 'Save Changes',
+    'fix_errors' => 'Please fix the following:',
     'confirm' => 'Confirm',
     'please_confirm' => 'Please confirm',
     'confirm_title' => 'Confirm',

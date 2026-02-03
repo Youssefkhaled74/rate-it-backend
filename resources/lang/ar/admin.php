@@ -17,6 +17,7 @@ return [
     'back' => 'رجوع',
     'save' => 'حفظ',
     'save_changes' => 'حفظ التغييرات',
+    'fix_errors' => 'يرجى تصحيح التالي:',
     'confirm' => 'تأكيد',
     'please_confirm' => 'يرجى التأكيد',
     'confirm_title' => 'تأكيد',

@@ -20,7 +20,7 @@
 
     @if ($errors->any())
       <div class="mx-6 md:mx-8 mt-6 rounded-2xl bg-red-50 border border-red-100 text-red-700 text-sm px-4 py-3">
-        <div class="font-semibold mb-1">Please fix the following:</div>
+        <div class="font-semibold mb-1">{{ __('admin.fix_errors') }}</div>
         <ul class="list-disc pl-5 space-y-1">
           @foreach($errors->all() as $err)
             <li>{{ $err }}</li>
