@@ -119,7 +119,7 @@
           </div>
         </div>
       @empty
-        <div class="px-6 py-8 text-sm text-gray-500">{{ __('admin.confirm_message') }}</div>
+        <div class="px-6 py-8 text-sm text-gray-500">{{ __('admin.no_questions_found') }}</div>
       @endforelse
     </div>
   </div>

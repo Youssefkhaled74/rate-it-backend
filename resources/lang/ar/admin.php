@@ -51,6 +51,7 @@ return [
     'add_question' => 'إضافة سؤال',
     'edit_question' => 'تعديل سؤال',
     'total_rating_questions' => 'إجمالي أسئلة التقييم',
+    'no_questions_found' => 'لا توجد أسئلة.',
     'all_types' => 'كل الأنواع',
     'all_subcategories' => 'كل التصنيفات الفرعية',
     'rating' => 'تقييم',
