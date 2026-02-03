@@ -14,6 +14,7 @@ class RatingQuestionsController extends Controller
     {
         $q = trim((string) $request->get('q', ''));
         $type = strtoupper((string) $request->get('type', ''));
+        $subcategoryId = (int) $request->get('subcategory_id', 0);
 
         $query = RatingCriteria::query()
             ->with(['subcategory.category', 'choices'])
@@ -27,13 +28,25 @@ class RatingQuestionsController extends Controller
             ->when(in_array($type, ['RATING','YES_NO','MULTIPLE_CHOICE'], true), function ($qq) use ($type) {
                 $qq->where('type', $type);
             })
+            ->when($subcategoryId > 0, function ($qq) use ($subcategoryId) {
+                $qq->where('subcategory_id', $subcategoryId);
+            })
             ->orderBy('id', 'desc');
 
         $questions = $query->paginate(12)->withQueryString();
 
         $totalRating = RatingCriteria::where('type', 'RATING')->count();
 
-        return view('admin.rating-questions.index', compact('questions', 'q', 'type', 'totalRating'));
+        $subcategories = Subcategory::with('category')->orderBy('name_en')->get();
+
+        return view('admin.rating-questions.index', compact(
+            'questions',
+            'q',
+            'type',
+            'totalRating',
+            'subcategories',
+            'subcategoryId'
+        ));
     }
 
     public function create()
@@ -52,8 +65,10 @@ class RatingQuestionsController extends Controller
             'is_required' => ['nullable', 'boolean'],
             'is_active' => ['nullable', 'boolean'],
             'sort_order' => ['nullable', 'integer'],
-            'choices_en' => ['nullable', 'string'],
-            'choices_ar' => ['nullable', 'string'],
+            'choices_en' => ['nullable', 'array'],
+            'choices_en.*' => ['nullable', 'string'],
+            'choices_ar' => ['nullable', 'array'],
+            'choices_ar.*' => ['nullable', 'string'],
         ]);
 
         $type = strtoupper($data['type']);
@@ -64,8 +79,8 @@ class RatingQuestionsController extends Controller
         $criteria = RatingCriteria::create($data);
 
         if ($type === 'MULTIPLE_CHOICE') {
-            $choicesEn = $this->splitChoices($data['choices_en'] ?? '');
-            $choicesAr = $this->splitChoices($data['choices_ar'] ?? '');
+            $choicesEn = $this->normalizeChoices($data['choices_en'] ?? []);
+            $choicesAr = $this->normalizeChoices($data['choices_ar'] ?? []);
             if (count($choicesEn) < 2) {
                 $criteria->delete();
                 return back()->withErrors(['choices_en' => 'Please add at least 2 choices.'])->withInput();
@@ -106,8 +121,10 @@ class RatingQuestionsController extends Controller
             'is_required' => ['nullable', 'boolean'],
             'is_active' => ['nullable', 'boolean'],
             'sort_order' => ['nullable', 'integer'],
-            'choices_en' => ['nullable', 'string'],
-            'choices_ar' => ['nullable', 'string'],
+            'choices_en' => ['nullable', 'array'],
+            'choices_en.*' => ['nullable', 'string'],
+            'choices_ar' => ['nullable', 'array'],
+            'choices_ar.*' => ['nullable', 'string'],
         ]);
 
         $type = strtoupper($data['type']);
@@ -120,8 +137,8 @@ class RatingQuestionsController extends Controller
         if ($type !== 'MULTIPLE_CHOICE') {
             $question->choices()->delete();
         } else {
-            $choicesEn = $this->splitChoices($data['choices_en'] ?? '');
-            $choicesAr = $this->splitChoices($data['choices_ar'] ?? '');
+            $choicesEn = $this->normalizeChoices($data['choices_en'] ?? []);
+            $choicesAr = $this->normalizeChoices($data['choices_ar'] ?? []);
             if (count($choicesEn) < 2) {
                 return back()->withErrors(['choices_en' => 'Please add at least 2 choices.'])->withInput();
             }
@@ -159,9 +176,9 @@ class RatingQuestionsController extends Controller
         return back()->with('success', 'Question deleted.');
     }
 
-    private function splitChoices(string $raw): array
+    private function normalizeChoices(array $raw): array
     {
-        $parts = array_map('trim', explode(',', $raw));
-        return array_values(array_filter($parts, fn ($v) => $v !== ''));
+        $items = array_map(fn ($v) => is_string($v) ? trim($v) : '', $raw);
+        return array_values(array_filter($items, fn ($v) => $v !== ''));
     }
 }

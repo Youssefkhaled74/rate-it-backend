@@ -1,8 +1,9 @@
 @php
   $isEdit = !empty($question);
   $type = old('type', $question->type ?? 'RATING');
-  $choicesEn = old('choices_en', $isEdit && $question->type === 'MULTIPLE_CHOICE' ? $question->choices->pluck('choice_en')->filter()->implode(', ') : '');
-  $choicesAr = old('choices_ar', $isEdit && $question->type === 'MULTIPLE_CHOICE' ? $question->choices->pluck('choice_ar')->filter()->implode(', ') : '');
+  $choicesEn = old('choices_en', $isEdit && $question->type === 'MULTIPLE_CHOICE' ? $question->choices->pluck('choice_en')->filter()->values()->toArray() : []);
+  $choicesAr = old('choices_ar', $isEdit && $question->type === 'MULTIPLE_CHOICE' ? $question->choices->pluck('choice_ar')->filter()->values()->toArray() : []);
+  if (empty($choicesEn)) $choicesEn = ['',''];
 @endphp
 
 <div class="space-y-6">
@@ -56,24 +57,42 @@
   </div>
 
   <div id="choices_block" class="{{ $type === 'MULTIPLE_CHOICE' ? '' : 'hidden' }}">
-    <label class="text-sm font-medium text-gray-700">Choices (EN)</label>
-    <input
-      name="choices_en"
-      value="{{ $choicesEn }}"
-      placeholder="Coffee, Tea, Food"
-      class="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
-             focus:border-red-300 focus:ring-4 focus:ring-red-100"
-    >
-    <div class="text-xs text-gray-500 mt-2">Separate choices with commas. Minimum 2 choices.</div>
+    <div class="flex items-center justify-between">
+      <label class="text-sm font-medium text-gray-700">Choices</label>
+      <button type="button" id="add_choice_btn"
+              class="text-xs font-semibold text-red-900 hover:text-red-950">
+        + Add Choice
+      </button>
+    </div>
 
-    <label class="text-sm font-medium text-gray-700 mt-4 block">Choices (AR)</label>
-    <input
-      name="choices_ar"
-      value="{{ $choicesAr }}"
-      placeholder="Arabic choices separated by commas"
-      class="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
-             focus:border-red-300 focus:ring-4 focus:ring-red-100"
-    >
+    <div id="choices_list" class="mt-3 space-y-3">
+      @foreach($choicesEn as $i => $choiceEn)
+        <div class="choice-row grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <input
+            name="choices_en[]"
+            value="{{ $choiceEn }}"
+            placeholder="Choice (EN)"
+            class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
+                   focus:border-red-300 focus:ring-4 focus:ring-red-100"
+          >
+          <div class="flex gap-2">
+            <input
+              name="choices_ar[]"
+              value="{{ $choicesAr[$i] ?? '' }}"
+              placeholder="Choice (AR)"
+              class="flex-1 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
+                     focus:border-red-300 focus:ring-4 focus:ring-red-100"
+            >
+            <button type="button"
+                    class="remove-choice w-11 h-11 rounded-2xl bg-red-50 border border-red-100 text-red-700 hover:bg-red-100">
+              ✕
+            </button>
+          </div>
+        </div>
+      @endforeach
+    </div>
+
+    <div class="text-xs text-gray-500 mt-2">Add at least 2 choices.</div>
   </div>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -131,5 +150,35 @@
     };
     typeSelect.addEventListener('change', toggle);
     toggle();
+
+    const list = document.getElementById('choices_list');
+    const addBtn = document.getElementById('add_choice_btn');
+    const rowHtml = () => `
+      <div class="choice-row grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <input name="choices_en[]" placeholder="Choice (EN)"
+               class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
+                      focus:border-red-300 focus:ring-4 focus:ring-red-100">
+        <div class="flex gap-2">
+          <input name="choices_ar[]" placeholder="Choice (AR)"
+                 class="flex-1 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
+                        focus:border-red-300 focus:ring-4 focus:ring-red-100">
+          <button type="button"
+                  class="remove-choice w-11 h-11 rounded-2xl bg-red-50 border border-red-100 text-red-700 hover:bg-red-100">✕</button>
+        </div>
+      </div>
+    `;
+
+    if (addBtn && list) {
+      addBtn.addEventListener('click', () => {
+        list.insertAdjacentHTML('beforeend', rowHtml());
+      });
+      list.addEventListener('click', (e) => {
+        const btn = e.target.closest('.remove-choice');
+        if (!btn) return;
+        const row = btn.closest('.choice-row');
+        if (!row) return;
+        row.remove();
+      });
+    }
   })();
 </script>

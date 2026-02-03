@@ -29,11 +29,21 @@
       </div>
 
       <div class="flex items-center gap-3">
-        <form method="get">
+        <form method="get" class="flex items-center gap-3">
           <input type="hidden" name="q" value="{{ request('q') }}">
+          <select name="subcategory_id" onchange="this.form.submit()"
+                  class="h-11 rounded-2xl border border-gray-200 bg-white px-4 text-sm text-gray-700">
+            <option value="">All Subcategories</option>
+            @foreach($subcategories as $sub)
+              <option value="{{ $sub->id }}" {{ (string) $subcategoryId === (string) $sub->id ? 'selected' : '' }}>
+                {{ $sub->name_en }} {{ $sub->category?->name_en ? '— ' . $sub->category->name_en : '' }}
+              </option>
+            @endforeach
+          </select>
+
           <select name="type" onchange="this.form.submit()"
                   class="h-11 rounded-2xl border border-gray-200 bg-white px-4 text-sm text-gray-700">
-            <option value="">Filter</option>
+            <option value="">All Types</option>
             <option value="RATING" {{ request('type') === 'RATING' ? 'selected' : '' }}>Rating</option>
             <option value="YES_NO" {{ request('type') === 'YES_NO' ? 'selected' : '' }}>Yes / No</option>
             <option value="MULTIPLE_CHOICE" {{ request('type') === 'MULTIPLE_CHOICE' ? 'selected' : '' }}>Multiple Choice</option>
