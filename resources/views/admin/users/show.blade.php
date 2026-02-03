@@ -13,11 +13,11 @@
       <div class="flex flex-col items-center text-center">
         <div class="w-28 h-28 rounded-full bg-gray-100 overflow-hidden grid place-items-center">
           @php
-          $defaultAvatar = asset('assets/images/userdefaultphoto.png');
+          $defaultAvatar = asset('assets/images/userdefultphoto.png');
           @endphp
 
           @if(!empty($avatar))
-          <img src="{{ $avatar }}" alt="Avatar" class="w-full h-full object-cover">
+          <img src="{{ $avatar }}" alt="Avatar" class="w-full h-full object-cover" onerror="this.src='{{ $defaultAvatar }}'">
           @else
           <img src="{{ $defaultAvatar }}" alt="Default Avatar" class="w-full h-full object-cover">
           @endif

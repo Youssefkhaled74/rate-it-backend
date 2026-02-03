@@ -3,7 +3,17 @@
 @section('title','Users')
 
 @section('content')
-<div class="bg-white rounded-3xl shadow-soft p-6">
+<div class="space-y-6">
+
+  {{-- Stats --}}
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="rounded-[22px] bg-white border border-gray-100 shadow-soft p-5">
+      <div class="text-sm text-gray-600">Total Users</div>
+      <div class="mt-2 text-3xl font-semibold text-red-900">{{ method_exists($users, 'total') ? $users->total() : $users->count() }}</div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-3xl shadow-soft p-6">
 
   {{-- Header: Title + Center Search + Right Icons --}}
   <div class="flex items-center justify-between gap-4 mb-6">
@@ -14,7 +24,7 @@
       <form method="GET" class="w-full max-w-xl">
         <div class="relative">
           {{-- Search icon --}}
-          <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+          <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 rtl-search-icon">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
               <circle cx="11" cy="11" r="7"></circle>
               <path d="M21 21l-4.3-4.3"></path>
@@ -26,7 +36,7 @@
             name="q"
             value="{{ request('q') }}"
             placeholder="Search"
-            class="w-full h-12 rounded-full border border-gray-200 bg-gray-50/70 pl-12 pr-12
+            class="w-full h-12 rounded-full border border-gray-200 bg-gray-50/70 pl-12 pr-12 rtl-search-input
                    text-sm outline-none transition
                    focus:bg-white focus:border-red-300 focus:ring-4 focus:ring-red-100"
           >
@@ -99,7 +109,7 @@
                 @if($img)
                   <div class="w-11 h-11 rounded-full overflow-hidden bg-gray-100">
                     <img
-                      src="{{ (file_exists(public_path($img)) ? asset($img) : (\Illuminate\Support\Facades\Storage::disk('public')->exists($img) ? route('storage.proxy',['path'=>$img]) : asset('assets/images/default-avatar.png'))) }}"
+                      src="{{ (file_exists(public_path($img)) ? asset($img) : (\Illuminate\Support\Facades\Storage::disk('public')->exists($img) ? route('storage.proxy',['path'=>$img]) : asset('assets/images/userdefultphoto.png'))) }}"
                       class="w-full h-full object-cover"
                       alt="avatar"
                     >
