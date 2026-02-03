@@ -49,6 +49,25 @@
     [dir="rtl"] .admin-nav-item { flex-direction: row-reverse; }
     [dir="rtl"] .admin-nav-item .admin-nav-text { text-align: right; }
     [dir="rtl"] .admin-logout { flex-direction: row-reverse; text-align: right; }
+
+    /* Sidebar layout matching screenshot */
+    .admin-sidebar { width: 16.5rem; }
+    .admin-sidebar-inner {
+      background: #8b1c1c;
+      border-radius: 3rem;
+      padding-block: 1.75rem;
+      padding-inline: 1.5rem;
+      box-shadow: 0 30px 90px rgba(0,0,0,.18);
+    }
+    .admin-nav-item {
+      padding-block: 0.7rem;
+      padding-inline: 1rem;
+      color: rgba(255,255,255,.9);
+    }
+    .admin-nav-item:hover { background: rgba(255,255,255,.12); }
+    .admin-nav-item.is-active { background: rgba(255,255,255,.22); color: #fff; }
+    .admin-nav-icon { color: #fff; opacity: .95; }
+    .admin-logout { padding-block: 0.75rem; padding-inline: 1rem; }
     [dir="rtl"] .admin-main .max-w-md { margin-right: auto; margin-left: 0; }
     [dir="rtl"] .admin-main input,
     [dir="rtl"] .admin-main textarea,
