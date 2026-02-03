@@ -43,7 +43,7 @@
   };
 @endphp
 
-<aside class="w-72 p-4">
+<aside class="admin-sidebar-spacer w-72 p-4">
   <div class="admin-sidebar-fixed h-[calc(100vh-2rem)] fixed w-60 top-5 left-5 bottom-5 rounded-[42px] bg-red-900 text-white shadow-[0_30px_90px_rgba(0,0,0,.18)] px-6 py-7 flex flex-col">
 
     {{-- Logo --}}

@@ -31,10 +31,16 @@
       font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     }
     /* Basic RTL layout fixes */
+    :root {
+      --sidebar-w: 15rem;
+      --sidebar-gap: 1.25rem;
+    }
+    /* Sidebar is fixed, so remove flow space to avoid double gaps */
+    .admin-sidebar-spacer { width: 0 !important; padding: 0 !important; }
     [dir="rtl"] .admin-shell { flex-direction: row-reverse; }
-    [dir="rtl"] .admin-sidebar-fixed { right: 1.25rem; left: auto; }
-    .admin-main { margin-left: 17rem; }
-    [dir="rtl"] .admin-main { margin-right: 0; margin-left: 17rem; padding-right: 1.5rem; padding-left: 0; }
+    [dir="rtl"] .admin-sidebar-fixed { right: var(--sidebar-gap); left: auto; }
+    .admin-main { margin-inline-start: calc(var(--sidebar-w) + var(--sidebar-gap)); }
+    [dir="rtl"] .admin-main { padding-right: 1.5rem; padding-left: 1.5rem; }
     [dir="rtl"] .admin-main .max-w-md { margin-right: auto; margin-left: 0; }
     [dir="rtl"] .admin-main input,
     [dir="rtl"] .admin-main textarea,
