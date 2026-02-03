@@ -41,6 +41,14 @@
     [dir="rtl"] .admin-sidebar-fixed { right: var(--sidebar-gap); left: auto; }
     .admin-main { margin-inline-start: calc(var(--sidebar-w) + var(--sidebar-gap)); }
     [dir="rtl"] .admin-main { padding-right: 1.5rem; padding-left: 1.5rem; }
+    /* Sidebar nav look + RTL mirroring */
+    .admin-logo-row { gap: 0.75rem; }
+    [dir="rtl"] .admin-logo-row { flex-direction: row-reverse; text-align: right; }
+    .admin-nav-item { border-radius: 9999px; }
+    .admin-nav-item .admin-nav-text { white-space: nowrap; }
+    [dir="rtl"] .admin-nav-item { flex-direction: row-reverse; }
+    [dir="rtl"] .admin-nav-item .admin-nav-text { text-align: right; }
+    [dir="rtl"] .admin-logout { flex-direction: row-reverse; text-align: right; }
     [dir="rtl"] .admin-main .max-w-md { margin-right: auto; margin-left: 0; }
     [dir="rtl"] .admin-main input,
     [dir="rtl"] .admin-main textarea,
