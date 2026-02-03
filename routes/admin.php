@@ -103,4 +103,24 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::patch('branches/{branch}/toggle', [\App\Http\Controllers\Admin\BranchesController::class, 'toggle'])->name('branches.toggle');
         Route::delete('branches/{branch}', [\App\Http\Controllers\Admin\BranchesController::class, 'destroy'])->name('branches.destroy');
     });
+
+    // Banners & Onboarding module
+    Route::middleware('auth:admin_web')->group(function () {
+        Route::get('banners', [\App\Http\Controllers\Admin\BannersController::class, 'index'])->name('banners.index');
+        Route::get('banners/create', [\App\Http\Controllers\Admin\BannersController::class, 'create'])->name('banners.create');
+        Route::get('banners/{banner}', [\App\Http\Controllers\Admin\BannersController::class, 'show'])->name('banners.show');
+        Route::post('banners', [\App\Http\Controllers\Admin\BannersController::class, 'store'])->name('banners.store');
+        Route::get('banners/{banner}/edit', [\App\Http\Controllers\Admin\BannersController::class, 'edit'])->name('banners.edit');
+        Route::match(['put', 'patch'], 'banners/{banner}', [\App\Http\Controllers\Admin\BannersController::class, 'update'])->name('banners.update');
+        Route::patch('banners/{banner}/toggle', [\App\Http\Controllers\Admin\BannersController::class, 'toggle'])->name('banners.toggle');
+        Route::delete('banners/{banner}', [\App\Http\Controllers\Admin\BannersController::class, 'destroy'])->name('banners.destroy');
+
+        Route::get('onboardings/create', [\App\Http\Controllers\Admin\OnboardingsController::class, 'create'])->name('onboardings.create');
+        Route::get('onboardings/{onboarding}', [\App\Http\Controllers\Admin\OnboardingsController::class, 'show'])->name('onboardings.show');
+        Route::post('onboardings', [\App\Http\Controllers\Admin\OnboardingsController::class, 'store'])->name('onboardings.store');
+        Route::get('onboardings/{onboarding}/edit', [\App\Http\Controllers\Admin\OnboardingsController::class, 'edit'])->name('onboardings.edit');
+        Route::match(['put', 'patch'], 'onboardings/{onboarding}', [\App\Http\Controllers\Admin\OnboardingsController::class, 'update'])->name('onboardings.update');
+        Route::patch('onboardings/{onboarding}/toggle', [\App\Http\Controllers\Admin\OnboardingsController::class, 'toggle'])->name('onboardings.toggle');
+        Route::delete('onboardings/{onboarding}', [\App\Http\Controllers\Admin\OnboardingsController::class, 'destroy'])->name('onboardings.destroy');
+    });
 });

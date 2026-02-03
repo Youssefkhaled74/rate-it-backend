@@ -8,6 +8,7 @@
     ['label' => 'Branches', 'route' => 'admin.branches.index', 'icon' => 'layers'],
     ['label' => 'Users', 'route' => 'admin.users.index', 'icon' => 'users'],
     ['label' => 'Rewards System', 'route' => 'admin.rewards.index', 'icon' => 'star'],
+    ['label' => 'Banners & Onboarding', 'route' => 'admin.banners.index', 'icon' => 'star'],
     ['label' => 'Setting', 'route' => 'admin.settings.index', 'icon' => 'gear'],
   ];
 
