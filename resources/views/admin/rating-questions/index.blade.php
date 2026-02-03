@@ -12,7 +12,7 @@
     <div class="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
       <div class="w-full max-w-md">
         <form method="get" class="relative">
-          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 rtl-search-icon">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
               <circle cx="11" cy="11" r="7"></circle>
               <path d="M21 21l-4.3-4.3"></path>
@@ -22,7 +22,7 @@
             name="q"
             value="{{ request('q') }}"
             placeholder="{{ __('admin.search') }}"
-            class="w-full rounded-2xl border border-gray-200 bg-white/80 pl-11 pr-4 py-3 text-sm outline-none
+            class="w-full rounded-2xl border border-gray-200 bg-white/80 pl-11 pr-4 py-3 text-sm outline-none rtl-search-input
                    focus:border-red-300 focus:ring-4 focus:ring-red-100 transition"
           >
         </form>
