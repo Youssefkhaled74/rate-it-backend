@@ -26,6 +26,8 @@ class Branch extends Model
         'qr_generated_at',
         'review_cooldown_days',
         'is_active',
+        'city_id',
+        'area_id',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -64,5 +66,15 @@ class Branch extends Model
     public function vouchers()
     {
         return $this->hasMany(Voucher::class, 'used_branch_id');
+    }
+
+    public function city()
+    {
+        return $this->belongsTo(City::class, 'city_id');
+    }
+
+    public function area()
+    {
+        return $this->belongsTo(Area::class, 'area_id');
     }
 }

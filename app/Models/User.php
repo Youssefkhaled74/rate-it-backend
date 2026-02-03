@@ -76,4 +76,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(\App\Models\Review::class, 'user_id');
     }
+
+    public function city()
+    {
+        return $this->belongsTo(\App\Models\City::class, 'city_id');
+    }
+
+    public function area()
+    {
+        return $this->belongsTo(\App\Models\Area::class, 'area_id');
+    }
 }
