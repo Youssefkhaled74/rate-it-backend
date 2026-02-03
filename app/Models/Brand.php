@@ -16,4 +16,9 @@ class Brand extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    public function places()
+    {
+        return $this->hasMany(Place::class, 'brand_id');
+    }
 }

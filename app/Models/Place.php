@@ -29,6 +29,11 @@ class Place extends Model
         return $this->belongsTo(Brand::class, 'brand_id');
     }
 
+    public function branches()
+    {
+        return $this->hasMany(Branch::class, 'place_id');
+    }
+
     /**
      * Unified display name for the place.
      * Tries locale-specific columns then sensible fallbacks.

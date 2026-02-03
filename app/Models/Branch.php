@@ -25,6 +25,7 @@ class Branch extends Model
         'qr_code_value',
         'qr_generated_at',
         'review_cooldown_days',
+        'is_active',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -39,6 +40,7 @@ class Branch extends Model
         'lat' => 'float',
         'lng' => 'float',
         'review_cooldown_days' => 'integer',
+        'is_active' => 'boolean',
     ];
 
     /**

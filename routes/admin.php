@@ -67,4 +67,40 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('subcategories/{subcategory}', [\App\Http\Controllers\Admin\SubcategoriesController::class, 'destroy'])
             ->name('subcategories.destroy');
     });
+
+    // Brands module
+    Route::middleware('auth:admin_web')->group(function () {
+        Route::get('brands', [\App\Http\Controllers\Admin\BrandsController::class, 'index'])->name('brands.index');
+        Route::get('brands/create', [\App\Http\Controllers\Admin\BrandsController::class, 'create'])->name('brands.create');
+        Route::get('brands/{brand}', [\App\Http\Controllers\Admin\BrandsController::class, 'show'])->name('brands.show');
+        Route::post('brands', [\App\Http\Controllers\Admin\BrandsController::class, 'store'])->name('brands.store');
+        Route::get('brands/{brand}/edit', [\App\Http\Controllers\Admin\BrandsController::class, 'edit'])->name('brands.edit');
+        Route::match(['put', 'patch'], 'brands/{brand}', [\App\Http\Controllers\Admin\BrandsController::class, 'update'])->name('brands.update');
+        Route::patch('brands/{brand}/toggle', [\App\Http\Controllers\Admin\BrandsController::class, 'toggle'])->name('brands.toggle');
+        Route::delete('brands/{brand}', [\App\Http\Controllers\Admin\BrandsController::class, 'destroy'])->name('brands.destroy');
+    });
+
+    // Places module
+    Route::middleware('auth:admin_web')->group(function () {
+        Route::get('places', [\App\Http\Controllers\Admin\PlacesController::class, 'index'])->name('places.index');
+        Route::get('places/create', [\App\Http\Controllers\Admin\PlacesController::class, 'create'])->name('places.create');
+        Route::get('places/{place}', [\App\Http\Controllers\Admin\PlacesController::class, 'show'])->name('places.show');
+        Route::post('places', [\App\Http\Controllers\Admin\PlacesController::class, 'store'])->name('places.store');
+        Route::get('places/{place}/edit', [\App\Http\Controllers\Admin\PlacesController::class, 'edit'])->name('places.edit');
+        Route::match(['put', 'patch'], 'places/{place}', [\App\Http\Controllers\Admin\PlacesController::class, 'update'])->name('places.update');
+        Route::patch('places/{place}/toggle', [\App\Http\Controllers\Admin\PlacesController::class, 'toggle'])->name('places.toggle');
+        Route::delete('places/{place}', [\App\Http\Controllers\Admin\PlacesController::class, 'destroy'])->name('places.destroy');
+    });
+
+    // Branches module
+    Route::middleware('auth:admin_web')->group(function () {
+        Route::get('branches', [\App\Http\Controllers\Admin\BranchesController::class, 'index'])->name('branches.index');
+        Route::get('branches/create', [\App\Http\Controllers\Admin\BranchesController::class, 'create'])->name('branches.create');
+        Route::get('branches/{branch}', [\App\Http\Controllers\Admin\BranchesController::class, 'show'])->name('branches.show');
+        Route::post('branches', [\App\Http\Controllers\Admin\BranchesController::class, 'store'])->name('branches.store');
+        Route::get('branches/{branch}/edit', [\App\Http\Controllers\Admin\BranchesController::class, 'edit'])->name('branches.edit');
+        Route::match(['put', 'patch'], 'branches/{branch}', [\App\Http\Controllers\Admin\BranchesController::class, 'update'])->name('branches.update');
+        Route::patch('branches/{branch}/toggle', [\App\Http\Controllers\Admin\BranchesController::class, 'toggle'])->name('branches.toggle');
+        Route::delete('branches/{branch}', [\App\Http\Controllers\Admin\BranchesController::class, 'destroy'])->name('branches.destroy');
+    });
 });
