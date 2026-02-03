@@ -45,6 +45,7 @@ return [
     'subcategories' => 'التصنيفات الفرعية',
     'type' => 'النوع',
     'choices' => 'الاختيارات',
+    'add_at_least_two_choices' => 'أضف اختيارين على الأقل.',
     'choices_en' => 'الاختيارات (إنجليزي)',
     'choices_ar' => 'الاختيارات (عربي)',
     'required' => 'مطلوب',

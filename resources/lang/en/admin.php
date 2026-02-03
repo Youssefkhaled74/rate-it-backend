@@ -45,6 +45,7 @@ return [
     'subcategories' => 'Subcategories',
     'type' => 'Type',
     'choices' => 'Choices',
+    'add_at_least_two_choices' => 'Add at least 2 choices.',
     'choices_en' => 'Choices (EN)',
     'choices_ar' => 'Choices (AR)',
     'required' => 'Required',

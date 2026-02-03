@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title','Add Question')
+@section('title', __('admin.add_question'))
 
 @section('content')
 <div class="max-w-4xl">
@@ -9,11 +9,11 @@
     <div class="px-6 md:px-8 py-6 border-b border-gray-100 bg-gradient-to-br from-white to-gray-50">
       <div class="flex items-center justify-between gap-4">
         <div>
-          <h2 class="text-xl font-semibold text-gray-900">Add Question</h2>
+          <h2 class="text-xl font-semibold text-gray-900">{{ __('admin.add_question') }}</h2>
         </div>
         <a href="{{ route('admin.rating-questions.index') }}"
            class="rounded-2xl bg-white border border-gray-200 px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
-          Back
+          {{ __('admin.back') }}
         </a>
       </div>
     </div>
@@ -35,11 +35,11 @@
 
       <div class="mt-8 flex gap-3">
         <button class="flex-1 rounded-2xl bg-red-900 text-white py-3.5 text-sm font-semibold shadow-lg shadow-red-900/20 hover:bg-red-950 transition">
-          Add
+          {{ __('admin.add') }}
         </button>
         <a href="{{ route('admin.rating-questions.index') }}"
            class="flex-1 text-center rounded-2xl bg-white border border-gray-200 py-3.5 text-sm font-semibold text-gray-800 hover:bg-gray-50 transition">
-          Cancel
+          {{ __('admin.cancel') }}
         </a>
       </div>
     </form>

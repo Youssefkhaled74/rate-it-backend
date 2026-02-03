@@ -92,7 +92,7 @@
       @endforeach
     </div>
 
-    <div class="text-xs text-gray-500 mt-2">{{ __('admin.choices') }}: {{ __('admin.add') }} 2+</div>
+    <div class="text-xs text-gray-500 mt-2">{{ __('admin.add_at_least_two_choices') }}</div>
   </div>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
