@@ -115,8 +115,12 @@
                     >
                   </div>
                 @else
-                  <div class="w-11 h-11 rounded-full bg-gray-200 grid place-items-center text-gray-600 font-semibold">
-                    {{ $initial }}
+                  <div class="w-11 h-11 rounded-full overflow-hidden bg-gray-100">
+                    <img
+                      src="{{ asset('assets/images/userdefultphoto.png') }}"
+                      class="w-full h-full object-cover"
+                      alt="avatar"
+                    >
                   </div>
                 @endif
 
