@@ -51,6 +51,13 @@
   {{-- Confirm modal (global) + inline script to handle data-confirm attributes --}}
   @includeWhen(true, 'components.admin.confirm-modal')
 
+  <script id="admin-i18n" type="application/json">
+    {!! json_encode([
+      'confirm' => __('admin.confirm'),
+      'pleaseConfirm' => __('admin.please_confirm'),
+    ], JSON_UNESCAPED_UNICODE) !!}
+  </script>
+
   <script>
     (function(){
       // Simple confirm modal handler
@@ -64,10 +71,8 @@
 
       let pendingForm = null;
 
-      const i18n = {
-        confirm: @json(__('admin.confirm')),
-        pleaseConfirm: @json(__('admin.please_confirm')),
-      };
+      const i18nEl = document.getElementById('admin-i18n');
+      const i18n = i18nEl ? JSON.parse(i18nEl.textContent) : { confirm: 'Confirm', pleaseConfirm: 'Please confirm' };
 
       function openModal(opts){
         pendingForm = opts.form || null;

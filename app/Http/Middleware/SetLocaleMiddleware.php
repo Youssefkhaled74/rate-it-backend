@@ -11,8 +11,15 @@ class SetLocaleMiddleware
     {
         $lang = null;
 
-        if ($request->hasSession() && $request->session()->has('lang')) {
+        if ($request->query('lang')) {
+            $lang = $request->query('lang');
+            if ($request->hasSession()) {
+                $request->session()->put('lang', $lang);
+            }
+        } elseif ($request->hasSession() && $request->session()->has('lang')) {
             $lang = $request->session()->get('lang');
+        } elseif ($request->cookies->has('lang')) {
+            $lang = $request->cookie('lang');
         } elseif ($request->headers->has('X-Lang')) {
             $lang = $request->header('X-Lang');
         } elseif ($request->headers->has('Accept-Language')) {

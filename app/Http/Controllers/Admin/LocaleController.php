@@ -14,6 +14,6 @@ class LocaleController extends Controller
             $request->session()->put('lang', $lang);
         }
 
-        return back();
+        return back()->withCookie(cookie('lang', $lang, 60 * 24 * 365));
     }
 }

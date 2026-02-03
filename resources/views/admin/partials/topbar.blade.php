@@ -6,7 +6,7 @@
     <div class="flex items-center gap-3">
         {{-- Language Toggle --}}
         @php $nextLang = app()->getLocale() === 'ar' ? 'en' : 'ar'; @endphp
-        <a href="{{ route('admin.lang.switch', $nextLang) }}"
+        <a href="{{ request()->fullUrlWithQuery(['lang' => $nextLang]) }}"
            class="h-11 px-4 rounded-full bg-white border border-gray-200 grid place-items-center text-sm font-semibold text-gray-700 shadow-sm hover:shadow-md transition">
             {{ strtoupper($nextLang) }}
         </a>
