@@ -30,16 +30,19 @@
     body {
       font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     }
+    /* Basic RTL layout fixes */
+    [dir="rtl"] .admin-shell { flex-direction: row-reverse; }
+    [dir="rtl"] .admin-sidebar-fixed { right: 1.25rem; left: auto; }
   </style>
 </head>
 
 <body class="bg-gray-100 text-gray-900 font-sans antialiased">
-  <div class="min-h-screen flex">
+  <div class="min-h-screen flex admin-shell">
     {{-- Sidebar --}}
     @include('admin.partials.sidebar')
 
     {{-- Main --}}
-    <div class="flex-1 p-6">
+    <div class="flex-1 p-6 admin-main">
       @include('admin.partials.topbar')
 
       <div class="mt-6">
