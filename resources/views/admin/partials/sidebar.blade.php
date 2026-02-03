@@ -1,5 +1,6 @@
 @php
   // Sidebar items (عدل الروتس براحتك)
+  $currentLang = request()->get('lang', app()->getLocale());
   $items = [
     ['label' => __('admin.dashboard'), 'route' => 'admin.dashboard', 'icon' => 'grid'],
     ['label' => __('admin.categories'), 'route' => 'admin.categories.index', 'icon' => 'layers'],
@@ -62,7 +63,7 @@
       @foreach($items as $it)
         @php $active = $isActive($it['route']); @endphp
 
-        <a href="{{ Route::has($it['route']) ? route($it['route']) : '#' }}"
+        <a href="{{ Route::has($it['route']) ? route($it['route'], ['lang' => $currentLang]) : '#' }}"
            class="admin-nav-item group flex items-center gap-3 px-4 py-3 transition
                   {{ $active ? 'bg-white/18' : 'hover:bg-white/10' }}">
           <span class="text-white/90">{!! $iconSvg($it['icon']) !!}</span>
