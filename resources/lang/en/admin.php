@@ -32,6 +32,9 @@ return [
 
     'categories' => 'Categories',
     'brands' => 'Brands',
+    'add_brand' => 'Add Brand',
+    'create_new_brand' => 'Create a new brand',
+    'all_brands' => 'All Brands',
     'places' => 'Places',
     'branches' => 'Branches',
     'users' => 'Users',

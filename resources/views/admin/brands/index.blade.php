@@ -1,13 +1,13 @@
 @extends('admin.layouts.app')
 
-@section('title','Brands')
+@section('title', __('admin.brands'))
 
 @section('content')
 <div class="space-y-6">
 
   {{-- Header row --}}
   <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-    <h2 class="text-2xl font-semibold text-gray-900">Brands</h2>
+    <h2 class="text-2xl font-semibold text-gray-900">{{ __('admin.brands') }}</h2>
 
     <div class="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
       <div class="w-full max-w-md">
@@ -21,7 +21,7 @@
           <input
             name="q"
             value="{{ request('q') }}"
-            placeholder="Search"
+            placeholder="{{ __('admin.search') }}"
             class="w-full rounded-2xl border border-gray-200 bg-white/80 pl-11 pr-4 py-3 text-sm outline-none
                    focus:border-red-300 focus:ring-4 focus:ring-red-100 transition"
           >
@@ -35,15 +35,15 @@
   {{-- Stats --}}
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
     <div class="rounded-[22px] bg-red-900 text-white p-5 shadow-soft">
-      <div class="text-sm opacity-90">Total Brands</div>
+      <div class="text-sm opacity-90">{{ __('admin.total_brands') }}</div>
       <div class="mt-2 text-3xl font-semibold">{{ $totalBrands }}</div>
     </div>
     <div class="rounded-[22px] bg-white p-5 border border-gray-100 shadow-soft">
-      <div class="text-sm text-gray-600">Active Brands</div>
+      <div class="text-sm text-gray-600">{{ __('admin.active_brands') }}</div>
       <div class="mt-2 text-3xl font-semibold text-red-900">{{ $activeBrands }}</div>
     </div>
     <div class="rounded-[22px] bg-white p-5 border border-gray-100 shadow-soft">
-      <div class="text-sm text-gray-600">Inactive Brands</div>
+      <div class="text-sm text-gray-600">{{ __('admin.inactive_brands') }}</div>
       <div class="mt-2 text-3xl font-semibold text-red-900">{{ $inactiveBrands }}</div>
     </div>
   </div>
@@ -52,15 +52,15 @@
   <div class="flex items-center gap-3">
     <a href="{{ route('admin.brands.index') }}"
        class="px-4 py-2 rounded-xl text-sm font-semibold {{ request('status') ? 'bg-white text-gray-600 border border-gray-100' : 'bg-red-900 text-white' }}">
-      All Brands
+      {{ __('admin.all_brands') }}
     </a>
     <a href="{{ route('admin.brands.index', ['status' => 'active']) }}"
        class="px-4 py-2 rounded-xl text-sm font-semibold {{ request('status') === 'active' ? 'bg-red-900 text-white' : 'bg-white text-gray-600 border border-gray-100' }}">
-      Active
+      {{ __('admin.active') }}
     </a>
     <a href="{{ route('admin.brands.index', ['status' => 'inactive']) }}"
        class="px-4 py-2 rounded-xl text-sm font-semibold {{ request('status') === 'inactive' ? 'bg-red-900 text-white' : 'bg-white text-gray-600 border border-gray-100' }}">
-      Inactive
+      {{ __('admin.inactive') }}
     </a>
   </div>
 
@@ -76,8 +76,8 @@
           <path d="M12 5v14M5 12h14"/>
         </svg>
       </div>
-      <div class="mt-3 text-sm font-semibold text-gray-900">Add Brand</div>
-      <div class="text-xs text-gray-500 mt-1">Create a new brand</div>
+      <div class="mt-3 text-sm font-semibold text-gray-900">{{ __('admin.add_brand') }}</div>
+      <div class="text-xs text-gray-500 mt-1">{{ __('admin.create_new_brand') }}</div>
     </a>
 
     {{-- Brand Cards --}}
@@ -109,13 +109,13 @@
             </button>
 
             <div id="brandmenu-{{ $b->id }}" class="hidden absolute right-0 mt-2 w-44 rounded-2xl bg-white border border-gray-100 shadow-lg overflow-hidden">
-              <a href="{{ route('admin.brands.show', $b) }}" class="block px-4 py-3 text-sm hover:bg-gray-50">Show</a>
-              <a href="{{ route('admin.brands.edit', $b) }}" class="block px-4 py-3 text-sm hover:bg-gray-50">Edit</a>
+              <a href="{{ route('admin.brands.show', $b) }}" class="block px-4 py-3 text-sm hover:bg-gray-50">{{ __('admin.show') }}</a>
+              <a href="{{ route('admin.brands.edit', $b) }}" class="block px-4 py-3 text-sm hover:bg-gray-50">{{ __('admin.edit') }}</a>
               <form method="POST" action="{{ route('admin.brands.destroy', $b) }}">
                 @csrf
                 @method('DELETE')
-                <button type="button" data-confirm="delete-brand-{{ $b->id }}" data-confirm-text="Delete" data-title="Delete brand?" data-message="Are you sure you want to delete the brand '{{ $b->name_en }}'?"
-                        class="w-full text-left px-4 py-3 text-sm text-red-700 hover:bg-red-50">Delete</button>
+                <button type="button" data-confirm="delete-brand-{{ $b->id }}" data-confirm-text="{{ __('admin.delete') }}" data-title="{{ __('admin.delete') }}" data-message="{{ __('admin.confirm_message') }}"
+                        class="w-full text-left px-4 py-3 text-sm text-red-700 hover:bg-red-50">{{ __('admin.delete') }}</button>
                 <input type="hidden" name="_confirm_target" value="delete-brand-{{ $b->id }}" />
               </form>
             </div>

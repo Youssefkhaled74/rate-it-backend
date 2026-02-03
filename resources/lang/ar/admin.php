@@ -32,6 +32,9 @@ return [
 
     'categories' => 'التصنيفات',
     'brands' => 'العلامات التجارية',
+    'add_brand' => 'إضافة علامة',
+    'create_new_brand' => 'إنشاء علامة جديدة',
+    'all_brands' => 'كل العلامات',
     'places' => 'الأماكن',
     'branches' => 'الفروع',
     'users' => 'المستخدمون',
