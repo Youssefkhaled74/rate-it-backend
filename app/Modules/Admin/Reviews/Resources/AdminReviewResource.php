@@ -30,7 +30,7 @@ class AdminReviewResource extends JsonResource
 
             'user' => [
                 'id' => $this->user->id ?? null,
-                'full_name' => $this->user->full_name ?? null,
+            'name' => $this->user->name ?? null,
                 'phone' => $this->user->phone ?? null,
             ],
 

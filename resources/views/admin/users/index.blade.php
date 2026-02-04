@@ -164,7 +164,7 @@
               <div class="flex items-center gap-3">
                 @php
                   $img = $u->avatar ?? ($u->avatar_path ?? ($u->photo_path ?? null));
-                  $initial = strtoupper(mb_substr($u->full_name ?? $u->name ?? 'U', 0, 1));
+                  $initial = strtoupper(mb_substr($u->name ?? 'U', 0, 1));
                 @endphp
 
                 @if($img)
@@ -186,7 +186,7 @@
                 @endif
 
                 <div class="leading-tight">
-                  <div class="font-semibold text-gray-900">{{ $u->full_name ?? $u->name }}</div>
+                  <div class="font-semibold text-gray-900">{{ $u->name }}</div>
                   <div class="text-xs text-gray-500">{{ $u->email }}</div>
                 </div>
               </div>

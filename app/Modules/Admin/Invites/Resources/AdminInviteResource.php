@@ -11,9 +11,9 @@ class AdminInviteResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'inviter' => $this->inviter ? ['id'=>$this->inviter->id,'full_name'=>$this->inviter->full_name ?? $this->inviter->name,'phone'=>$this->inviter->phone] : null,
+            'inviter' => $this->inviter ? ['id'=>$this->inviter->id,'name'=>$this->inviter->name,'phone'=>$this->inviter->phone] : null,
             'invitee_phone' => $this->invited_phone,
-            'invitee_user' => $this->invitedUser ? ['id'=>$this->invitedUser->id,'full_name'=>$this->invitedUser->full_name ?? $this->invitedUser->name,'phone'=>$this->invitedUser->phone] : null,
+            'invitee_user' => $this->invitedUser ? ['id'=>$this->invitedUser->id,'name'=>$this->invitedUser->name,'phone'=>$this->invitedUser->phone] : null,
             'status' => $this->status,
             'reward_points' => $this->reward_points,
             'channel' => $this->channel ?? null,

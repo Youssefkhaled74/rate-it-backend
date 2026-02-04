@@ -39,6 +39,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     // Users module
     Route::middleware('auth:admin_web')->group(function () {
+        Route::get('search/suggest', [\App\Http\Controllers\Admin\GlobalSearchController::class, 'suggest'])->name('search.suggest');
         Route::get('users', [\App\Http\Controllers\Admin\UsersController::class, 'index'])->name('users.index');
         Route::get('users/export', [\App\Http\Controllers\Admin\UsersController::class, 'export'])->name('users.export');
         Route::get('users/{user}', [\App\Http\Controllers\Admin\UsersController::class, 'show'])->name('users.show');

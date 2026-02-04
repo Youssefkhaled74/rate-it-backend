@@ -11,7 +11,7 @@ class AdminSubscriptionResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'user' => $this->user ? ['id'=>$this->user->id,'name'=>$this->user->full_name ?? $this->user->name,'phone'=>$this->user->phone] : null,
+            'user' => $this->user ? ['id'=>$this->user->id,'name'=>$this->user->name,'phone'=>$this->user->phone] : null,
             'plan' => $this->plan ? ['id'=>$this->plan->id,'code'=>$this->plan->code,'name_en'=>$this->plan->name_en,'name_ar'=>$this->plan->name_ar] : null,
             'subscription_status' => $this->subscription_status ?? $this->status ?? null,
             'started_at' => $this->started_at ? new TimestampResource($this->started_at) : null,

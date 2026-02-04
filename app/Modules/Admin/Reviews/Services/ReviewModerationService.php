@@ -12,7 +12,7 @@ class ReviewModerationService
     public function list(array $filters): LengthAwarePaginator
     {
         $perPage = (int) ($filters['per_page'] ?? 15);
-        $query = Review::query()->with(['user:id,full_name,phone','place:id,name,logo','branch:id,name'])
+        $query = Review::query()->with(['user:id,name,phone','place:id,name,logo','branch:id,name'])
             ->withCount(['answers','photos']);
 
         if (! empty($filters['place_id'])) $query->where('place_id', (int) $filters['place_id']);
@@ -36,7 +36,7 @@ class ReviewModerationService
             $q = $filters['q'];
             $query->where(function ($q2) use ($q) {
                 $q2->where('comment', 'like', "%{$q}%")
-                    ->orWhereHas('user', fn($s) => $s->where('full_name', 'like', "%{$q}%")->orWhere('phone', 'like', "%{$q}%"))
+                    ->orWhereHas('user', fn($s) => $s->where('name', 'like', "%{$q}%")->orWhere('phone', 'like', "%{$q}%"))
                     ->orWhereHas('place', fn($s) => $s->where('name', 'like', "%{$q}%"))
                     ->orWhereHas('branch', fn($s) => $s->where('name', 'like', "%{$q}%"));
             });

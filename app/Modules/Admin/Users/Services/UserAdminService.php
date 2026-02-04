@@ -18,7 +18,7 @@ class UserAdminService
         if (! empty($filters['q'])) {
             $q = $filters['q'];
             $query->where(function ($q2) use ($q) {
-                $q2->where('full_name', 'like', "%{$q}%")
+                $q2->where('name', 'like', "%{$q}%")
                     ->orWhere('phone', 'like', "%{$q}%")
                     ->orWhere('email', 'like', "%{$q}%");
             });

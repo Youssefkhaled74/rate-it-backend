@@ -18,7 +18,7 @@ class AuthService
 
         $user = User::create([
             // Some apps store `name` column; ensure we set it to avoid SQL errors when 'name' is required
-            'name' => $data['full_name'] ?? ($data['first_name'] ?? null),
+            'name' => $data['name'] ?? ($data['full_name'] ?? ($data['first_name'] ?? null)),
             'email' => $data['email'] ?? null,
             'phone' => $phone,
             'birth_date' => $data['birth_date'] ?? null,

@@ -14,7 +14,7 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'full_name' => ['required','string','max:255'],
+            'name' => ['required','string','max:255'],
             'phone' => ['required','string','max:20','unique:users,phone'],
             'email' => ['required','email','max:255','unique:users,email'],
             'birth_date' => ['nullable','date'],
@@ -32,6 +32,7 @@ class RegisterRequest extends FormRequest
             'email.required' => __('validation.required'),
             'phone.required' => __('validation.required'),
             'password.confirmed' => __('validation.confirmed'),
+            'name.required' => __('validation.required'),
         ];
     }
 }

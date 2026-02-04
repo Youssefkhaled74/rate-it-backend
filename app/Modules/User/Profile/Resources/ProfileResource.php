@@ -13,8 +13,7 @@ class ProfileResource extends JsonResource
 
         return [
             'id' => $user->id,
-            // prefer `full_name` if available, fallback to `name`
-            'full_name' => $user->full_name ?? $user->name ?? null,
+            'name' => $user->name ?? null,
             'email' => $user->email ?? null,
             'phone' => $user->phone ?? null,
             'avatar_url' => ($user->avatar ?? null) ? Storage::disk('public')->url($user->avatar) : null,

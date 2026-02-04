@@ -93,7 +93,7 @@ class AdminDashboardService
             $withPlace = array_filter(array_merge(['id'], $placeCols));
 
             $query->with([
-                'user:id,full_name,phone',
+                'user:id,name,phone',
                 // select only id and available display columns for place
                 'place:' . implode(',', $withPlace),
                 'branch:id,name',
@@ -110,7 +110,7 @@ class AdminDashboardService
             $now = Carbon::now();
 
             $mapped = $items->map(function (Review $r) use ($negativeKeywords, $now) {
-                $name = $r->user?->full_name ?? $r->user?->name ?? 'Anonymous';
+                $name = $r->user?->name ?? 'Anonymous';
                 $metaParts = [];
                 $metaParts[] = $r->created_at?->diffForHumans();
                 if ($r->branch) $metaParts[] = $r->branch->name;

@@ -19,7 +19,7 @@ class ProfileService
 
     public function updateProfile(User $user, array $data): User
     {
-        if (isset($data['full_name'])) $user->name = $data['full_name'];
+        if (isset($data['name'])) $user->name = $data['name'];
         if (isset($data['email'])) $user->email = $data['email'];
 
         if (isset($data['avatar_file'])) {

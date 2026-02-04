@@ -25,6 +25,7 @@ return [
     'recent_reviews_moderation' => 'مراجعات حديثة للمراجعة',
     'top_rated_brands' => 'أفضل العلامات تقييمًا',
     'restaurant' => 'مطعم',
+    'no_results' => 'لا توجد نتائج',
     'quick_reply' => 'رد سريع',
     'helpful' => 'مفيد',
     'photo' => 'صورة',

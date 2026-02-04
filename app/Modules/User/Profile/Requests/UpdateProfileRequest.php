@@ -16,7 +16,7 @@ class UpdateProfileRequest extends FormRequest
     {
         $id = $this->user()->id;
         return [
-            'full_name' => 'sometimes|string|min:2|max:255',
+            'name' => 'sometimes|string|min:2|max:255',
             'email' => [ 'sometimes','email', Rule::unique('users','email')->ignore($id) ],
             'avatar' => 'sometimes|file|mimes:jpg,jpeg,png,webp|max:2048'
         ];

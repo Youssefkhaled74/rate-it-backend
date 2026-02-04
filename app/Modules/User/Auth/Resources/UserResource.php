@@ -12,7 +12,7 @@ class UserResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'full_name' => $this->full_name ?? $this->name,
+            'name' => $this->name,
             'phone' => $this->phone,
             'email' => $this->email,
             'birth_date' => $this->birth_date ? $this->birth_date->toDateString() : null,

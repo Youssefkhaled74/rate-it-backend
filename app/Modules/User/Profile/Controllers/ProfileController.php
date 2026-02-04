@@ -28,7 +28,7 @@ class ProfileController extends BaseApiController
     public function update(UpdateProfileRequest $request)
     {
         $user = $request->user();
-        $data = $request->only(['full_name','email']);
+        $data = $request->only(['name','email']);
         if ($request->hasFile('avatar')) {
             $data['avatar_file'] = $request->file('avatar');
         }

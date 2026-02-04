@@ -25,7 +25,7 @@
         </div>
 
         <div class="mt-5 text-lg font-semibold text-gray-900">
-          {{ $user->full_name ?? $user->name }}
+          {{ $user->name }}
         </div>
         <div class="mt-1 text-sm text-gray-500">
           {{ $user->email }}

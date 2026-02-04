@@ -11,7 +11,7 @@ class AdminPointsTransactionResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'user' => $this->whenLoaded('user', function(){ return ['id' => $this->user->id ?? null, 'full_name' => $this->user->full_name ?? null, 'phone' => $this->user->phone ?? null]; }),
+            'user' => $this->whenLoaded('user', function(){ return ['id' => $this->user->id ?? null, 'name' => $this->user->name ?? null, 'phone' => $this->user->phone ?? null]; }),
             'type' => $this->type,
             'points' => (int) $this->points,
             'meta' => $this->meta ?? null,

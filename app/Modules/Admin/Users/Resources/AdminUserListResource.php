@@ -11,7 +11,7 @@ class AdminUserListResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'full_name' => $this->full_name ?? ($this->first_name . ' ' . $this->last_name),
+            'name' => $this->name ?? ($this->first_name . ' ' . $this->last_name),
             'phone' => $this->phone,
             'email' => $this->email,
             'is_phone_verified' => (bool) ($this->phone_verified_at ?? false),

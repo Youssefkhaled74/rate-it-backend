@@ -18,7 +18,7 @@ class AdminReviewListResource extends JsonResource
             'is_featured' => $this->is_featured ?? false,
             'user' => [
                 'id' => $this->user->id ?? null,
-                'full_name' => $this->user->full_name ?? null,
+                'name' => $this->user->name ?? null,
                 'phone' => $this->user->phone ?? null,
             ],
             'place' => [

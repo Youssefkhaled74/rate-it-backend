@@ -24,7 +24,7 @@ class VendorReviewService
         
         // Query reviews under vendor's brand
         $query = Review::query()
-            ->with(['user:id,full_name,phone,nickname', 'place:id,name,brand_id', 'branch:id,name'])
+            ->with(['user:id,name,phone,nickname', 'place:id,name,brand_id', 'branch:id,name'])
             ->withCount(['photos'])
             ->whereHas('place', fn($q) => $q->where('brand_id', $brandId));
 
@@ -67,7 +67,7 @@ class VendorReviewService
             $keyword = $filters['keyword'];
             $query->where(function ($q) use ($keyword) {
                 $q->where('comment', 'like', "%{$keyword}%")
-                    ->orWhereHas('user', fn($s) => $s->where('full_name', 'like', "%{$keyword}%")->orWhere('phone', 'like', "%{$keyword}%"))
+                    ->orWhereHas('user', fn($s) => $s->where('name', 'like', "%{$keyword}%")->orWhere('phone', 'like', "%{$keyword}%"))
                     ->orWhereHas('branch', fn($s) => $s->where('name', 'like', "%{$keyword}%"));
             });
         }
@@ -87,7 +87,7 @@ class VendorReviewService
         $brandId = $this->getVendorBrandId($vendor);
         
         $review = Review::with([
-            'user:id,full_name,phone,nickname',
+            'user:id,name,phone,nickname',
             'place:id,name,brand_id',
             'branch:id,name,address',
             'answers.criteria',

@@ -13,11 +13,19 @@
         </svg>
       </span>
       <input
+        id="global_search"
         type="text"
         placeholder="{{ __('admin.search') }}"
+        data-no-results="{{ __('admin.no_results') }}"
         class="w-full h-11 rounded-full border border-gray-200 bg-white pl-11 pr-4 text-sm outline-none
                focus:border-red-300 focus:ring-4 focus:ring-red-100 transition rtl-search-input"
       >
+
+      {{-- Suggestions --}}
+      <div id="global_search_menu"
+           class="hidden absolute z-50 mt-2 w-full rounded-2xl bg-white border border-gray-100 shadow-lg overflow-hidden">
+        <div id="global_search_list" class="max-h-80 overflow-auto"></div>
+      </div>
     </div>
   </div>
 
@@ -53,3 +61,62 @@
     </button>
   </div>
 </div>
+
+<script>
+  (function () {
+    const input = document.getElementById('global_search');
+    const menu = document.getElementById('global_search_menu');
+    const list = document.getElementById('global_search_list');
+    if (!input || !menu || !list) return;
+
+    let t = null;
+    const hide = () => menu.classList.add('hidden');
+    const show = () => menu.classList.remove('hidden');
+
+    function render(items) {
+      if (!items || !items.length) {
+        const emptyText = input.getAttribute('data-no-results') || 'No results';
+        list.innerHTML = `<div class="px-4 py-3 text-sm text-gray-500">${emptyText}</div>`;
+        show();
+        return;
+      }
+      list.innerHTML = items.map(item => {
+        const img = item.image
+          ? `<img src="${item.image}" class="w-9 h-9 rounded-full object-cover" alt="">`
+          : `<div class="w-9 h-9 rounded-full bg-gray-100 grid place-items-center text-gray-500 text-xs">${(item.type || '').slice(0,1)}</div>`;
+        return `
+          <a href="${item.url}" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition">
+            ${img}
+            <div class="min-w-0">
+              <div class="text-sm font-semibold text-gray-900 truncate">${item.label || ''}</div>
+              <div class="text-xs text-gray-500 truncate">${item.type || ''}${item.sub ? ' • ' + item.sub : ''}</div>
+            </div>
+          </a>
+        `;
+      }).join('');
+      show();
+    }
+
+    async function search(q) {
+      if (!q || q.length < 2) {
+        hide();
+        return;
+      }
+      const url = new URL("{{ route('admin.search.suggest') }}", window.location.origin);
+      url.searchParams.set('q', q);
+      const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' }});
+      const data = await res.json();
+      render(data.items || []);
+    }
+
+    input.addEventListener('input', function () {
+      clearTimeout(t);
+      t = setTimeout(() => search(this.value.trim()), 250);
+    });
+
+    document.addEventListener('click', function (e) {
+      if (menu.contains(e.target) || input.contains(e.target)) return;
+      hide();
+    });
+  })();
+</script>

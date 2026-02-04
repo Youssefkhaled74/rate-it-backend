@@ -25,6 +25,7 @@ return [
     'recent_reviews_moderation' => 'Recent Reviews Moderation',
     'top_rated_brands' => 'Top Rated Brands',
     'restaurant' => 'Restaurant',
+    'no_results' => 'No results',
     'quick_reply' => 'Quick Reply',
     'helpful' => 'helpful',
     'photo' => 'photo',

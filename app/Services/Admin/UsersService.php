@@ -27,7 +27,7 @@ class UsersService
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function (User $u) use ($locale, $hasBlocked) {
-                $name = $u->full_name ?: ($u->name ?? '');
+                $name = $u->name ?? '';
                 $gender = $u->gender;
                 $nationality = $u->nationality;
                 $city = $u->city;
@@ -76,7 +76,7 @@ class UsersService
 
     protected function buildUsersQuery(array $filters = []): Builder
     {
-        $select = ['id','name','full_name','email','phone','gender_id','nationality_id','city_id','area_id','created_at'];
+        $select = ['id','name','email','phone','gender_id','nationality_id','city_id','area_id','created_at'];
 
         // include avatar-like columns if present
         $avatarCandidates = ['avatar_path','avatar','photo_path','picture'];
@@ -91,7 +91,6 @@ class UsersService
             $q = $filters['q'];
             $query->where(function($s) use ($q) {
                 $s->where('name', 'like', "%{$q}%")
-                  ->orWhere('full_name', 'like', "%{$q}%")
                   ->orWhere('email', 'like', "%{$q}%")
                   ->orWhere('phone', 'like', "%{$q}%");
             });
