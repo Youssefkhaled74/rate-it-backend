@@ -203,7 +203,7 @@
             </td>
 
             <td class="py-5 px-5 text-gray-700">
-              {{ $u->city ?? '-' }}
+              {{ $u->city?->name_en ?? $u->city?->name_ar ?? '-' }}
             </td>
 
             <td class="py-5 px-5">
