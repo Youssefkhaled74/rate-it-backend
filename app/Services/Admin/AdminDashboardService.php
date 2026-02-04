@@ -3,6 +3,8 @@
 namespace App\Services\Admin;
 
 use App\Models\Review;
+use App\Models\User;
+use App\Models\Brand;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Schema;
@@ -48,6 +50,8 @@ class AdminDashboardService
                 'total_delta_percent' => $totalChange,
                 'new_7_days' => $new7,
                 'pending_reply' => $pending,
+                'total_users' => User::count(),
+                'total_brands' => Brand::count(),
             ];
         });
     }

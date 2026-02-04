@@ -4,51 +4,127 @@
 @section('title', __('admin.dashboard_title'))
 
 @section('content')
-  {{-- Welcome + Stats --}}
-  <div class="bg-white rounded-3xl shadow-soft p-6">
-    <div class="flex items-start justify-between gap-6">
-      <div>
-        <h2 class="text-xl font-semibold">{{ __('admin.welcome_back', ['name' => ($welcomeName ?? __('admin.admin'))]) }}</h2>
-        <p class="text-sm text-gray-500 mt-1">{{ __('admin.dashboard_subtitle') }}</p>
+  {{-- Hero --}}
+  <div class="bg-white rounded-[28px] shadow-soft p-6 border border-gray-100 relative overflow-hidden">
+    <div class="flex items-center justify-between gap-6">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-full bg-gray-100 overflow-hidden">
+          <img src="{{ asset('assets/images/userdefultphoto.png') }}" alt="avatar" class="w-12 h-12 object-cover">
+        </div>
+        <div>
+          <div class="text-xs text-gray-500">{{ __('admin.good_morning') }}</div>
+          <div class="text-base font-semibold text-gray-900">{{ $welcomeName ?? __('admin.admin') }}</div>
+          <div class="text-sm text-gray-600 mt-1">
+            {{ __('admin.dashboard_headline', ['count' => ($counts['all'] ?? 0)]) }}
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div class="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4">
-      <x-admin.stat-card title="{{ __('admin.average_rating') }}" value="{{ $stats['average_rating'] ?? '0.0' }}"
-        sub="{{ $stats['average_delta_percent'] !== null ? ($stats['average_delta_percent'] . ' %') : '' }}"
-        accent="{{ ($stats['average_delta_percent'] ?? null) === null ? 'text-gray-500' : (($stats['average_delta_percent'] > 0) ? 'text-green-600' : 'text-red-600') }}" />
-
-      <x-admin.stat-card title="{{ __('admin.total_reviews') }}" value="{{ number_format($stats['total_reviews'] ?? 0) }}" 
-        sub="{{ $stats['total_delta_percent'] !== null ? ($stats['total_delta_percent'] . ' %') : '' }}" />
-
-      <x-admin.stat-card title="{{ __('admin.new_7_days') }}" value="{{ $stats['new_7_days'] ?? 0 }}" 
-        sub="{{ $stats['new_7_days'] ? ('+' . $stats['new_7_days']) : '' }}" />
-
-      <x-admin.stat-card title="{{ __('admin.pending_reply') }}" value="{{ $stats['pending_reply'] ?? 0 }}" sub="" accent="text-red-600"/>
+      <div class="hidden md:block">
+        <div class="w-36 h-20 rounded-3xl bg-red-50 border border-red-100 grid place-items-center">
+          <span class="text-red-300 text-4xl">✦</span>
+        </div>
+      </div>
     </div>
   </div>
 
-  {{-- Recent Reviews --}}
-  <div class="mt-6">
-    <div class="flex items-center justify-between mb-4">
-      <div class="flex items-center gap-4">
-        <h3 class="text-lg font-semibold">{{ __('admin.recent_reviews') }}</h3>
-        <div class="flex items-center gap-2 text-sm text-gray-500">
-          <a href="?status=all" class="px-3 py-1 rounded-full bg-gray-200 text-gray-700">All ({{ $counts['all'] ?? 0 }})</a>
-          <a href="?status=urgent" class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-red-600"></span>Urgent ({{ $counts['urgent'] ?? 0 }})</a>
-          <a href="?status=high" class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-yellow-500"></span>High ({{ $counts['high'] ?? 0 }})</a>
-          <a href="?status=normal" class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-green-500"></span>Normal ({{ $counts['normal'] ?? 0 }})</a>
-        </div>
+  {{-- Quick Stats --}}
+  <div class="mt-5 grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="rounded-[22px] bg-white border border-gray-100 p-5 shadow-soft flex items-center justify-between">
+      <div class="text-sm text-gray-600">{{ __('admin.total_users') }}</div>
+      <div class="text-2xl font-semibold text-gray-900">{{ $stats['total_users'] ?? 0 }}</div>
+    </div>
+    <div class="rounded-[22px] bg-white border border-gray-100 p-5 shadow-soft flex items-center justify-between">
+      <div class="text-sm text-gray-600">{{ __('admin.total_brands') }}</div>
+      <div class="text-2xl font-semibold text-gray-900">{{ $stats['total_brands'] ?? 0 }}</div>
+    </div>
+    <div class="rounded-[22px] bg-white border border-gray-100 p-5 shadow-soft flex items-center justify-between">
+      <div class="text-sm text-gray-600">{{ __('admin.average_rating') }}</div>
+      <div class="text-2xl font-semibold text-gray-900">{{ $stats['average_rating'] ?? '0.0' }}</div>
+    </div>
+  </div>
+
+  {{-- Charts Row --}}
+  <div class="mt-5 grid grid-cols-1 lg:grid-cols-3 gap-5">
+    <div class="lg:col-span-2 bg-white border border-gray-100 rounded-[24px] p-5 shadow-soft">
+      <div class="flex items-center justify-between">
+        <div class="text-sm font-semibold text-gray-900">{{ __('admin.reviews_over_time') }}</div>
+        <button class="text-xs text-red-700 font-semibold">{{ __('admin.filter') }}</button>
       </div>
-      <a href="#" class="text-sm text-red-700 font-semibold hover:underline">{{ __('admin.view_all') }} (80)</a>
+      <div class="mt-4 h-60 rounded-2xl bg-gray-50 border border-gray-100 grid place-items-center text-gray-400">
+        {{ __('admin.chart_placeholder') }}
+      </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-      @forelse($reviews as $review)
-        <x-admin.review-card :status="$review['status']" :text="$review['text']" :name="$review['name']" :meta="$review['meta']" />
-      @empty
-        <div class="text-sm text-gray-500">{{ __('admin.no_recent_reviews') }}</div>
-      @endforelse
+    <div class="bg-white border border-gray-100 rounded-[24px] p-5 shadow-soft">
+      <div class="flex items-center justify-between">
+        <div class="text-sm font-semibold text-gray-900">{{ __('admin.user_growth') }}</div>
+        <div class="text-xs text-gray-400">{{ __('admin.last_14_days') }}</div>
+      </div>
+      <div class="mt-4 space-y-3">
+        @foreach(['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] as $m)
+          <div class="flex items-center gap-3">
+            <div class="w-8 text-xs text-gray-500">{{ $m }}</div>
+            <div class="flex-1 h-2 rounded-full bg-gray-100 overflow-hidden">
+              <div class="h-2 rounded-full bg-red-800" style="width: {{ rand(30, 95) }}%"></div>
+            </div>
+            <div class="text-[10px] text-gray-400">( {{ rand(120, 900) }} )</div>
+          </div>
+        @endforeach
+      </div>
+    </div>
+  </div>
+
+  {{-- Bottom Row --}}
+  <div class="mt-5 grid grid-cols-1 lg:grid-cols-3 gap-5">
+    <div class="lg:col-span-2 bg-white border border-gray-100 rounded-[24px] p-5 shadow-soft">
+      <div class="text-sm font-semibold text-gray-900">{{ __('admin.recent_reviews_moderation') }}</div>
+      <div class="mt-4 overflow-x-auto">
+        <table class="min-w-full text-sm">
+          <thead>
+            <tr class="text-left text-xs text-gray-500">
+              <th class="py-2">{{ __('admin.name') }}</th>
+              <th class="py-2">{{ __('admin.reviews') }}</th>
+              <th class="py-2">{{ __('admin.rating') }}</th>
+              <th class="py-2 text-right">{{ __('admin.actions') }}</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            @forelse($reviews as $review)
+              <tr>
+                <td class="py-3 font-medium text-gray-900">{{ $review['name'] ?? '-' }}</td>
+                <td class="py-3 text-gray-600">{{ \Illuminate\Support\Str::limit($review['text'] ?? '', 60) }}</td>
+                <td class="py-3 text-gray-700">{{ $review['rating'] ?? '-' }}</td>
+                <td class="py-3 text-right">
+                  <a href="#" class="text-xs font-semibold text-red-700">{{ __('admin.view') }}</a>
+                </td>
+              </tr>
+            @empty
+              <tr>
+                <td colspan="4" class="py-6 text-center text-gray-500">{{ __('admin.no_recent_reviews') }}</td>
+              </tr>
+            @endforelse
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="bg-white border border-gray-100 rounded-[24px] p-5 shadow-soft">
+      <div class="text-sm font-semibold text-gray-900">{{ __('admin.top_rated_brands') }}</div>
+      <div class="mt-4 space-y-4">
+        @for($i = 0; $i < 4; $i++)
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-gray-100 grid place-items-center text-gray-600">🏷️</div>
+              <div>
+                <div class="text-sm font-semibold text-gray-900">Brand {{ $i + 1 }}</div>
+                <div class="text-xs text-gray-500">{{ __('admin.restaurant') }}</div>
+              </div>
+            </div>
+            <div class="text-xs text-gray-700">😍 ({{ number_format(rand(40, 50) / 10, 1) }})</div>
+          </div>
+        @endfor
+      </div>
     </div>
   </div>
 @endsection
