@@ -89,7 +89,8 @@
 
       <div class="rounded-[26px] bg-white border border-gray-100 shadow-soft overflow-hidden">
         <div class="relative h-32 bg-gray-100">
-          <img src="{{ $cover }}" alt="{{ $b->name_en }}" class="w-full h-full object-cover">
+          <img src="{{ $cover }}" alt="{{ $b->name_en }}" class="w-full h-full object-cover"
+               onerror="this.onerror=null;this.src='{{ asset('assets/images/category-placeholder.png') }}';">
 
           <form method="POST" action="{{ route('admin.brands.toggle', $b) }}" class="absolute top-3 left-3 rtl-toggle">
             @csrf
@@ -127,7 +128,8 @@
             <div class="min-w-0">
               <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-full bg-gray-50 overflow-hidden border border-gray-100 grid place-items-center flex-shrink-0">
-                  <img src="{{ $logo }}" class="w-9 h-9 object-cover" alt="logo">
+                  <img src="{{ $logo }}" class="w-9 h-9 object-cover" alt="logo"
+                       onerror="this.onerror=null;this.src='{{ asset('assets/images/category-icon-placeholder.png') }}';">
                 </div>
                 <div class="min-w-0">
                   <div class="text-sm font-semibold text-gray-900 truncate">{{ $b->name_en }}</div>
