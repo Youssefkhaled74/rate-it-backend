@@ -34,13 +34,13 @@
 
       <div class="mt-4 flex items-center justify-between">
         <div class="text-xs text-gray-500">
-          👍 8 helpful • 📷 1 photo • ⚠️ Low rating • Negative keywords
+          👍 8 {{ __('admin.helpful') }} • 📷 1 {{ __('admin.photo') }} • ⚠️ {{ __('admin.low_rating') }} • {{ __('admin.negative_keywords') }}
         </div>
       </div>
 
       <div class="mt-4 flex items-center gap-3">
         <button class="flex-1 rounded-full bg-red-800 text-white py-3 text-sm font-semibold hover:bg-red-900 transition">
-          Quick Reply
+          {{ __('admin.quick_reply') }}
         </button>
         <button class="w-12 h-12 rounded-full border border-gray-200 bg-white grid place-items-center">
           ➜
