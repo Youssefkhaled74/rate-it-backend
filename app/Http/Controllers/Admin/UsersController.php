@@ -123,15 +123,12 @@ class UsersController extends Controller
             foreach ($rows as $row) {
                 $colNum = 1;
                 foreach ($row as $key => $value) {
+                    $colLetter = $this->excelColumnLetter($colNum);
+                    $cellRef = $colLetter . $rowNum;
                     if ($key === 'phone') {
-                        $sheet->setCellValueExplicitByColumnAndRow(
-                            $colNum,
-                            $rowNum,
-                            (string) $value,
-                            DataType::TYPE_STRING
-                        );
+                        $sheet->setCellValueExplicit($cellRef, (string) $value, DataType::TYPE_STRING);
                     } else {
-                        $sheet->setCellValueByColumnAndRow($colNum, $rowNum, $value);
+                        $sheet->setCellValue($cellRef, $value);
                     }
                     $colNum++;
                 }
@@ -167,5 +164,16 @@ class UsersController extends Controller
         return response($csv)
             ->header('Content-Type', 'text/csv')
             ->header('Content-Disposition', "attachment; filename=\"{$fileName}\"");
+    }
+
+    protected function excelColumnLetter(int $colNum): string
+    {
+        $letter = '';
+        while ($colNum > 0) {
+            $mod = ($colNum - 1) % 26;
+            $letter = chr(65 + $mod) . $letter;
+            $colNum = intdiv($colNum - 1, 26);
+        }
+        return $letter;
     }
 }
