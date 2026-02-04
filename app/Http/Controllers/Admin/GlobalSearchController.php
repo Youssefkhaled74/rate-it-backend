@@ -31,6 +31,8 @@ class GlobalSearchController extends Controller
 
         // Users
         $userSelect = ['id', 'name', 'email'];
+        $hasFullName = Schema::hasColumn('users', 'full_name');
+        if ($hasFullName) $userSelect[] = 'full_name';
         foreach (['avatar_path','avatar','photo_path','picture'] as $col) {
             if (Schema::hasColumn('users', $col)) $userSelect[] = $col;
         }
@@ -45,10 +47,21 @@ class GlobalSearchController extends Controller
             ->limit($limit)
             ->get();
 
+        if ($hasFullName) {
+            $users = $users->concat(
+                User::query()
+                    ->select(array_unique($userSelect))
+                    ->where('full_name', 'like', "%{$q}%")
+                    ->limit($limit)
+                    ->get()
+            );
+            $users = $users->unique('id')->values();
+        }
+
         foreach ($users as $u) {
             $items[] = [
                 'type' => 'User',
-                'label' => $u->name ?? 'User',
+                'label' => $u->name ?? ($u->full_name ?? 'User'),
                 'sub' => $u->email ?? '',
                 'url' => route('admin.users.show', $u),
                 'image' => $this->resolveUserAvatar($u) ?: asset('assets/images/userdefultphoto.png'),
