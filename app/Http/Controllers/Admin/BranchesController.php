@@ -1,12 +1,12 @@
-﻿<?php
+<?php
 
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
-use App\\Models\\Place;
-use App\\Models\\City;
-use App\\Models\\Area;
+use App\Models\Place;
+use App\Models\City;
+use App\Models\Area;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -87,6 +87,7 @@ class BranchesController extends Controller
         $data['is_active'] = (bool) $request->boolean('is_active', true);
         $data['qr_code_value'] = (string) Str::uuid();
         $data['qr_generated_at'] = now();
+        $data['brand_id'] = Place::query()->whereKey($data['place_id'])->value('brand_id');
 
         Branch::create($data);
 
@@ -134,6 +135,7 @@ class BranchesController extends Controller
         }
 
         $data['is_active'] = (bool) $request->boolean('is_active', false);
+        $data['brand_id'] = Place::query()->whereKey($data['place_id'])->value('brand_id');
 
         $branch->update($data);
 

@@ -78,7 +78,7 @@
     @foreach($branches as $br)
       @php
         $placeName = $br->place?->display_name ?: 'Place';
-        $brandName = $br->place?->brand?->name_en ?: '-';
+        $brandName = $br->brand?->name_en ?: ($br->place?->brand?->name_en ?: '-');
       @endphp
 
       <div class="rounded-[26px] bg-white border border-gray-100 shadow-soft overflow-hidden">

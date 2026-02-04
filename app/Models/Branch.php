@@ -28,6 +28,7 @@ class Branch extends Model
         'is_active',
         'city_id',
         'area_id',
+        'brand_id',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -51,6 +52,11 @@ class Branch extends Model
     public function place()
     {
         return $this->belongsTo(Place::class, 'place_id');
+    }
+
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class, 'brand_id');
     }
 
     public function reviews()
