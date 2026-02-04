@@ -4,6 +4,7 @@ namespace App\Services\Admin;
 
 use App\Models\User;
 use App\Models\Review;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
@@ -12,13 +13,77 @@ class UsersService
 {
     public function listUsers(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
-        $select\ = ['id','name','full_name','email','phone','gender_id','nationality_id','city_id','area_id','created_at'];
+        return $this->buildUsersQuery($filters)
+            ->orderBy('created_at','desc')
+            ->paginate($perPage);
+    }
+
+    public function exportUsers(array $filters = []): array
+    {
+        $locale = app()->getLocale();
+        $hasBlocked = Schema::hasColumn('users', 'is_blocked');
+
+        return $this->buildUsersQuery($filters)
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function (User $u) use ($locale, $hasBlocked) {
+                $name = $u->full_name ?: ($u->name ?? '');
+                $gender = $u->gender;
+                $nationality = $u->nationality;
+                $city = $u->city;
+                $area = $u->area;
+
+                $genderName = $gender
+                    ? ($locale === 'ar'
+                        ? ($gender->name_ar ?? $gender->name ?? $gender->name_en ?? $gender->code)
+                        : ($gender->name_en ?? $gender->name ?? $gender->code))
+                    : __('admin.unspecified');
+
+                $nationalityName = $nationality
+                    ? ($locale === 'ar'
+                        ? ($nationality->name_ar ?? $nationality->name ?? $nationality->country_name ?? $nationality->name_en ?? $nationality->iso_code)
+                        : ($nationality->name_en ?? $nationality->country_name ?? $nationality->name ?? $nationality->iso_code))
+                    : __('admin.unspecified');
+
+                $cityName = $city
+                    ? ($locale === 'ar' ? ($city->name_ar ?? $city->name_en) : ($city->name_en ?? $city->name_ar))
+                    : __('admin.unspecified');
+
+                $areaName = $area
+                    ? ($locale === 'ar' ? ($area->name_ar ?? $area->name_en) : ($area->name_en ?? $area->name_ar))
+                    : __('admin.unspecified');
+
+                $status = $hasBlocked
+                    ? ($u->is_blocked ? __('admin.inactive') : __('admin.active'))
+                    : __('admin.active');
+
+                return [
+                    'id' => $u->id,
+                    'name' => $name,
+                    'email' => $u->email ?? '',
+                    'phone' => $u->phone ?? '',
+                    'gender' => $genderName,
+                    'nationality' => $nationalityName,
+                    'city' => $cityName,
+                    'area' => $areaName,
+                    'reviews' => (int) ($u->reviews_count ?? 0),
+                    'created_at' => optional($u->created_at)->format('Y-m-d H:i'),
+                    'status' => $status,
+                ];
+            })
+            ->toArray();
+    }
+
+    protected function buildUsersQuery(array $filters = []): Builder
+    {
+        $select = ['id','name','full_name','email','phone','gender_id','nationality_id','city_id','area_id','created_at'];
 
         // include avatar-like columns if present
         $avatarCandidates = ['avatar_path','avatar','photo_path','picture'];
         foreach ($avatarCandidates as $col) {
             if (Schema::hasColumn('users', $col)) $select[] = $col;
         }
+        if (Schema::hasColumn('users', 'is_blocked')) $select[] = 'is_blocked';
 
         $query = User::query()->select(array_unique($select))->with(['gender','nationality','city','area']);
 
@@ -33,9 +98,7 @@ class UsersService
         }
 
         // include reviews count
-        $query->withCount('reviews');
-
-        return $query->orderBy('created_at','desc')->paginate($perPage);
+        return $query->withCount('reviews');
     }
 
     /**

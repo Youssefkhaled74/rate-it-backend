@@ -127,8 +127,17 @@
       </form>
     </div>
 
-    {{-- Right icons like UI --}}
+    {{-- Right actions like UI --}}
     <div class="flex items-center gap-3">
+      <a href="{{ route('admin.users.export', request()->query()) }}"
+         class="h-11 inline-flex items-center gap-2 rounded-full bg-white border border-gray-200 px-4 text-sm font-semibold text-red-900 shadow-sm hover:bg-gray-50 transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M12 3v12"/>
+          <path d="M8 11l4 4 4-4"/>
+          <path d="M20 21H4"/>
+        </svg>
+        Export
+      </a>
       <button type="button"
               class="w-11 h-11 rounded-full bg-white border border-gray-200 grid place-items-center text-red-900 shadow-sm hover:bg-gray-50 transition"
               aria-label="{{ __('admin.settings') }}">

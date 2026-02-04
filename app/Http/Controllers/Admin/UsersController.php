@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use App\Modules\User\Lookups\Models\Gender;
 use App\Modules\User\Lookups\Models\Nationality;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class UsersController extends Controller
 {
@@ -86,5 +89,79 @@ class UsersController extends Controller
         $this->authorize('view', $user);
         $data = $this->service->getUserProfile($user);
         return view('admin.users.show', $data);
+    }
+
+    public function export(Request $request)
+    {
+        $this->authorize('viewAny', User::class);
+        $filters = $request->only(['q']);
+        $rows = $this->service->exportUsers($filters);
+
+        $headers = [
+            'ID',
+            'Name',
+            'Email',
+            'Phone',
+            'Gender',
+            'Nationality',
+            'City',
+            'Area',
+            'Reviews',
+            'Created At',
+            'Status',
+        ];
+
+        if (class_exists(Spreadsheet::class)) {
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+
+            $sheet->fromArray($headers, null, 'A1');
+            $sheet->getStyle('A1:K1')->getFont()->setBold(true);
+            $sheet->freezePane('A2');
+
+            $rowNum = 2;
+            foreach ($rows as $row) {
+                $colNum = 1;
+                foreach ($row as $key => $value) {
+                    $cell = $sheet->getCellByColumnAndRow($colNum, $rowNum);
+                    if ($key === 'phone') {
+                        $cell->setValueExplicit((string) $value, DataType::TYPE_STRING);
+                    } else {
+                        $cell->setValue($value);
+                    }
+                    $colNum++;
+                }
+                $rowNum++;
+            }
+
+            $lastRow = max(1, count($rows) + 1);
+            $sheet->setAutoFilter("A1:K{$lastRow}");
+
+            foreach (range('A', 'K') as $col) {
+                $sheet->getColumnDimension($col)->setAutoSize(true);
+            }
+
+            $writer = new Xlsx($spreadsheet);
+            $tmp = tempnam(sys_get_temp_dir(), 'users_') . '.xlsx';
+            $writer->save($tmp);
+
+            $fileName = 'users-export-' . now()->format('Ymd_His') . '.xlsx';
+            return response()->download($tmp, $fileName)->deleteFileAfterSend(true);
+        }
+
+        // Fallback to CSV if Spreadsheet isn't available
+        $fileName = 'users-export-' . now()->format('Ymd_His') . '.csv';
+        $handle = fopen('php://temp', 'r+');
+        fputcsv($handle, $headers);
+        foreach ($rows as $row) {
+            fputcsv($handle, array_values($row));
+        }
+        rewind($handle);
+        $csv = stream_get_contents($handle);
+        fclose($handle);
+
+        return response($csv)
+            ->header('Content-Type', 'text/csv')
+            ->header('Content-Disposition', "attachment; filename=\"{$fileName}\"");
     }
 }
