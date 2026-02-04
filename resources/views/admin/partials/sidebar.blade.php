@@ -5,13 +5,13 @@
     ['label' => __('admin.dashboard'), 'route' => 'admin.dashboard', 'icon' => 'grid'],
     ['label' => __('admin.categories'), 'route' => 'admin.categories.index', 'icon' => 'layers'],
     ['label' => __('admin.brands'), 'route' => 'admin.brands.index', 'icon' => 'tag'],
-    ['label' => __('admin.places'), 'route' => 'admin.places.index', 'icon' => 'layers'],
-    ['label' => __('admin.branches'), 'route' => 'admin.branches.index', 'icon' => 'layers'],
+    ['label' => __('admin.places'), 'route' => 'admin.places.index', 'icon' => 'home'],
+    ['label' => __('admin.branches'), 'route' => 'admin.branches.index', 'icon' => 'branch'],
     ['label' => __('admin.users'), 'route' => 'admin.users.index', 'icon' => 'users'],
-    ['label' => __('admin.lookups'), 'route' => 'admin.lookups.index', 'icon' => 'layers'],
-    ['label' => __('admin.rewards_system'), 'route' => 'admin.rewards.index', 'icon' => 'star'],
-    ['label' => __('admin.rating_questions'), 'route' => 'admin.rating-questions.index', 'icon' => 'star'],
-    ['label' => __('admin.banners_onboarding'), 'route' => 'admin.banners.index', 'icon' => 'star'],
+    ['label' => __('admin.lookups'), 'route' => 'admin.lookups.index', 'icon' => 'search'],
+    ['label' => __('admin.rewards_system'), 'route' => 'admin.rewards.index', 'icon' => 'trophy'],
+    ['label' => __('admin.rating_questions'), 'route' => 'admin.rating-questions.index', 'icon' => 'checklist'],
+    ['label' => __('admin.banners_onboarding'), 'route' => 'admin.banners.index', 'icon' => 'flag'],
     ['label' => __('admin.settings'), 'route' => 'admin.settings.index', 'icon' => 'gear'],
   ];
 
@@ -40,6 +40,13 @@
       'users' => '<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
       'star' => '<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l3 7 7 .6-5.3 4.6 1.6 7-6.3-3.8-6.3 3.8 1.6-7L2 9.6 9 9z"/></svg>',
       'gear' => '<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7z"/><path d="M19.4 15a7.9 7.9 0 0 0 .1-2l2-1.2-2-3.4-2.3.6a8 8 0 0 0-1.7-1L15 3h-6l-.5 3a8 8 0 0 0-1.7 1L4.5 6.4l-2 3.4 2 1.2a8 8 0 0 0 0 2l-2 1.2 2 3.4 2.3-.6a8 8 0 0 0 1.7 1L9 21h6l.5-3a8 8 0 0 0 1.7-1l2.3.6 2-3.4-2.1-1.2z"/></svg>',
+      'pin' => '<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-4.6-7-11a7 7 0 0 1 14 0c0 6.4-7 11-7 11z"/><circle cx="12" cy="10" r="3"/></svg>',
+      'home' => '<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>',
+      'branch' => '<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="12" r="3"/><path d="M8.7 7.6l6.6 3.5M8.7 16.4l6.6-3.5"/></svg>',
+      'search' => '<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>',
+      'trophy' => '<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 4h8v3a4 4 0 1 1-8 0z"/><path d="M6 4H4a2 2 0 0 0 2 2"/><path d="M18 4h2a2 2 0 0 1-2 2"/><path d="M12 12v4"/><path d="M8 20h8"/><path d="M10 16h4"/></svg>',
+      'checklist' => '<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 6h11"/><path d="M9 12h11"/><path d="M9 18h11"/><path d="M4 6l1 1 2-2"/><path d="M4 12l1 1 2-2"/><path d="M4 18l1 1 2-2"/></svg>',
+      'flag' => '<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4v16"/><path d="M4 5h12l-1.5 3L16 11H4z"/></svg>',
       default => '<span class="w-5 h-5 inline-block"></span>',
     };
   };

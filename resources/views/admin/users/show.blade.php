@@ -68,7 +68,9 @@
           ?? optional($user->nationality)->iso_code
           ?? ($user->nationality ?? '-');
 
-          $cityText = $user->city ?? '-';
+          $cityText = app()->getLocale() === 'ar'
+            ? ($user->city?->name_ar ?? $user->city?->name_en ?? '-')
+            : ($user->city?->name_en ?? $user->city?->name_ar ?? '-');
           @endphp
 
           {{-- Phone --}}
@@ -185,9 +187,12 @@
       ?? data_get($r, 'place_name')
       ?? 'Place';
 
-      $ago = optional($r->created_at)->diffForHumans() ?? '';
-      $text = $r->comment ?? $r->review_text ?? $r->text ?? '';
-      $emoji = $r->sentiment_emoji ?? '😍'; // optional
+      $createdAt = data_get($r, 'created_at');
+      $ago = $createdAt instanceof \Illuminate\Support\Carbon
+        ? $createdAt->diffForHumans()
+        : (\Illuminate\Support\Carbon::parse($createdAt)->diffForHumans() ?? '');
+      $text = data_get($r, 'comment') ?? data_get($r, 'review_text') ?? data_get($r, 'text') ?? '';
+      $emoji = data_get($r, 'sentiment_emoji') ?? '😍'; // optional
       $quality = $r->quality_rating ?? null;
       $price = $r->price_rating ?? null;
       $thumb = data_get($r,'photo_url') ?? data_get($r,'cover') ?? null;
