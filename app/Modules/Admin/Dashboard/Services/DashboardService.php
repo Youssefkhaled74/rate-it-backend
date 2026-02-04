@@ -96,7 +96,7 @@ class DashboardService
 
         // Filter by category if provided
         if ($categoryId) {
-            $query->whereHas('subcategory', fn($q) => $q->where('category_id', $categoryId));
+            $query->whereHas('brand', fn($q) => $q->whereHas('subcategory', fn($sq) => $sq->where('category_id', $categoryId)));
         }
 
         // Apply sorting based on metric
@@ -194,8 +194,8 @@ class DashboardService
             $query->where('branch_id', (int) $branchId);
         }
         if ($categoryId) {
-            $query->whereHas('place', fn($q) => 
-                $q->whereHas('subcategory', fn($sq) => $sq->where('category_id', $categoryId))
+            $query->whereHas('place', fn($q) =>
+                $q->whereHas('brand', fn($bq) => $bq->whereHas('subcategory', fn($sq) => $sq->where('category_id', $categoryId)))
             );
         }
 

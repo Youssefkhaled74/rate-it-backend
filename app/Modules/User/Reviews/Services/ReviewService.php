@@ -52,8 +52,8 @@ class ReviewService
         }
 
         // Instrumentation: log branch and subcategory
-        $subcat = optional(optional($branch)->place)->subcategory_id;
-        Log::debug('review.create.branch_info', ['branch_id' => $branch->id, 'place_id' => $branch->place_id, 'subcategory_id' => $subcat]);
+        $subcat = optional(optional($branch)->brand)->subcategory_id;
+        Log::debug('review.create.branch_info', ['branch_id' => $branch->id, 'place_id' => $branch->place_id, 'brand_id' => $branch->brand_id, 'subcategory_id' => $subcat]);
 
         // Cooldown check
         $cooldownDays = (int) $branch->review_cooldown_days;

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Brand;
+use App\Models\Subcategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
@@ -47,7 +48,8 @@ class BrandsController extends Controller
 
     public function create()
     {
-        return view('admin.brands.create');
+        $subcategories = Subcategory::query()->orderBy('name_en')->get();
+        return view('admin.brands.create', compact('subcategories'));
     }
 
     public function store(Request $request)
@@ -59,6 +61,7 @@ class BrandsController extends Controller
             'description_ar' => ['nullable', 'string'],
             'logo' => ['nullable', 'image', 'max:4096'],
             'cover_image' => ['nullable', 'image', 'max:6144'],
+            'subcategory_id' => ['nullable', 'exists:subcategories,id'],
             'is_active' => ['nullable', 'boolean'],
         ]);
 
@@ -81,7 +84,8 @@ class BrandsController extends Controller
 
     public function edit(Brand $brand)
     {
-        return view('admin.brands.edit', compact('brand'));
+        $subcategories = Subcategory::query()->orderBy('name_en')->get();
+        return view('admin.brands.edit', compact('brand', 'subcategories'));
     }
 
     public function update(Request $request, Brand $brand)
@@ -93,6 +97,7 @@ class BrandsController extends Controller
             'description_ar' => ['nullable', 'string'],
             'logo' => ['nullable', 'image', 'max:4096'],
             'cover_image' => ['nullable', 'image', 'max:6144'],
+            'subcategory_id' => ['nullable', 'exists:subcategories,id'],
             'is_active' => ['nullable', 'boolean'],
         ]);
 

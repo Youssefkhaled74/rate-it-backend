@@ -32,6 +32,11 @@ class Subcategory extends Model
         return $this->hasMany(RatingCriteria::class, 'subcategory_id');
     }
 
+    public function brands()
+    {
+        return $this->hasMany(Brand::class, 'subcategory_id');
+    }
+
     /**
      * Determine if this subcategory is ready to be used by branches/places.
      * Rules:

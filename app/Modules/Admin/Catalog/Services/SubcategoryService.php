@@ -6,6 +6,7 @@ use App\Models\Subcategory;
 use App\Models\RatingCriteria;
 use App\Models\Place;
 use App\Models\Branch;
+use App\Models\Brand;
 
 class SubcategoryService
 {
@@ -52,6 +53,11 @@ class SubcategoryService
         // Prevent deletion if any place references this subcategory
         if (Place::where('subcategory_id', $id)->exists()) {
             throw new \RuntimeException('subcategory.delete_blocked.places');
+        }
+
+        // Prevent deletion if any brand references this subcategory
+        if (Brand::where('subcategory_id', $id)->exists()) {
+            throw new \RuntimeException('subcategory.delete_blocked.brands');
         }
 
         // Prevent deletion if any branch exists under places of this subcategory

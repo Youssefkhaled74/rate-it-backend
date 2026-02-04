@@ -62,11 +62,6 @@
         <div class="text-sm font-semibold text-gray-800">Address</div>
         <div class="text-sm text-gray-600 mt-2">{{ $branch->address }}</div>
       </div>
-
-      <div class="mt-4">
-        <div class="text-sm font-semibold text-gray-800">Working Hours</div>
-        <pre class="mt-2 text-xs bg-gray-50 border border-gray-100 rounded-2xl p-4 overflow-auto">{{ $branch->working_hours ? json_encode($branch->working_hours, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) : '-' }}</pre>
-      </div>
     </div>
   </div>
 
@@ -99,7 +94,37 @@
 
         <div class="mt-4">
           <div class="text-sm font-semibold text-gray-800">Working Hours</div>
-          <pre class="mt-2 text-xs bg-gray-50 border border-gray-100 rounded-2xl p-4 overflow-auto">{{ $branch->working_hours ? json_encode($branch->working_hours, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) : '-' }}</pre>
+          @php
+            $wh = $branch->working_hours ?? [];
+            $dayLabels = [
+              'sat' => 'Saturday',
+              'sun' => 'Sunday',
+              'mon' => 'Monday',
+              'tue' => 'Tuesday',
+              'wed' => 'Wednesday',
+              'thu' => 'Thursday',
+              'fri' => 'Friday',
+            ];
+          @endphp
+          @if(!empty($wh) && is_array($wh))
+            <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+              @foreach($dayLabels as $key => $label)
+                @php
+                  $open = $wh[$key]['open'] ?? null;
+                  $close = $wh[$key]['close'] ?? null;
+                  $isClosed = empty($open) && empty($close);
+                @endphp
+                <div class="rounded-2xl border border-gray-100 bg-gray-50 p-4 flex items-center justify-between">
+                  <div class="text-sm font-semibold text-gray-900">{{ $label }}</div>
+                  <div class="text-xs {{ $isClosed ? 'text-gray-400' : 'text-gray-700 font-semibold' }}">
+                    {{ $isClosed ? 'Closed' : ($open . ' - ' . $close) }}
+                  </div>
+                </div>
+              @endforeach
+            </div>
+          @else
+            <div class="mt-2 text-sm text-gray-500">No working hours set.</div>
+          @endif
         </div>
       </div>
     </div>

@@ -33,6 +33,18 @@
     >
   </div>
 
+  <x-admin.select
+    name="subcategory_id"
+    label="Subcategory"
+    placeholder="Choose subcategory"
+  >
+    @foreach($subcategories ?? [] as $sub)
+      <option value="{{ $sub->id }}" {{ (string) old('subcategory_id', $brand->subcategory_id ?? '') === (string) $sub->id ? 'selected' : '' }}>
+        {{ $sub->name_en ?? $sub->name_ar ?? 'Subcategory' }}
+      </option>
+    @endforeach
+  </x-admin.select>
+
   <div>
     <label class="text-sm font-medium text-gray-700">Description (EN)</label>
     <textarea

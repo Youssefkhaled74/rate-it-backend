@@ -28,6 +28,9 @@
         <div>
           <div class="text-xl font-semibold text-gray-900">{{ $brand->name_en }}</div>
           <div class="text-sm text-gray-500">{{ $brand->name_ar ?: '-' }}</div>
+          <div class="text-xs text-gray-500 mt-1">
+            Subcategory: {{ $brand->subcategory?->name_en ?: ($brand->subcategory?->name_ar ?? '-') }}
+          </div>
         </div>
       </div>
 

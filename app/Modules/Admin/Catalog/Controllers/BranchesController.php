@@ -37,9 +37,10 @@ class BranchesController extends BaseApiController
     {
         $place = Place::find($request->input('place_id'));
         if (! $place) return $this->error('Place not found', null, 404);
-        // If place references a subcategory, ensure the subcategory is configured with criteria
-        if ($place->subcategory_id) {
-            $sub = $place->subcategory;
+        // If brand references a subcategory, ensure the subcategory is configured with criteria
+        $brandSub = optional($place->brand)->subcategory;
+        if ($brandSub) {
+            $sub = $brandSub;
             if (! $sub || ! $sub->isReadyForUse()) {
                 return $this->error('subcategory.not_ready', null, 422);
             }
@@ -58,11 +59,12 @@ class BranchesController extends BaseApiController
 
     public function update(UpdateBranchRequest $request, $id)
     {
-        // Ensure the branch's place/subcategory is still valid for usage
+        // Ensure the branch's brand/subcategory is still valid for usage
         $existing = $this->service->find((int) $id);
         if (! $existing) return $this->error('Not found', null, 404);
-        if ($existing->place && $existing->place->subcategory_id) {
-            $sub = $existing->place->subcategory;
+        $brandSub = $existing->brand?->subcategory;
+        if ($brandSub) {
+            $sub = $brandSub;
             if (! $sub || ! $sub->isReadyForUse()) {
                 return $this->error('subcategory.not_ready', null, 422);
             }

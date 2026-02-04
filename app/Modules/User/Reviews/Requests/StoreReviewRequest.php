@@ -60,7 +60,7 @@ class StoreReviewRequest extends FormRequest
             $sessionToken = $this->input('session_token');
             if ($sessionToken) {
                 $session = \App\Models\BranchQrSession::where('session_token', $sessionToken)->first();
-                $subCategoryId = optional(optional($session)->branch)->place ? optional($session->branch->place)->subcategory_id : null;
+                $subCategoryId = optional(optional($session)->branch)->brand ? optional($session->branch->brand)->subcategory_id : null;
             }
 
             foreach ($answers as $i => $ans) {

@@ -16,7 +16,7 @@ class CriteriaResolver
      */
     public function getForBranch(Branch $branch)
     {
-        $subcategoryId = optional($branch->place)->subcategory_id;
+        $subcategoryId = optional($branch->brand)->subcategory_id;
         if (! $subcategoryId) {
             return collect();
         }
