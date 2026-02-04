@@ -21,11 +21,21 @@ class UserPolicy
 
     public function viewAny($user)
     {
+        // Allow admin panel access to list/search users
+        if ($user instanceof Admin) {
+            return true;
+        }
+
         return false;
     }
 
     public function view($user, User $model)
     {
+        // Allow admin panel access to view user details
+        if ($user instanceof Admin) {
+            return true;
+        }
+
         return false;
     }
 }
