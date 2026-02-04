@@ -66,7 +66,7 @@
           <div class="flex items-center gap-3">
             <div class="w-8 text-xs text-gray-500">{{ $m }}</div>
             <div class="flex-1 h-2 rounded-full bg-gray-100 overflow-hidden">
-              <div class="h-2 rounded-full bg-red-800" style="width: {{ rand(30, 95) }}%"></div>
+              <div class="h-2 rounded-full bg-red-800 js-bar" data-width="{{ rand(30, 95) }}"></div>
             </div>
             <div class="text-[10px] text-gray-400">( {{ rand(120, 900) }} )</div>
           </div>
@@ -140,6 +140,18 @@
     </div>
   </div>
 @endsection
+
+@push('scripts')
+  <script>
+    (function(){
+      document.querySelectorAll('.js-bar[data-width]').forEach(function(el){
+        const w = parseInt(el.getAttribute('data-width'), 10);
+        if (!Number.isFinite(w)) return;
+        el.style.width = w + '%';
+      });
+    })();
+  </script>
+@endpush
 
 
 

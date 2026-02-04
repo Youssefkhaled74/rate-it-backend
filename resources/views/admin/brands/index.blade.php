@@ -102,8 +102,9 @@
           </form>
 
           <div class="absolute top-3 right-3 rtl-dots">
-            <button type="button" class="w-9 h-9 rounded-full bg-white/90 border border-gray-100 grid place-items-center text-gray-700 hover:bg-white"
-                    onclick="toggleMenu('brandmenu-{{ $b->id }}')">
+            <button type="button"
+                    class="w-9 h-9 rounded-full bg-white/90 border border-gray-100 grid place-items-center text-gray-700 hover:bg-white"
+                    data-menu="brandmenu-{{ $b->id }}">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                 <circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/>
               </svg>
@@ -153,16 +154,19 @@
 </div>
 
 <script>
-  function toggleMenu(id){
-    const el = document.getElementById(id);
-    if(!el) return;
-    el.classList.toggle('hidden');
-  }
   document.addEventListener('click', function(e){
+    const btn = e.target.closest('[data-menu]');
+    if (btn) {
+      const id = btn.getAttribute('data-menu');
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle('hidden');
+      return;
+    }
+
     document.querySelectorAll('[id^="brandmenu-"]').forEach(m => {
-      const btn = m.previousElementSibling;
+      const toggle = document.querySelector(`[data-menu="${m.id}"]`);
       if(m.contains(e.target)) return;
-      if(btn && btn.contains(e.target)) return;
+      if(toggle && toggle.contains(e.target)) return;
       m.classList.add('hidden');
     });
   });

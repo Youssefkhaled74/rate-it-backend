@@ -25,6 +25,7 @@
     }
   </script>
   
+  @stack('styles')
   <style>
     /* Ensures the font looks crisp on all browsers */
     body {
@@ -187,5 +188,6 @@
 
     })();
   </script>
+  @stack('scripts')
 </body>
 </html>

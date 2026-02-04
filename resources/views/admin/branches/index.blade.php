@@ -24,9 +24,38 @@
             class="w-full rounded-2xl border border-gray-200 bg-white/80 pl-11 pr-4 py-3 text-sm outline-none rtl-search-input
                    focus:border-red-300 focus:ring-4 focus:ring-red-100 transition"
           >
+          @if(request('status'))
+            <input type="hidden" name="status" value="{{ request('status') }}">
+          @endif
+          @if(request('brand_id'))
+            <input type="hidden" name="brand_id" value="{{ request('brand_id') }}">
+          @endif
         </form>
       </div>
 
+      <div class="w-full max-w-xs">
+        <form method="get">
+          <select
+            name="brand_id"
+            class="w-full rounded-2xl border border-gray-200 bg-white/80 px-4 py-3 text-sm outline-none
+                   focus:border-red-300 focus:ring-4 focus:ring-red-100 transition"
+            onchange="this.form.submit()"
+          >
+            <option value="">All Brands</option>
+            @foreach($brands as $brand)
+              <option value="{{ $brand->id }}" {{ (string) $brandId === (string) $brand->id ? 'selected' : '' }}>
+                {{ $brand->name_en ?? $brand->name_ar ?? 'Brand' }}
+              </option>
+            @endforeach
+          </select>
+          @if(request('q'))
+            <input type="hidden" name="q" value="{{ request('q') }}">
+          @endif
+          @if(request('status'))
+            <input type="hidden" name="status" value="{{ request('status') }}">
+          @endif
+        </form>
+      </div>
 
     </div>
   </div>

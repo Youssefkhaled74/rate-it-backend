@@ -7,6 +7,7 @@ use App\Models\Branch;
 use App\Models\Place;
 use App\Models\City;
 use App\Models\Area;
+use App\Models\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -26,6 +27,7 @@ class BranchesController extends Controller
     {
         $q = trim((string) $request->get('q', ''));
         $status = $request->get('status');
+        $brandId = $request->get('brand_id');
 
         $base = Branch::query()
             ->when($q !== '', function ($query) use ($q) {
@@ -38,6 +40,9 @@ class BranchesController extends Controller
                       ->orWhere('title_en', 'like', "%{$q}%")
                       ->orWhere('title_ar', 'like', "%{$q}%");
                 });
+            })
+            ->when(!empty($brandId), function ($query) use ($brandId) {
+                $query->where('brand_id', $brandId);
             });
 
         $totalBranches = (clone $base)->count();
@@ -52,10 +57,14 @@ class BranchesController extends Controller
             ->paginate(12)
             ->withQueryString();
 
+        $brands = Brand::query()->orderBy('name_en')->get();
+
         return view('admin.branches.index', compact(
             'branches',
             'q',
             'status',
+            'brandId',
+            'brands',
             'totalBranches',
             'activeBranches',
             'inactiveBranches'

@@ -37,8 +37,8 @@
               <span class="font-semibold text-gray-800">{{ $row['total'] }}</span>
             </div>
             <div class="mt-2 h-2 rounded-full bg-gray-100">
-              <div class="h-2 rounded-full bg-red-900"
-                   style="width: {{ $stats['total'] > 0 ? round(($row['total'] / $stats['total']) * 100) : 0 }}%"></div>
+              <div class="h-2 rounded-full bg-red-900 js-bar"
+                   data-width="{{ $stats['total'] > 0 ? round(($row['total'] / $stats['total']) * 100) : 0 }}"></div>
             </div>
           </div>
         @empty
@@ -57,8 +57,8 @@
               <span class="font-semibold text-gray-800">{{ $row['total'] }}</span>
             </div>
             <div class="mt-2 h-2 rounded-full bg-gray-100">
-              <div class="h-2 rounded-full bg-red-900"
-                   style="width: {{ $stats['total'] > 0 ? round(($row['total'] / $stats['total']) * 100) : 0 }}%"></div>
+              <div class="h-2 rounded-full bg-red-900 js-bar"
+                   data-width="{{ $stats['total'] > 0 ? round(($row['total'] / $stats['total']) * 100) : 0 }}"></div>
             </div>
           </div>
         @empty
@@ -254,3 +254,15 @@
   })();
 </script>
 @endsection
+
+@push('scripts')
+  <script>
+    (function(){
+      document.querySelectorAll('.js-bar[data-width]').forEach(function(el){
+        const w = parseInt(el.getAttribute('data-width'), 10);
+        if (!Number.isFinite(w)) return;
+        el.style.width = w + '%';
+      });
+    })();
+  </script>
+@endpush
