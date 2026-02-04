@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 namespace App\Services\Admin;
 
@@ -177,11 +177,11 @@ class UsersService
 
     protected function ratingEmoji(float $rating): string
     {
-        if ($rating >= 4.5) return 'ðŸ˜';
-        if ($rating >= 4) return 'ðŸ˜Š';
-        if ($rating >= 3) return 'ðŸ˜';
-        if ($rating >= 2) return 'ðŸ˜•';
-        return 'ðŸ˜¡';
+        if ($rating >= 4.5) return '😍';
+        if ($rating >= 4) return '😊';
+        if ($rating >= 3) return '😐';
+        if ($rating >= 2) return '😕';
+        return '😡';
     }
 }
 

@@ -1,7 +1,7 @@
 @extends('admin.layouts.app')
 
-@section('page_title','Dashboard')
-@section('title','Admin • Dashboard')
+@section('page_title', __('admin.dashboard'))
+@section('title', __('admin.dashboard_title'))
 
 @section('content')
   {{-- Welcome + Stats --}}
@@ -52,3 +52,4 @@
     </div>
   </div>
 @endsection
+

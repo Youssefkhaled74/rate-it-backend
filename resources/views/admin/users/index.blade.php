@@ -138,23 +138,6 @@
         </svg>
         Export
       </a>
-      <button type="button"
-              class="w-11 h-11 rounded-full bg-white border border-gray-200 grid place-items-center text-red-900 shadow-sm hover:bg-gray-50 transition"
-              aria-label="{{ __('admin.settings') }}">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7z"/>
-          <path d="M19.4 15a7.8 7.8 0 0 0 .1-2l2-1.2-2-3.4-2.3.7a7.6 7.6 0 0 0-1.7-1l-.3-2.4H9.8l-.3 2.4a7.6 7.6 0 0 0-1.7 1l-2.3-.7-2 3.4 2 1.2a7.8 7.8 0 0 0 .1 2l-2 1.2 2 3.4 2.3-.7c.5.4 1.1.7 1.7 1l.3 2.4h4.4l.3-2.4c.6-.3 1.2-.6 1.7-1l2.3.7 2-3.4-2-1.2z"/>
-        </svg>
-      </button>
-
-      <button type="button"
-              class="w-11 h-11 rounded-full bg-white border border-gray-200 grid place-items-center text-red-900 shadow-sm hover:bg-gray-50 transition"
-              aria-label="{{ __('admin.notifications') }}">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M18 8a6 6 0 10-12 0c0 7-3 7-3 7h18s-3 0-3-7"/>
-          <path d="M13.7 21a2 2 0 01-3.4 0"/>
-        </svg>
-      </button>
     </div>
   </div>
 
