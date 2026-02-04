@@ -32,7 +32,7 @@
     }
     /* Basic RTL layout fixes */
     :root {
-      --sidebar-w: 15rem;
+      --sidebar-w: 16.5rem;
       --sidebar-gap: 1.25rem;
     }
     /* Sidebar is fixed, so remove flow space to avoid double gaps */
@@ -51,12 +51,12 @@
     [dir="rtl"] .admin-logout { flex-direction: row-reverse; text-align: right; }
 
     /* Sidebar layout matching screenshot */
-    .admin-sidebar { width: 16.5rem; }
+    .admin-sidebar { width: var(--sidebar-w); }
     .admin-sidebar-inner {
       background: #8b1c1c;
       border-radius: 3rem;
       padding-block: 1.75rem;
-      padding-inline: 1.5rem;
+      padding-inline: 1.35rem;
       box-shadow: 0 30px 90px rgba(0,0,0,.18);
     }
     .admin-nav-item {

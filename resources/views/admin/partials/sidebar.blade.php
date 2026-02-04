@@ -53,7 +53,7 @@
 @endphp
 
 <aside class="admin-sidebar-spacer w-72 p-4">
-  <div class="admin-sidebar-fixed h-[calc(100vh-2rem)] fixed w-60 top-5 left-5 bottom-5 rounded-[42px] bg-red-900 text-white shadow-[0_30px_90px_rgba(0,0,0,.18)] px-6 py-7 flex flex-col">
+  <div class="admin-sidebar-fixed admin-sidebar admin-sidebar-inner h-[calc(100vh-2rem)] fixed top-5 left-5 bottom-5 text-white flex flex-col">
 
     {{-- Logo --}}
     <div class="flex items-center admin-logo-row mb-8">
@@ -73,8 +73,8 @@
 
         <a href="{{ Route::has($it['route']) ? route($it['route'], ['lang' => $currentLang]) : '#' }}"
            class="admin-nav-item group flex items-center gap-3 px-4 py-3 transition
-                  {{ $active ? 'bg-white/18' : 'hover:bg-white/10' }}">
-          <span class="text-white/90">{!! $iconSvg($it['icon']) !!}</span>
+                  {{ $active ? 'is-active' : '' }}">
+          <span class="admin-nav-icon text-white/90">{!! $iconSvg($it['icon']) !!}</span>
           <span class="admin-nav-text text-sm font-medium">{{ $it['label'] }}</span>
         </a>
       @endforeach
