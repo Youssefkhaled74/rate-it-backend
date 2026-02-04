@@ -28,7 +28,7 @@ class BrandsController extends Controller
         $inactiveBrands = (clone $base)->where('is_active', 0)->count();
 
         $brands = (clone $base)
-            ->withCount('places')
+            ->withCount(['places','branches'])
             ->when($status === 'active', fn ($q) => $q->where('is_active', 1))
             ->when($status === 'inactive', fn ($q) => $q->where('is_active', 0))
             ->orderBy('id', 'desc')

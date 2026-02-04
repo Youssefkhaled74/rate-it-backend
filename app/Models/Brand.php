@@ -21,4 +21,9 @@ class Brand extends Model
     {
         return $this->hasMany(Place::class, 'brand_id');
     }
+
+    public function branches()
+    {
+        return $this->hasMany(Branch::class, 'brand_id');
+    }
 }

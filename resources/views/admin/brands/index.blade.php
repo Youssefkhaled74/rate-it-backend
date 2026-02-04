@@ -136,7 +136,7 @@
               </div>
             </div>
             <div class="text-[11px] text-gray-500 whitespace-nowrap">
-              {{ $b->places_count }} Places
+              {{ $b->places_count }} {{ __('admin.places') }} · {{ $b->branches_count }} {{ __('admin.branches') }}
             </div>
           </div>
         </div>
