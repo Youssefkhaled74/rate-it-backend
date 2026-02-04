@@ -10,6 +10,7 @@ use App\Models\Area;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Encoding\Encoding;
 use Endroid\QrCode\ErrorCorrectionLevel;
@@ -74,6 +75,8 @@ class BranchesController extends Controller
         $data = $request->validate([
             'place_id' => ['required', 'exists:places,id'],
             'name' => ['nullable', 'string', 'max:255'],
+            'logo' => ['nullable', 'image', 'max:4096'],
+            'cover_image' => ['nullable', 'image', 'max:6144'],
             'address' => ['required', 'string', 'max:1000'],
             'city_id' => ['nullable','exists:cities,id'],
             'area_id' => ['nullable','exists:areas,id'],
@@ -97,6 +100,8 @@ class BranchesController extends Controller
         $data['qr_code_value'] = (string) Str::uuid();
         $data['qr_generated_at'] = now();
         $data['brand_id'] = Place::query()->whereKey($data['place_id'])->value('brand_id');
+        $data['logo'] = $this->saveImageToPublicAssets($request, 'logo', 'branches');
+        $data['cover_image'] = $this->saveImageToPublicAssets($request, 'cover_image', 'branches/covers');
 
         Branch::create($data);
 
@@ -124,6 +129,8 @@ class BranchesController extends Controller
         $data = $request->validate([
             'place_id' => ['required', 'exists:places,id'],
             'name' => ['nullable', 'string', 'max:255'],
+            'logo' => ['nullable', 'image', 'max:4096'],
+            'cover_image' => ['nullable', 'image', 'max:6144'],
             'address' => ['required', 'string', 'max:1000'],
             'city_id' => ['nullable','exists:cities,id'],
             'area_id' => ['nullable','exists:areas,id'],
@@ -146,6 +153,22 @@ class BranchesController extends Controller
         $data['is_active'] = (bool) $request->boolean('is_active', false);
         $data['brand_id'] = Place::query()->whereKey($data['place_id'])->value('brand_id');
 
+        $newLogo = $this->saveImageToPublicAssets($request, 'logo', 'branches');
+        if ($newLogo) {
+            $this->deletePublicAssetIfExists($branch->logo);
+            $data['logo'] = $newLogo;
+        } else {
+            unset($data['logo']);
+        }
+
+        $newCover = $this->saveImageToPublicAssets($request, 'cover_image', 'branches/covers');
+        if ($newCover) {
+            $this->deletePublicAssetIfExists($branch->cover_image);
+            $data['cover_image'] = $newCover;
+        } else {
+            unset($data['cover_image']);
+        }
+
         $branch->update($data);
 
         return redirect()
@@ -163,6 +186,8 @@ class BranchesController extends Controller
 
     public function destroy(Branch $branch)
     {
+        $this->deletePublicAssetIfExists($branch->logo);
+        $this->deletePublicAssetIfExists($branch->cover_image);
         $branch->delete();
 
         return back()->with('success', 'Branch deleted.');
@@ -240,6 +265,7 @@ class BranchesController extends Controller
     protected function resolveBranchLogoPath(Branch $branch): ?string
     {
         $candidates = [
+            $branch->logo,
             $branch->place?->logo,
             $branch->place?->brand?->logo,
         ];
@@ -262,6 +288,40 @@ class BranchesController extends Controller
         $mime = mime_content_type($path) ?: 'image/png';
         $data = base64_encode(file_get_contents($path));
         return 'data:' . $mime . ';base64,' . $data;
+    }
+
+    /**
+     * Save uploaded file into: public/assets/images/<folder>/
+     * Returns path like: assets/images/branches/xxx.png
+     */
+    private function saveImageToPublicAssets(Request $request, string $field, string $folder): ?string
+    {
+        if (! $request->hasFile($field)) return null;
+
+        $file = $request->file($field);
+        if (! $file->isValid()) return null;
+
+        $ext = strtolower($file->getClientOriginalExtension() ?: 'png');
+        $name = Str::uuid()->toString() . '.' . $ext;
+
+        $dir = public_path("assets/images/{$folder}");
+        if (! File::exists($dir)) {
+            File::makeDirectory($dir, 0755, true);
+        }
+
+        $file->move($dir, $name);
+
+        return "assets/images/{$folder}/{$name}";
+    }
+
+    private function deletePublicAssetIfExists(?string $path): void
+    {
+        if (! $path) return;
+
+        $full = public_path($path);
+        if (File::exists($full)) {
+            @File::delete($full);
+        }
     }
 }
 

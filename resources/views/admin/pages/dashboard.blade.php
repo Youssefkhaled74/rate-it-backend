@@ -110,20 +110,32 @@
     </div>
 
     <div class="bg-white border border-gray-100 rounded-[24px] p-5 shadow-soft">
-      <div class="text-sm font-semibold text-gray-900">{{ __('admin.top_rated_brands') }}</div>
+      <div class="text-sm font-semibold text-gray-900">{{ __('admin.recent_branches') }}</div>
       <div class="mt-4 space-y-4">
-        @for($i = 0; $i < 4; $i++)
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-gray-100 grid place-items-center text-gray-600">🏷️</div>
-              <div>
-                <div class="text-sm font-semibold text-gray-900">Brand {{ $i + 1 }}</div>
-                <div class="text-xs text-gray-500">{{ __('admin.restaurant') }}</div>
-              </div>
+        @forelse($branches ?? [] as $br)
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-2xl bg-gray-100 border border-gray-100 overflow-hidden flex-shrink-0">
+              @if(!empty($br['logo_url']))
+                <img src="{{ $br['logo_url'] }}" alt="Logo" class="w-full h-full object-cover">
+              @else
+                <div class="w-full h-full grid place-items-center text-gray-500 text-xs">
+                  {{ strtoupper(mb_substr($br['name'] ?? 'B', 0, 1)) }}
+                </div>
+              @endif
             </div>
-            <div class="text-xs text-gray-700">😍 ({{ number_format(rand(40, 50) / 10, 1) }})</div>
+            <div class="min-w-0">
+              <div class="text-sm font-semibold text-gray-900 truncate">{{ $br['name'] ?? '-' }}</div>
+              <div class="text-xs text-gray-500 truncate">{{ $br['brand'] ?? '' }}</div>
+            </div>
+            @if(!empty($br['cover_url']))
+              <div class="ml-auto w-16 h-10 rounded-xl overflow-hidden border border-gray-100">
+                <img src="{{ $br['cover_url'] }}" alt="Cover" class="w-full h-full object-cover">
+              </div>
+            @endif
           </div>
-        @endfor
+        @empty
+          <div class="text-sm text-gray-500">{{ __('admin.no_recent_branches') }}</div>
+        @endforelse
       </div>
     </div>
   </div>

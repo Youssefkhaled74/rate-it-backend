@@ -79,13 +79,23 @@
       @php
         $placeName = $br->place?->display_name ?: 'Place';
         $brandName = $br->brand?->name_en ?: ($br->place?->brand?->name_en ?: '-');
+        $coverUrl = $br->cover_url;
+        $logoUrl = $br->logo_url;
       @endphp
 
       <div class="rounded-[26px] bg-white border border-gray-100 shadow-soft overflow-hidden">
-        <div class="relative h-28 bg-gradient-to-br from-red-50 to-white">
+        <div class="relative h-28 {{ $coverUrl ? '' : 'bg-gradient-to-br from-red-50 to-white' }}">
+          @if($coverUrl)
+            <img src="{{ $coverUrl }}" alt="Cover" class="absolute inset-0 w-full h-full object-cover">
+            <div class="absolute inset-0 bg-black/10"></div>
+          @endif
           <div class="absolute inset-0 flex items-center justify-center">
-            <div class="w-14 h-14 rounded-2xl bg-white border border-gray-100 grid place-items-center text-red-900 font-semibold shadow-sm">
-              {{ strtoupper(mb_substr($placeName, 0, 1)) }}
+            <div class="w-14 h-14 rounded-2xl bg-white border border-gray-100 grid place-items-center text-red-900 font-semibold shadow-sm overflow-hidden">
+              @if($logoUrl)
+                <img src="{{ $logoUrl }}" alt="Logo" class="w-full h-full object-cover">
+              @else
+                {{ strtoupper(mb_substr($placeName, 0, 1)) }}
+              @endif
             </div>
           </div>
 

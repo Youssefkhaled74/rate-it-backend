@@ -18,6 +18,8 @@ class Branch extends Model
     protected $fillable = [
         'place_id',
         'name',
+        'logo',
+        'cover_image',
         'address',
         'lat',
         'lng',
@@ -45,6 +47,27 @@ class Branch extends Model
         'review_cooldown_days' => 'integer',
         'is_active' => 'boolean',
     ];
+
+    /**
+     * Accessors for media URLs with fallbacks.
+     */
+    public function getLogoUrlAttribute(): ?string
+    {
+        $path = $this->logo
+            ?: $this->place?->logo
+            ?: $this->place?->brand?->logo;
+
+        return $path ? asset($path) : null;
+    }
+
+    public function getCoverUrlAttribute(): ?string
+    {
+        $path = $this->cover_image
+            ?: $this->place?->cover_image
+            ?: $this->place?->brand?->cover_image;
+
+        return $path ? asset($path) : null;
+    }
 
     /**
      * Relations

@@ -30,7 +30,7 @@
       </div>
     @endif
 
-    <form method="POST" action="{{ route('admin.branches.store') }}" class="px-6 md:px-8 py-6">
+    <form method="POST" action="{{ route('admin.branches.store') }}" enctype="multipart/form-data" class="px-6 md:px-8 py-6">
       @csrf
       @include('admin.branches._form', ['branch' => null])
 

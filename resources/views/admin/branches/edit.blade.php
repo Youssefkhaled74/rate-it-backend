@@ -30,7 +30,7 @@
       </div>
     @endif
 
-    <form method="POST" action="{{ route('admin.branches.update', $branch) }}" class="px-6 md:px-8 py-6">
+    <form method="POST" action="{{ route('admin.branches.update', $branch) }}" enctype="multipart/form-data" class="px-6 md:px-8 py-6">
       @csrf
       @method('PUT')
       @include('admin.branches._form', ['branch' => $branch])

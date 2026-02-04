@@ -20,6 +20,7 @@ class DashboardController extends Controller
         $selectedStatus = $request->query('status', 'all');
         $stats = $this->service->getStats();
         $recent = $this->service->getRecentReviews($selectedStatus, 10);
+        $branches = $this->service->getRecentBranches(6);
 
         $welcomeName = auth()->guard('admin_web')->user()?->name ?? 'Admin';
 
@@ -27,6 +28,7 @@ class DashboardController extends Controller
             'stats' => $stats,
             'reviews' => $recent['items'],
             'counts' => $recent['counts'],
+            'branches' => $branches,
             'welcomeName' => $welcomeName,
             'selectedStatus' => $selectedStatus,
         ]);

@@ -23,6 +23,8 @@ return [
     'user_growth' => 'User Growth',
     'last_14_days' => 'last 14 days',
     'recent_reviews_moderation' => 'Recent Reviews Moderation',
+    'recent_branches' => 'Recent Branches',
+    'no_recent_branches' => 'No recent branches',
     'top_rated_brands' => 'Top Rated Brands',
     'restaurant' => 'Restaurant',
     'no_results' => 'No results',

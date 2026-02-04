@@ -46,6 +46,40 @@
   </div>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div>
+      <label class="text-sm font-medium text-gray-700">Branch Logo</label>
+      <input
+        type="file"
+        name="logo"
+        accept="image/*"
+        class="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
+               focus:border-red-300 focus:ring-4 focus:ring-red-100"
+      >
+      @if(!empty($branch?->logo))
+        <div class="mt-3 flex items-center gap-3">
+          <img src="{{ asset($branch->logo) }}" alt="Logo" class="w-12 h-12 rounded-xl object-cover border border-gray-100">
+          <div class="text-xs text-gray-500">Current logo</div>
+        </div>
+      @endif
+    </div>
+    <div>
+      <label class="text-sm font-medium text-gray-700">Cover Image</label>
+      <input
+        type="file"
+        name="cover_image"
+        accept="image/*"
+        class="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
+               focus:border-red-300 focus:ring-4 focus:ring-red-100"
+      >
+      @if(!empty($branch?->cover_image))
+        <div class="mt-3">
+          <img src="{{ asset($branch->cover_image) }}" alt="Cover" class="w-full max-w-sm h-28 rounded-2xl object-cover border border-gray-100">
+        </div>
+      @endif
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
     <x-admin.select
       name="city_id"
       label="City"

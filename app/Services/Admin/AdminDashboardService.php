@@ -5,6 +5,7 @@ namespace App\Services\Admin;
 use App\Models\Review;
 use App\Models\User;
 use App\Models\Brand;
+use App\Models\Branch;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Schema;
@@ -160,6 +161,30 @@ class AdminDashboardService
             }
 
             return ['items' => $mapped, 'counts' => $counts];
+        });
+    }
+
+    /**
+     * Return recent branches for dashboard.
+     */
+    public function getRecentBranches(int $limit = 6): array
+    {
+        return Cache::remember("admin_recent_branches_{$limit}", $this->cacheTtl, function () use ($limit) {
+            $branches = Branch::query()
+                ->with(['place','brand'])
+                ->orderBy('id', 'desc')
+                ->limit($limit)
+                ->get();
+
+            return $branches->map(function (Branch $b) {
+                return [
+                    'id' => $b->id,
+                    'name' => $b->name ?: ($b->place?->display_name ?? 'Branch'),
+                    'brand' => $b->brand?->name_en ?: ($b->place?->brand?->name_en ?? ''),
+                    'logo_url' => $b->logo_url,
+                    'cover_url' => $b->cover_url,
+                ];
+            })->toArray();
         });
     }
 }

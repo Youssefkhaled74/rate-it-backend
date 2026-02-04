@@ -23,6 +23,8 @@ return [
     'user_growth' => 'نمو المستخدمين',
     'last_14_days' => 'آخر 14 يومًا',
     'recent_reviews_moderation' => 'مراجعات حديثة للمراجعة',
+    'recent_branches' => 'فروع حديثة',
+    'no_recent_branches' => 'لا توجد فروع حديثة',
     'top_rated_brands' => 'أفضل العلامات تقييمًا',
     'restaurant' => 'مطعم',
     'no_results' => 'لا توجد نتائج',
