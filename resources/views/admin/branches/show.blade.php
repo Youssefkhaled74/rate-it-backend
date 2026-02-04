@@ -60,6 +60,36 @@
     </div>
   </div>
 
+  <div class="bg-white rounded-3xl shadow-soft border border-gray-100 overflow-hidden p-6">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <div class="text-lg font-semibold text-gray-900">Branch QR Code</div>
+        <div class="text-sm text-gray-500 mt-1">Print or share the QR code for this branch.</div>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="{{ route('admin.branches.qr', $branch) }}"
+           target="_blank"
+           class="rounded-2xl bg-white border border-gray-200 px-5 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
+          Open QR
+        </a>
+        <a href="{{ route('admin.branches.qr.pdf', $branch) }}"
+           target="_blank"
+           class="rounded-2xl bg-red-900 text-white px-5 py-2.5 text-sm font-semibold hover:bg-red-800 transition">
+          Print PDF
+        </a>
+      </div>
+    </div>
+
+    <div class="mt-6 flex flex-col items-center">
+      <div class="w-64 h-64 rounded-3xl border border-gray-100 bg-white grid place-items-center">
+        <img src="{{ route('admin.branches.qr', $branch) }}"
+             alt="Branch QR"
+             class="w-52 h-52 object-contain">
+      </div>
+      <div class="text-sm text-gray-600 mt-3 font-semibold">{{ $branch->name ?: $placeName }}</div>
+    </div>
+  </div>
+
   <div>
     <a href="{{ route('admin.branches.index') }}"
        class="rounded-2xl bg-white border border-gray-200 px-5 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">

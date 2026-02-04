@@ -9,6 +9,15 @@ use App\Models\City;
 use App\Models\Area;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\ErrorCorrectionLevel;
+use Endroid\QrCode\RoundBlockSizeMode;
+use Endroid\QrCode\Color\Color;
+use Endroid\QrCode\Writer\PngWriter;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 class BranchesController extends Controller
 {
@@ -157,6 +166,102 @@ class BranchesController extends Controller
         $branch->delete();
 
         return back()->with('success', 'Branch deleted.');
+    }
+
+    public function qr(Branch $branch)
+    {
+        $png = $this->buildBranchQrPng($branch);
+        return response($png, 200)->header('Content-Type', 'image/png');
+    }
+
+    public function qrPdf(Branch $branch)
+    {
+        $qrPng = $this->buildBranchQrPng($branch, 900);
+        $qrBase64 = 'data:image/png;base64,' . base64_encode($qrPng);
+
+        $rateitLogoPath = public_path('assets/images/Vector.png');
+        $rateitLogoBase64 = $this->fileToDataUri($rateitLogoPath);
+
+        $html = view('admin.branches.qr-pdf', [
+            'branch' => $branch,
+            'qrBase64' => $qrBase64,
+            'rateitLogoBase64' => $rateitLogoBase64,
+        ])->render();
+
+        $options = new Options();
+        $options->set('isRemoteEnabled', true);
+        $options->set('isHtml5ParserEnabled', true);
+
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html, 'UTF-8');
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $fileName = 'branch-qr-' . $branch->id . '.pdf';
+        return response($dompdf->output(), 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'inline; filename="' . $fileName . '"');
+    }
+
+    protected function buildBranchQrPng(Branch $branch, int $size = 500): string
+    {
+        if (empty($branch->qr_code_value)) {
+            $branch->qr_code_value = (string) Str::uuid();
+            $branch->qr_generated_at = now();
+            $branch->save();
+        }
+
+        $logoPath = $this->resolveBranchLogoPath($branch);
+        $builder = Builder::create()
+            ->writer(new PngWriter())
+            ->writerOptions([])
+            ->data((string) $branch->qr_code_value)
+            ->encoding(new Encoding('UTF-8'))
+            ->errorCorrectionLevel(ErrorCorrectionLevel::High)
+            ->size($size)
+            ->margin(12)
+            ->roundBlockSizeMode(RoundBlockSizeMode::Margin)
+            ->foregroundColor(new Color(25, 25, 25))
+            ->backgroundColor(new Color(255, 255, 255));
+
+        if ($logoPath) {
+            $builder
+                ->logoPath($logoPath)
+                ->logoResizeToWidth((int) ($size * 0.22))
+                ->logoResizeToHeight((int) ($size * 0.22))
+                ->logoPunchoutBackground(true);
+        }
+
+        $result = $builder->build();
+
+        return $result->getString();
+    }
+
+    protected function resolveBranchLogoPath(Branch $branch): ?string
+    {
+        $candidates = [
+            $branch->place?->logo,
+            $branch->place?->brand?->logo,
+        ];
+
+        foreach ($candidates as $path) {
+            if (empty($path)) continue;
+            $publicPath = public_path($path);
+            if (file_exists($publicPath)) return $publicPath;
+            if (Storage::disk('public')->exists($path)) {
+                return storage_path('app/public/' . ltrim($path, '/'));
+            }
+        }
+
+        return null;
+    }
+
+    protected function fileToDataUri(?string $path): ?string
+    {
+        if (empty($path) || ! file_exists($path)) return null;
+        $mime = mime_content_type($path) ?: 'image/png';
+        $data = base64_encode(file_get_contents($path));
+        return 'data:' . $mime . ';base64,' . $data;
     }
 }
 

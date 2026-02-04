@@ -103,6 +103,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('branches', [\App\Http\Controllers\Admin\BranchesController::class, 'index'])->name('branches.index');
         Route::get('branches/create', [\App\Http\Controllers\Admin\BranchesController::class, 'create'])->name('branches.create');
         Route::get('branches/{branch}', [\App\Http\Controllers\Admin\BranchesController::class, 'show'])->name('branches.show');
+        Route::get('branches/{branch}/qr', [\App\Http\Controllers\Admin\BranchesController::class, 'qr'])->name('branches.qr');
+        Route::get('branches/{branch}/qr/pdf', [\App\Http\Controllers\Admin\BranchesController::class, 'qrPdf'])->name('branches.qr.pdf');
         Route::post('branches', [\App\Http\Controllers\Admin\BranchesController::class, 'store'])->name('branches.store');
         Route::get('branches/{branch}/edit', [\App\Http\Controllers\Admin\BranchesController::class, 'edit'])->name('branches.edit');
         Route::match(['put', 'patch'], 'branches/{branch}', [\App\Http\Controllers\Admin\BranchesController::class, 'update'])->name('branches.update');
