@@ -8,6 +8,7 @@
     ['label' => __('admin.places'), 'route' => 'admin.places.index', 'icon' => 'layers'],
     ['label' => __('admin.branches'), 'route' => 'admin.branches.index', 'icon' => 'layers'],
     ['label' => __('admin.users'), 'route' => 'admin.users.index', 'icon' => 'users'],
+    ['label' => __('admin.lookups'), 'route' => 'admin.lookups.index', 'icon' => 'layers'],
     ['label' => __('admin.rewards_system'), 'route' => 'admin.rewards.index', 'icon' => 'star'],
     ['label' => __('admin.rating_questions'), 'route' => 'admin.rating-questions.index', 'icon' => 'star'],
     ['label' => __('admin.banners_onboarding'), 'route' => 'admin.banners.index', 'icon' => 'star'],

@@ -138,4 +138,41 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::patch('rating-questions/{question}/toggle', [\App\Http\Controllers\Admin\RatingQuestionsController::class, 'toggle'])->name('rating-questions.toggle');
         Route::delete('rating-questions/{question}', [\App\Http\Controllers\Admin\RatingQuestionsController::class, 'destroy'])->name('rating-questions.destroy');
     });
+
+    // User Lookups
+    Route::middleware('auth:admin_web')->group(function () {
+        Route::get('lookups', [\App\Http\Controllers\Admin\LookupsController::class, 'index'])->name('lookups.index');
+
+        Route::get('lookups/genders', [\App\Http\Controllers\Admin\GendersController::class, 'index'])->name('lookups.genders.index');
+        Route::get('lookups/genders/create', [\App\Http\Controllers\Admin\GendersController::class, 'create'])->name('lookups.genders.create');
+        Route::post('lookups/genders', [\App\Http\Controllers\Admin\GendersController::class, 'store'])->name('lookups.genders.store');
+        Route::get('lookups/genders/{gender}/edit', [\App\Http\Controllers\Admin\GendersController::class, 'edit'])->name('lookups.genders.edit');
+        Route::match(['put', 'patch'], 'lookups/genders/{gender}', [\App\Http\Controllers\Admin\GendersController::class, 'update'])->name('lookups.genders.update');
+        Route::patch('lookups/genders/{gender}/toggle', [\App\Http\Controllers\Admin\GendersController::class, 'toggle'])->name('lookups.genders.toggle');
+        Route::delete('lookups/genders/{gender}', [\App\Http\Controllers\Admin\GendersController::class, 'destroy'])->name('lookups.genders.destroy');
+
+        Route::get('lookups/nationalities', [\App\Http\Controllers\Admin\NationalitiesController::class, 'index'])->name('lookups.nationalities.index');
+        Route::get('lookups/nationalities/create', [\App\Http\Controllers\Admin\NationalitiesController::class, 'create'])->name('lookups.nationalities.create');
+        Route::post('lookups/nationalities', [\App\Http\Controllers\Admin\NationalitiesController::class, 'store'])->name('lookups.nationalities.store');
+        Route::get('lookups/nationalities/{nationality}/edit', [\App\Http\Controllers\Admin\NationalitiesController::class, 'edit'])->name('lookups.nationalities.edit');
+        Route::match(['put', 'patch'], 'lookups/nationalities/{nationality}', [\App\Http\Controllers\Admin\NationalitiesController::class, 'update'])->name('lookups.nationalities.update');
+        Route::patch('lookups/nationalities/{nationality}/toggle', [\App\Http\Controllers\Admin\NationalitiesController::class, 'toggle'])->name('lookups.nationalities.toggle');
+        Route::delete('lookups/nationalities/{nationality}', [\App\Http\Controllers\Admin\NationalitiesController::class, 'destroy'])->name('lookups.nationalities.destroy');
+
+        Route::get('lookups/cities', [\App\Http\Controllers\Admin\CitiesController::class, 'index'])->name('lookups.cities.index');
+        Route::get('lookups/cities/create', [\App\Http\Controllers\Admin\CitiesController::class, 'create'])->name('lookups.cities.create');
+        Route::post('lookups/cities', [\App\Http\Controllers\Admin\CitiesController::class, 'store'])->name('lookups.cities.store');
+        Route::get('lookups/cities/{city}/edit', [\App\Http\Controllers\Admin\CitiesController::class, 'edit'])->name('lookups.cities.edit');
+        Route::match(['put', 'patch'], 'lookups/cities/{city}', [\App\Http\Controllers\Admin\CitiesController::class, 'update'])->name('lookups.cities.update');
+        Route::patch('lookups/cities/{city}/toggle', [\App\Http\Controllers\Admin\CitiesController::class, 'toggle'])->name('lookups.cities.toggle');
+        Route::delete('lookups/cities/{city}', [\App\Http\Controllers\Admin\CitiesController::class, 'destroy'])->name('lookups.cities.destroy');
+
+        Route::get('lookups/areas', [\App\Http\Controllers\Admin\AreasController::class, 'index'])->name('lookups.areas.index');
+        Route::get('lookups/areas/create', [\App\Http\Controllers\Admin\AreasController::class, 'create'])->name('lookups.areas.create');
+        Route::post('lookups/areas', [\App\Http\Controllers\Admin\AreasController::class, 'store'])->name('lookups.areas.store');
+        Route::get('lookups/areas/{area}/edit', [\App\Http\Controllers\Admin\AreasController::class, 'edit'])->name('lookups.areas.edit');
+        Route::match(['put', 'patch'], 'lookups/areas/{area}', [\App\Http\Controllers\Admin\AreasController::class, 'update'])->name('lookups.areas.update');
+        Route::patch('lookups/areas/{area}/toggle', [\App\Http\Controllers\Admin\AreasController::class, 'toggle'])->name('lookups.areas.toggle');
+        Route::delete('lookups/areas/{area}', [\App\Http\Controllers\Admin\AreasController::class, 'destroy'])->name('lookups.areas.destroy');
+    });
 });

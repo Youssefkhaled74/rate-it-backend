@@ -31,29 +31,30 @@
     >
   </div>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-    <div>
-      <label class="text-sm font-medium text-gray-700">{{ __('admin.subcategories') }}</label>
-      <select name="subcategory_id" class="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
-                    focus:border-red-300 focus:ring-4 focus:ring-red-100" required>
-        <option value="">{{ __('admin.subcategories') }}</option>
-        @foreach($subcategories as $sub)
-          <option value="{{ $sub->id }}" {{ (string) old('subcategory_id', $question->subcategory_id ?? '') === (string) $sub->id ? 'selected' : '' }}>
-            {{ $sub->name_en }} {{ $sub->category?->name_en ? '— ' . $sub->category->name_en : '' }}
-          </option>
-        @endforeach
-      </select>
-    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <x-admin.select
+      name="subcategory_id"
+      :label="__('admin.subcategories')"
+      :placeholder="__('admin.subcategories')"
+      :required="true"
+    >
+      @foreach($subcategories as $sub)
+        <option value="{{ $sub->id }}" {{ (string) old('subcategory_id', $question->subcategory_id ?? '') === (string) $sub->id ? 'selected' : '' }}>
+          {{ $sub->name_en }} {{ $sub->category?->name_en ? '— ' . $sub->category->name_en : '' }}
+        </option>
+      @endforeach
+    </x-admin.select>
 
-    <div>
-      <label class="text-sm font-medium text-gray-700">{{ __('admin.type') }}</label>
-      <select name="type" id="question_type" class="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
-                    focus:border-red-300 focus:ring-4 focus:ring-red-100" required>
-        <option value="RATING" {{ $type === 'RATING' ? 'selected' : '' }}>{{ __('admin.rating') }} (1–5)</option>
-        <option value="YES_NO" {{ $type === 'YES_NO' ? 'selected' : '' }}>{{ __('admin.yes_no') }}</option>
-        <option value="MULTIPLE_CHOICE" {{ $type === 'MULTIPLE_CHOICE' ? 'selected' : '' }}>{{ __('admin.multiple_choice') }}</option>
-      </select>
-    </div>
+    <x-admin.select
+      name="type"
+      id="question_type"
+      :label="__('admin.type')"
+      :required="true"
+    >
+      <option value="RATING" {{ $type === 'RATING' ? 'selected' : '' }}>{{ __('admin.rating') }} (1–5)</option>
+      <option value="YES_NO" {{ $type === 'YES_NO' ? 'selected' : '' }}>{{ __('admin.yes_no') }}</option>
+      <option value="MULTIPLE_CHOICE" {{ $type === 'MULTIPLE_CHOICE' ? 'selected' : '' }}>{{ __('admin.multiple_choice') }}</option>
+    </x-admin.select>
   </div>
 
   <div id="choices_block" class="{{ $type === 'MULTIPLE_CHOICE' ? '' : 'hidden' }}">
@@ -182,3 +183,4 @@
     }
   })();
 </script>
+

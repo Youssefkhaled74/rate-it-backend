@@ -24,3 +24,4 @@ class City extends Model
         return $this->hasMany(Area::class, 'city_id');
     }
 }
+

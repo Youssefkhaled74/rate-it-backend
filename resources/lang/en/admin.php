@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 return [
     'dashboard' => 'Dashboard',
@@ -123,4 +123,29 @@ return [
     'inactive_branches' => 'Inactive Branches',
     'active_categories' => 'Active Categories',
     'inactive_categories' => 'Inactive Categories',
+    'lookups' => 'Lookups',
+    'genders' => 'Genders',
+    'nationalities' => 'Nationalities',
+    'cities' => 'Cities',
+    'areas' => 'Areas',
+    'manage_genders' => 'Manage genders lookup values',
+    'manage_nationalities' => 'Manage nationalities lookup values',
+    'manage_cities' => 'Manage cities lookup values',
+    'manage_areas' => 'Manage areas lookup values',
+    'add_gender' => 'Add Gender',
+    'edit_gender' => 'Edit Gender',
+    'add_nationality' => 'Add Nationality',
+    'edit_nationality' => 'Edit Nationality',
+    'add_city' => 'Add City',
+    'edit_city' => 'Edit City',
+    'add_area' => 'Add Area',
+    'edit_area' => 'Edit Area',
+    'code' => 'Code',
+    'name_en' => 'Name (EN)',
+    'name_ar' => 'Name (AR)',
+    'country_code' => 'Country Code',
+    'flag_style' => 'Flag Style',
+    'flag_size' => 'Flag Size',
+    'choose_city' => 'Choose city',
+    'visible' => 'visible in app',
 ];

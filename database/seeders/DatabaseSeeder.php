@@ -26,7 +26,9 @@ class DatabaseSeeder extends Seeder
             \Database\Seeders\OnboardingScreensSeeder::class,
             \Database\Seeders\GendersSeeder::class,
             \Database\Seeders\NationalitiesSeeder::class,
-                \Database\Seeders\HomeBannersSeeder::class,
+            \Database\Seeders\CitiesSeeder::class,
+            \Database\Seeders\AreasSeeder::class,
+            \Database\Seeders\HomeBannersSeeder::class,
         ]);
 
         // Optionally run demo data only in local or when DB_SEED_DEMO=true

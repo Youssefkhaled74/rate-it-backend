@@ -43,20 +43,17 @@
         >
       </div>
 
-      <div>
-        <label class="text-sm font-medium text-gray-700">Vendors</label>
-        <select
-          name="brand_id"
-          class="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
-                 focus:border-red-300 focus:ring-4 focus:ring-red-100">
-          <option value="">Select vendor</option>
-          @foreach($brands as $brand)
-            <option value="{{ $brand->id }}" {{ (string) old('brand_id', $banner?->brand_id ?? '') === (string) $brand->id ? 'selected' : '' }}>
-              {{ $brand->name_en }}
-            </option>
-          @endforeach
-        </select>
-      </div>
+      <x-admin.select
+        name="brand_id"
+        label="Vendors"
+        placeholder="Select vendor"
+      >
+        @foreach($brands as $brand)
+          <option value="{{ $brand->id }}" {{ (string) old('brand_id', $banner?->brand_id ?? '') === (string) $brand->id ? 'selected' : '' }}>
+            {{ $brand->name_en }}
+          </option>
+        @endforeach
+      </x-admin.select>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>

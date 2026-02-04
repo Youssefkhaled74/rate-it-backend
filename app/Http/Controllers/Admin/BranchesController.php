@@ -1,10 +1,12 @@
-<?php
+﻿<?php
 
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
-use App\Models\Place;
+use App\\Models\\Place;
+use App\\Models\\City;
+use App\\Models\\Area;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -53,7 +55,9 @@ class BranchesController extends Controller
     public function create()
     {
         $places = Place::query()->orderBy('name_en')->get();
-        return view('admin.branches.create', compact('places'));
+        $cities = City::query()->orderBy('name_en')->get();
+        $areas = Area::query()->orderBy('name_en')->get();
+        return view('admin.branches.create', compact('places','cities','areas'));
     }
 
     public function store(Request $request)
@@ -62,6 +66,10 @@ class BranchesController extends Controller
             'place_id' => ['required', 'exists:places,id'],
             'name' => ['nullable', 'string', 'max:255'],
             'address' => ['required', 'string', 'max:1000'],
+            'city_id' => ['nullable','exists:cities,id'],
+            'area_id' => ['nullable','exists:areas,id'],
+            'city_id' => ['nullable','exists:cities,id'],
+            'area_id' => ['nullable','exists:areas,id'],
             'lat' => ['nullable', 'numeric'],
             'lng' => ['nullable', 'numeric'],
             'review_cooldown_days' => ['nullable', 'integer', 'min:0'],
@@ -96,7 +104,9 @@ class BranchesController extends Controller
     public function edit(Branch $branch)
     {
         $places = Place::query()->orderBy('name_en')->get();
-        return view('admin.branches.edit', compact('branch', 'places'));
+        $cities = City::query()->orderBy('name_en')->get();
+        $areas = Area::query()->orderBy('name_en')->get();
+        return view('admin.branches.edit', compact('branch','places','cities','areas'));
     }
 
     public function update(Request $request, Branch $branch)
@@ -105,6 +115,10 @@ class BranchesController extends Controller
             'place_id' => ['required', 'exists:places,id'],
             'name' => ['nullable', 'string', 'max:255'],
             'address' => ['required', 'string', 'max:1000'],
+            'city_id' => ['nullable','exists:cities,id'],
+            'area_id' => ['nullable','exists:areas,id'],
+            'city_id' => ['nullable','exists:cities,id'],
+            'area_id' => ['nullable','exists:areas,id'],
             'lat' => ['nullable', 'numeric'],
             'lng' => ['nullable', 'numeric'],
             'review_cooldown_days' => ['nullable', 'integer', 'min:0'],
@@ -143,3 +157,5 @@ class BranchesController extends Controller
         return back()->with('success', 'Branch deleted.');
     }
 }
+
+

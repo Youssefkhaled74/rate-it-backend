@@ -11,31 +11,29 @@
 <div class="space-y-6">
 
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-    <div>
-      <label class="text-sm font-medium text-gray-700">Brand</label>
-      <select name="brand_id" class="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
-                    focus:border-red-300 focus:ring-4 focus:ring-red-100">
-        <option value="">None</option>
-        @foreach($brands as $brand)
-          <option value="{{ $brand->id }}" {{ (string) old('brand_id', $place->brand_id ?? '') === (string) $brand->id ? 'selected' : '' }}>
-            {{ $brand->name_en }}
-          </option>
-        @endforeach
-      </select>
-    </div>
+    <x-admin.select
+      name="brand_id"
+      label="Brand"
+      placeholder="None"
+    >
+      @foreach($brands as $brand)
+        <option value="{{ $brand->id }}" {{ (string) old('brand_id', $place->brand_id ?? '') === (string) $brand->id ? 'selected' : '' }}>
+          {{ $brand->name_en }}
+        </option>
+      @endforeach
+    </x-admin.select>
 
-    <div>
-      <label class="text-sm font-medium text-gray-700">Subcategory</label>
-      <select name="subcategory_id" class="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
-                    focus:border-red-300 focus:ring-4 focus:ring-red-100">
-        <option value="">None</option>
-        @foreach($subcategories as $sub)
-          <option value="{{ $sub->id }}" {{ (string) old('subcategory_id', $place->subcategory_id ?? '') === (string) $sub->id ? 'selected' : '' }}>
-            {{ $sub->name_en }}
-          </option>
-        @endforeach
-      </select>
-    </div>
+    <x-admin.select
+      name="subcategory_id"
+      label="Subcategory"
+      placeholder="None"
+    >
+      @foreach($subcategories as $sub)
+        <option value="{{ $sub->id }}" {{ (string) old('subcategory_id', $place->subcategory_id ?? '') === (string) $sub->id ? 'selected' : '' }}>
+          {{ $sub->name_en }}
+        </option>
+      @endforeach
+    </x-admin.select>
   </div>
 
   <div>

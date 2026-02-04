@@ -1,4 +1,4 @@
-@php
+﻿@php
   $isEdit = !empty($branch);
   $workingHoursValue = $isEdit && !empty($branch->working_hours)
     ? json_encode($branch->working_hours, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
@@ -7,18 +7,18 @@
 
 <div class="space-y-6">
 
-  <div>
-    <label class="text-sm font-medium text-gray-700">Place</label>
-    <select name="place_id" class="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
-                  focus:border-red-300 focus:ring-4 focus:ring-red-100" required>
-      <option value="">Choose place</option>
-      @foreach($places as $place)
-        <option value="{{ $place->id }}" {{ (string) old('place_id', $branch->place_id ?? '') === (string) $place->id ? 'selected' : '' }}>
-          {{ $place->display_name }}
-        </option>
-      @endforeach
-    </select>
-  </div>
+  <x-admin.select
+    name="place_id"
+    label="Place"
+    placeholder="Choose place"
+    :required="true"
+  >
+    @foreach($places as $place)
+      <option value="{{ $place->id }}" {{ (string) old('place_id', $branch->place_id ?? '') === (string) $place->id ? 'selected' : '' }}>
+        {{ $place->display_name }}
+      </option>
+    @endforeach
+  </x-admin.select>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
     <div>
@@ -43,6 +43,31 @@
                focus:border-red-300 focus:ring-4 focus:ring-red-100"
       >
     </div>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <x-admin.select
+      name="city_id"
+      label="City"
+      placeholder="Choose city"
+    >
+      @foreach($cities ?? [] as $city)
+        <option value="{{ $city->id }}" {{ (string) old('city_id', $branch->city_id ?? '') === (string) $city->id ? 'selected' : '' }}>
+          {{ $city->name_en }}
+        </option>
+      @endforeach
+    </x-admin.select>
+    <x-admin.select
+      name="area_id"
+      label="Area"
+      placeholder="Choose area"
+    >
+      @foreach($areas ?? [] as $area)
+        <option value="{{ $area->id }}" {{ (string) old('area_id', $branch->area_id ?? '') === (string) $area->id ? 'selected' : '' }}>
+          {{ $area->name_en }}
+        </option>
+      @endforeach
+    </x-admin.select>
   </div>
 
   <div>
@@ -104,7 +129,7 @@
 
       <span class="text-sm text-gray-700">
         <span class="font-semibold">Active</span>
-        <span class="text-gray-500">— visible in app</span>
+        <span class="text-gray-500">- visible in app</span>
       </span>
     </label>
   </div>

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Services\Admin;
 
@@ -12,7 +12,7 @@ class UsersService
 {
     public function listUsers(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
-        $select = ['id','name','full_name','email','phone','gender_id','nationality_id','created_at'];
+        $select\ = ['id','name','full_name','email','phone','gender_id','nationality_id','city_id','area_id','created_at'];
 
         // include avatar-like columns if present
         $avatarCandidates = ['avatar_path','avatar','photo_path','picture'];
@@ -20,7 +20,7 @@ class UsersService
             if (Schema::hasColumn('users', $col)) $select[] = $col;
         }
 
-        $query = User::query()->select(array_unique($select))->with(['gender','nationality']);
+        $query = User::query()->select(array_unique($select))->with(['gender','nationality','city','area']);
 
         if (! empty($filters['q'])) {
             $q = $filters['q'];
@@ -114,10 +114,11 @@ class UsersService
 
     protected function ratingEmoji(float $rating): string
     {
-        if ($rating >= 4.5) return '😍';
-        if ($rating >= 4) return '😊';
-        if ($rating >= 3) return '😐';
-        if ($rating >= 2) return '😕';
-        return '😡';
+        if ($rating >= 4.5) return 'ðŸ˜';
+        if ($rating >= 4) return 'ðŸ˜Š';
+        if ($rating >= 3) return 'ðŸ˜';
+        if ($rating >= 2) return 'ðŸ˜•';
+        return 'ðŸ˜¡';
     }
 }
+

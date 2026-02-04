@@ -37,13 +37,14 @@
                       focus:border-red-300 focus:ring-4 focus:ring-red-100 transition">
       </div>
 
-      <select name="status"
-              class="rounded-2xl border border-gray-200 bg-gray-50/50 px-4 py-3 text-sm outline-none
-                     focus:border-red-300 focus:ring-4 focus:ring-red-100 transition">
-        <option value="">All</option>
+            <x-admin.select
+        name="status"
+        placeholder="All"
+        selectClass="bg-gray-50/50 border-gray-200"
+      >
         <option value="active" {{ request('status')=='active' ? 'selected' : '' }}>Active</option>
         <option value="inactive" {{ request('status')=='inactive' ? 'selected' : '' }}>Inactive</option>
-      </select>
+      </x-admin.select>
 
       <button class="rounded-2xl bg-gray-900 text-white px-5 py-3 text-sm font-semibold hover:opacity-90 transition">
         Filter
@@ -182,3 +183,4 @@
   </div>
 </div>
 @endsection
+
