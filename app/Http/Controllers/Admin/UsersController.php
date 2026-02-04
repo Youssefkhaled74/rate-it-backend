@@ -123,11 +123,15 @@ class UsersController extends Controller
             foreach ($rows as $row) {
                 $colNum = 1;
                 foreach ($row as $key => $value) {
-                    $cell = $sheet->getCellByColumnAndRow($colNum, $rowNum);
                     if ($key === 'phone') {
-                        $cell->setValueExplicit((string) $value, DataType::TYPE_STRING);
+                        $sheet->setCellValueExplicitByColumnAndRow(
+                            $colNum,
+                            $rowNum,
+                            (string) $value,
+                            DataType::TYPE_STRING
+                        );
                     } else {
-                        $cell->setValue($value);
+                        $sheet->setCellValueByColumnAndRow($colNum, $rowNum, $value);
                     }
                     $colNum++;
                 }
