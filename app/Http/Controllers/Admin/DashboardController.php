@@ -21,6 +21,8 @@ class DashboardController extends Controller
         $stats = $this->service->getStats();
         $recent = $this->service->getRecentReviews($selectedStatus, 10);
         $branches = $this->service->getRecentBranches(6);
+        $reviewsChart = $this->service->getReviewsChart(7);
+        $userGrowth = $this->service->getUserGrowthMonthly(12);
 
         $welcomeName = auth()->guard('admin_web')->user()?->name ?? 'Admin';
 
@@ -31,6 +33,8 @@ class DashboardController extends Controller
             'branches' => $branches,
             'welcomeName' => $welcomeName,
             'selectedStatus' => $selectedStatus,
+            'reviewsChart' => $reviewsChart,
+            'userGrowth' => $userGrowth,
         ]);
     }
 }

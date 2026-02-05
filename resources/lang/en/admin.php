@@ -22,6 +22,7 @@ return [
     'chart_placeholder' => 'Chart',
     'user_growth' => 'User Growth',
     'last_14_days' => 'last 14 days',
+    'last_12_months' => 'last 12 months',
     'recent_reviews_moderation' => 'Recent Reviews Moderation',
     'recent_branches' => 'Recent Branches',
     'no_recent_branches' => 'No recent branches',

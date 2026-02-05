@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Schema;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 
 class AdminDashboardService
 {
@@ -186,5 +187,70 @@ class AdminDashboardService
                 ];
             })->toArray();
         });
+    }
+
+    /**
+     * Get reviews counts per day for the last N days (inclusive).
+     */
+    public function getReviewsChart(int $days = 7): array
+    {
+        $days = max(2, $days);
+        $end = Carbon::today();
+        $start = $end->copy()->subDays($days - 1);
+
+        $rows = Review::query()
+            ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+            ->whereBetween('created_at', [$start->copy()->startOfDay(), $end->copy()->endOfDay()])
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get()
+            ->keyBy('date');
+
+        $labels = [];
+        $values = [];
+
+        foreach (CarbonPeriod::create($start, $end) as $date) {
+            $key = $date->format('Y-m-d');
+            $labels[] = $date->format('l');
+            $values[] = (int) (($rows[$key]->count ?? 0));
+        }
+
+        return [
+            'labels' => $labels,
+            'values' => $values,
+        ];
+    }
+
+    /**
+     * Get user growth counts per month for the last N months (inclusive).
+     */
+    public function getUserGrowthMonthly(int $months = 12): array
+    {
+        $months = max(2, $months);
+        $end = Carbon::now()->startOfMonth();
+        $start = $end->copy()->subMonths($months - 1);
+
+        $rows = User::query()
+            ->selectRaw('DATE_FORMAT(created_at, "%Y-%m-01") as month, COUNT(*) as count')
+            ->whereBetween('created_at', [$start->copy()->startOfMonth(), $end->copy()->endOfMonth()])
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get()
+            ->keyBy('month');
+
+        $labels = [];
+        $values = [];
+
+        $period = CarbonPeriod::create($start, '1 month', $end);
+        foreach ($period as $date) {
+            $key = $date->format('Y-m-01');
+            $labels[] = $date->format('M');
+            $values[] = (int) (($rows[$key]->count ?? 0));
+        }
+
+        return [
+            'labels' => $labels,
+            'values' => $values,
+        ];
     }
 }

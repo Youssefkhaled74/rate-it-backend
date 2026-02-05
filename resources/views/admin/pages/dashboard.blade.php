@@ -23,11 +23,11 @@
         <div>
           <div class="text-xs text-gray-500">
             {{ __('admin.good_morning') }}
-            <span class="text-red-700 font-semibold">{{  ?? __('admin.admin') }}</span>
+            <span class="text-red-700 font-semibold">{{ $welcomeName ?? __('admin.admin') }}</span>
           </div>
-          @php  = (int) (['all'] ?? 0); @endphp
+          @php $headlineCount = (int) ($counts['all'] ?? 0); @endphp
           <div class="text-sm text-gray-700 mt-2">
-            {!! __('admin.dashboard_headline', ['count' => '<span class="text-red-700 font-semibold">' .  . '</span>']) !!}
+            {!! __('admin.dashboard_headline', ['count' => '<span class="text-red-700 font-semibold">' . $headlineCount . '</span>']) !!}
           </div>
         </div>
       </div>
@@ -56,24 +56,55 @@
         <div class="text-sm font-semibold text-gray-900">{{ __('admin.reviews_over_time') }}</div>
         <button class="text-xs text-red-700 font-semibold">{{ __('admin.filter') }}</button>
       </div>
-      <div class="mt-4 h-60 rounded-2xl bg-gray-50 border border-gray-100 grid place-items-center text-gray-400">
-        {{ __('admin.chart_placeholder') }}
+      @php
+        $chartLabels = $reviewsChart['labels'] ?? [];
+        $chartValues = $reviewsChart['values'] ?? [];
+        $chartCols = max(1, count($chartLabels));
+      @endphp
+      <div class="mt-4 rounded-2xl bg-white border border-gray-100 p-4">
+        <div id="reviewsChart" data-values='@json($chartValues)'>
+          <svg class="w-full h-52" viewBox="0 0 640 200" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="reviewsAreaFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#b91c1c" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="#b91c1c" stop-opacity="0"/>
+              </linearGradient>
+              <filter id="reviewsGlow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#b91c1c" flood-opacity="0.15"/>
+              </filter>
+            </defs>
+            <path id="reviewsArea" d="" fill="url(#reviewsAreaFill)"></path>
+            <path id="reviewsLine" d="" fill="none" stroke="#b91c1c" stroke-width="3" stroke-linecap="round" filter="url(#reviewsGlow)"></path>
+            <g id="reviewsDots"></g>
+          </svg>
+        </div>
+        <div class="mt-2 text-[11px] text-gray-500 grid gap-1" style="grid-template-columns: repeat({{ $chartCols }}, minmax(0, 1fr));">
+          @foreach($chartLabels as $label)
+            <div class="text-center">{{ $label }}</div>
+          @endforeach
+        </div>
       </div>
     </div>
 
     <div class="bg-white border border-gray-100 rounded-[24px] p-5 shadow-soft">
       <div class="flex items-center justify-between">
         <div class="text-sm font-semibold text-gray-900">{{ __('admin.user_growth') }}</div>
-        <div class="text-xs text-gray-400">{{ __('admin.last_14_days') }}</div>
+        <div class="text-xs text-gray-400">{{ __('admin.last_12_months') }}</div>
       </div>
+      @php
+        $growthLabels = $userGrowth['labels'] ?? [];
+        $growthValues = $userGrowth['values'] ?? [];
+        $growthMax = max(1, ...($growthValues ?: [1]));
+      @endphp
       <div class="mt-4 space-y-3">
-        @foreach(['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] as $m)
+        @foreach($growthLabels as $i => $label)
+          @php $value = (int) ($growthValues[$i] ?? 0); @endphp
           <div class="flex items-center gap-3">
-            <div class="w-8 text-xs text-gray-500">{{ $m }}</div>
+            <div class="w-8 text-xs text-gray-500">{{ $label }}</div>
             <div class="flex-1 h-2 rounded-full bg-gray-100 overflow-hidden">
-              <div class="h-2 rounded-full bg-red-800 js-bar" data-width="{{ rand(30, 95) }}"></div>
+              <div class="h-2 rounded-full bg-red-800" style="width: {{ round(($value / $growthMax) * 100) }}%"></div>
             </div>
-            <div class="text-[10px] text-gray-400">( {{ rand(120, 900) }} )</div>
+            <div class="text-[10px] text-gray-400">( {{ $value }} )</div>
           </div>
         @endforeach
       </div>
@@ -153,6 +184,67 @@
         const w = parseInt(el.getAttribute('data-width'), 10);
         if (!Number.isFinite(w)) return;
         el.style.width = w + '%';
+      });
+
+      const chartEl = document.getElementById('reviewsChart');
+      if (!chartEl) return;
+
+      let values = [];
+      try {
+        values = JSON.parse(chartEl.getAttribute('data-values') || '[]');
+      } catch (e) {
+        values = [];
+      }
+      if (!Array.isArray(values) || values.length < 2) return;
+
+      const svg = chartEl.querySelector('svg');
+      const area = chartEl.querySelector('#reviewsArea');
+      const line = chartEl.querySelector('#reviewsLine');
+      const dots = chartEl.querySelector('#reviewsDots');
+      if (!svg || !area || !line || !dots) return;
+
+      const width = 640;
+      const height = 200;
+      const pad = 18;
+
+      const max = Math.max.apply(null, values.concat([1]));
+      const min = Math.min.apply(null, values);
+      const range = Math.max(1, max - min);
+      const step = (width - pad * 2) / (values.length - 1);
+
+      function pointY(value){
+        const t = (value - min) / range;
+        return (height - pad) - t * (height - pad * 2);
+      }
+
+      const points = values.map(function(v, i){
+        const x = pad + step * i;
+        const y = pointY(v);
+        return [x, y];
+      });
+
+      const linePath = points.map(function(p, i){
+        return (i === 0 ? 'M' : 'L') + p[0].toFixed(2) + ' ' + p[1].toFixed(2);
+      }).join(' ');
+
+      const areaPath = linePath
+        + ' L ' + (pad + step * (values.length - 1)).toFixed(2) + ' ' + (height - pad).toFixed(2)
+        + ' L ' + pad.toFixed(2) + ' ' + (height - pad).toFixed(2)
+        + ' Z';
+
+      line.setAttribute('d', linePath);
+      area.setAttribute('d', areaPath);
+
+      dots.innerHTML = '';
+      points.forEach(function(p){
+        const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        c.setAttribute('cx', p[0].toFixed(2));
+        c.setAttribute('cy', p[1].toFixed(2));
+        c.setAttribute('r', '4');
+        c.setAttribute('fill', '#b91c1c');
+        c.setAttribute('stroke', '#fff');
+        c.setAttribute('stroke-width', '2');
+        dots.appendChild(c);
       });
     })();
   </script>

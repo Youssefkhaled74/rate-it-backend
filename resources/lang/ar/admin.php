@@ -22,6 +22,7 @@ return [
     'chart_placeholder' => 'المخطط',
     'user_growth' => 'نمو المستخدمين',
     'last_14_days' => 'آخر 14 يومًا',
+    'last_12_months' => 'آخر 12 شهرًا',
     'recent_reviews_moderation' => 'مراجعات حديثة للمراجعة',
     'recent_branches' => 'فروع حديثة',
     'no_recent_branches' => 'لا توجد فروع حديثة',
