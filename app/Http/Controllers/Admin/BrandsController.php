@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Models\Subcategory;
+use App\Models\VendorUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class BrandsController extends Controller
 {
@@ -85,7 +88,10 @@ class BrandsController extends Controller
     public function edit(Brand $brand)
     {
         $subcategories = Subcategory::query()->orderBy('name_en')->get();
-        return view('admin.brands.edit', compact('brand', 'subcategories'));
+        $vendorAdmin = VendorUser::where('role', 'VENDOR_ADMIN')
+            ->where('brand_id', $brand->id)
+            ->first();
+        return view('admin.brands.edit', compact('brand', 'subcategories', 'vendorAdmin'));
     }
 
     public function update(Request $request, Brand $brand)
@@ -141,6 +147,64 @@ class BrandsController extends Controller
         $brand->delete();
 
         return back()->with('success', 'Brand deleted.');
+    }
+
+    public function saveVendorAdmin(Request $request, Brand $brand)
+    {
+        $vendor = VendorUser::where('role', 'VENDOR_ADMIN')
+            ->where('brand_id', $brand->id)
+            ->first();
+
+        $rules = [
+            'name' => ['required', 'string', 'max:255'],
+            'phone' => [
+                'required',
+                'regex:/^[0-9+\-\s()]+$/',
+                'max:20',
+                Rule::unique('vendor_users', 'phone')->ignore($vendor?->id),
+            ],
+            'email' => [
+                'nullable',
+                'email',
+                'max:255',
+                Rule::unique('vendor_users', 'email')->ignore($vendor?->id),
+            ],
+        ];
+
+        if ($vendor) {
+            $rules['password'] = ['nullable', 'string', 'min:6', 'confirmed'];
+        } else {
+            $rules['password'] = ['required', 'string', 'min:6', 'confirmed'];
+        }
+
+        $data = $request->validate($rules);
+
+        if ($vendor) {
+            $updates = [
+                'name' => $data['name'],
+                'phone' => $data['phone'],
+                'email' => $data['email'] ?? null,
+            ];
+            if (!empty($data['password'])) {
+                $updates['password_hash'] = Hash::make($data['password']);
+            }
+            $vendor->update($updates);
+            $message = 'Brand admin updated.';
+        } else {
+            VendorUser::create([
+                'brand_id' => $brand->id,
+                'branch_id' => null,
+                'name' => $data['name'],
+                'phone' => $data['phone'],
+                'email' => $data['email'] ?? null,
+                'password_hash' => Hash::make($data['password']),
+                'role' => 'VENDOR_ADMIN',
+                'is_active' => true,
+            ]);
+            $message = 'Brand admin created.';
+        }
+
+        return back()->with('success', $message);
     }
 
     /**

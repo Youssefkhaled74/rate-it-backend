@@ -82,6 +82,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('brands', [\App\Http\Controllers\Admin\BrandsController::class, 'store'])->name('brands.store');
         Route::get('brands/{brand}/edit', [\App\Http\Controllers\Admin\BrandsController::class, 'edit'])->name('brands.edit');
         Route::match(['put', 'patch'], 'brands/{brand}', [\App\Http\Controllers\Admin\BrandsController::class, 'update'])->name('brands.update');
+        Route::post('brands/{brand}/vendor-admin', [\App\Http\Controllers\Admin\BrandsController::class, 'saveVendorAdmin'])
+            ->name('brands.vendor-admin.save');
         Route::patch('brands/{brand}/toggle', [\App\Http\Controllers\Admin\BrandsController::class, 'toggle'])->name('brands.toggle');
         Route::delete('brands/{brand}', [\App\Http\Controllers\Admin\BrandsController::class, 'destroy'])->name('brands.destroy');
     });
