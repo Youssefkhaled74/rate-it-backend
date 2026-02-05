@@ -96,7 +96,13 @@ class BrandsController extends Controller
         $vendorAdmin = VendorUser::where('role', 'VENDOR_ADMIN')
             ->where('brand_id', $brand->id)
             ->first();
-        return view('admin.brands.edit', compact('brand', 'subcategories', 'vendorAdmin'));
+        $branches = $brand->branches()
+            ->with(['city', 'area'])
+            ->withAvg('reviews', 'overall_rating')
+            ->withCount('reviews')
+            ->orderBy('id', 'desc')
+            ->get();
+        return view('admin.brands.edit', compact('brand', 'subcategories', 'vendorAdmin', 'branches'));
     }
 
     public function update(Request $request, Brand $brand)
