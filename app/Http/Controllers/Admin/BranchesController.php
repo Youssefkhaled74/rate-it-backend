@@ -246,6 +246,7 @@ class BranchesController extends Controller
         }
 
         $logoPath = $this->resolveBranchLogoPath($branch);
+        $badgePath = null;
         $builder = Builder::create()
             ->writer(new PngWriter())
             ->writerOptions([])
@@ -259,14 +260,19 @@ class BranchesController extends Controller
             ->backgroundColor(new Color(255, 255, 255));
 
         if ($logoPath) {
+            $badgeSize = (int) ($size * 0.24);
+            $badgePath = $this->buildQrLogoBadge($logoPath, $badgeSize);
             $builder
-                ->logoPath($logoPath)
-                ->logoResizeToWidth((int) ($size * 0.22))
-                ->logoResizeToHeight((int) ($size * 0.22))
+                ->logoPath($badgePath ?: $logoPath)
+                ->logoResizeToWidth($badgeSize)
+                ->logoResizeToHeight($badgeSize)
                 ->logoPunchoutBackground(true);
         }
 
         $result = $builder->build();
+        if ($badgePath && file_exists($badgePath)) {
+            @unlink($badgePath);
+        }
 
         return $result->getString();
     }
@@ -297,6 +303,82 @@ class BranchesController extends Controller
         $mime = mime_content_type($path) ?: 'image/png';
         $data = base64_encode(file_get_contents($path));
         return 'data:' . $mime . ';base64,' . $data;
+    }
+
+    protected function buildQrLogoBadge(string $logoPath, int $badgeSize): ?string
+    {
+        if (! function_exists('imagecreatefromstring')) {
+            return $logoPath;
+        }
+        if (! file_exists($logoPath)) {
+            return null;
+        }
+
+        $raw = file_get_contents($logoPath);
+        if ($raw === false) return null;
+
+        $logo = @imagecreatefromstring($raw);
+        if (! $logo) return null;
+
+        $radius = max(6, (int) round($badgeSize * 0.14));
+        $border = 2;
+        $padding = max(8, (int) round($badgeSize * 0.18));
+
+        $canvas = imagecreatetruecolor($badgeSize, $badgeSize);
+        imagesavealpha($canvas, true);
+        $transparent = imagecolorallocatealpha($canvas, 0, 0, 0, 127);
+        imagefill($canvas, 0, 0, $transparent);
+
+        $borderColor = imagecolorallocate($canvas, 229, 231, 235);
+        $white = imagecolorallocate($canvas, 255, 255, 255);
+
+        $this->drawRoundedRect($canvas, 0, 0, $badgeSize, $badgeSize, $radius, $borderColor);
+        $this->drawRoundedRect(
+            $canvas,
+            $border,
+            $border,
+            $badgeSize - $border * 2,
+            $badgeSize - $border * 2,
+            max(4, $radius - 2),
+            $white
+        );
+
+        $logoW = imagesx($logo);
+        $logoH = imagesy($logo);
+        $innerSize = max(10, $badgeSize - $padding * 2);
+        $scale = min($innerSize / $logoW, $innerSize / $logoH, 1);
+        $dstW = (int) round($logoW * $scale);
+        $dstH = (int) round($logoH * $scale);
+        $dstX = (int) round(($badgeSize - $dstW) / 2);
+        $dstY = (int) round(($badgeSize - $dstH) / 2);
+
+        imagealphablending($canvas, true);
+        imagecopyresampled($canvas, $logo, $dstX, $dstY, 0, 0, $dstW, $dstH, $logoW, $logoH);
+
+        $tmpDir = storage_path('app/tmp');
+        if (! File::exists($tmpDir)) {
+            File::makeDirectory($tmpDir, 0755, true);
+        }
+        $tmpPath = $tmpDir . '/qr-logo-' . Str::uuid()->toString() . '.png';
+        imagepng($canvas, $tmpPath, 6);
+
+        imagedestroy($logo);
+        imagedestroy($canvas);
+
+        return $tmpPath;
+    }
+
+    protected function drawRoundedRect($img, int $x, int $y, int $w, int $h, int $r, $color): void
+    {
+        $r = max(0, min($r, (int) floor(min($w, $h) / 2)));
+
+        imagefilledrectangle($img, $x + $r, $y, $x + $w - $r, $y + $h, $color);
+        imagefilledrectangle($img, $x, $y + $r, $x + $w, $y + $h - $r, $color);
+
+        imagefilledellipse($img, $x + $r, $y + $r, $r * 2, $r * 2, $color);
+        imagefilledellipse($img, $x + $w - $r, $y + $r, $r * 2, $r * 2, $color);
+        imagefilledellipse($img, $x + $r, $y + $h - $r, $r * 2, $r * 2, $color);
+        imagefilledellipse($img, $x + $w - $r, $y + $h - $r, $r * 2, $r * 2, $color);
     }
 
     /**
