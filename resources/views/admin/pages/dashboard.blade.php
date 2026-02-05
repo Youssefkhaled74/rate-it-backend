@@ -5,29 +5,34 @@
 
 @section('content')
   {{-- Hero --}}
-  <div class="bg-white rounded-[28px] shadow-soft p-6 border border-gray-100 relative overflow-hidden">
+  <div class="bg-gradient-to-r from-white via-white to-rose-50 rounded-[28px] shadow-soft p-6 border border-rose-100/60 relative overflow-hidden">
+    <div class="pointer-events-none absolute -right-6 -top-6 hidden md:block opacity-80">
+      <svg width="210" height="120" viewBox="0 0 210 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M45 12c4 15 7 18 22 22-15 4-18 7-22 22-4-15-7-18-22-22 15-4 18-7 22-22Z" fill="#F9C6C6"/>
+        <path d="M110 6c3 12 6 15 18 18-12 3-15 6-18 18-3-12-6-15-18-18 12-3 15-6 18-18Z" fill="#F4AAAA"/>
+        <path d="M160 24c3 11 5 14 16 16-11 3-14 5-16 16-3-11-5-14-16-16 11-2 14-5 16-16Z" fill="#F7B2B2"/>
+        <path d="M182 64c2 8 4 10 12 12-8 2-10 4-12 12-2-8-4-10-12-12 8-2 10-4 12-12Z" fill="#FAD3D3"/>
+      </svg>
+    </div>
+
     <div class="flex items-center justify-between gap-6">
       <div class="flex items-center gap-4">
-        <div class="w-12 h-12 rounded-full bg-gray-100 overflow-hidden">
+        <div class="w-12 h-12 rounded-full bg-gray-100 overflow-hidden ring-2 ring-white shadow-sm">
           <img src="{{ asset('assets/images/userdefultphoto.png') }}" alt="avatar" class="w-12 h-12 object-cover">
         </div>
         <div>
-          <div class="text-xs text-gray-500">{{ __('admin.good_morning') }}</div>
-          <div class="text-base font-semibold text-gray-900">{{ $welcomeName ?? __('admin.admin') }}</div>
-          <div class="text-sm text-gray-600 mt-1">
-            {{ __('admin.dashboard_headline', ['count' => ($counts['all'] ?? 0)]) }}
+          <div class="text-xs text-gray-500">
+            {{ __('admin.good_morning') }}
+            <span class="text-red-700 font-semibold">{{  ?? __('admin.admin') }}</span>
           </div>
-        </div>
-      </div>
-
-      <div class="hidden md:block">
-        <div class="w-36 h-20 rounded-3xl bg-red-50 border border-red-100 grid place-items-center">
-          <span class="text-red-300 text-4xl">✦</span>
+          @php  = (int) (['all'] ?? 0); @endphp
+          <div class="text-sm text-gray-700 mt-2">
+            {!! __('admin.dashboard_headline', ['count' => '<span class="text-red-700 font-semibold">' .  . '</span>']) !!}
+          </div>
         </div>
       </div>
     </div>
   </div>
-
   {{-- Quick Stats --}}
   <div class="mt-5 grid grid-cols-1 md:grid-cols-3 gap-4">
     <div class="rounded-[22px] bg-white border border-gray-100 p-5 shadow-soft flex items-center justify-between">
