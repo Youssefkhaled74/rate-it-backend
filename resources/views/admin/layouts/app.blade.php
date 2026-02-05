@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700&display=swap" rel="stylesheet">
 
   <script src="https://cdn.tailwindcss.com"></script>
 
@@ -19,6 +20,7 @@
           fontFamily: {
             // This sets Inter as the default sans-serif font
             sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif'],
+            ar: ['Almarai', 'ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif'],
           },
         },
       },
@@ -31,6 +33,7 @@
     body {
       font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     }
+    [dir="rtl"] body { font-family: 'Almarai', ui-sans-serif, system-ui, -apple-system, sans-serif; }
     /* Basic RTL layout fixes */
     :root {
       --sidebar-w: 16.5rem;
@@ -50,6 +53,8 @@
     [dir="rtl"] .admin-nav-item { flex-direction: row-reverse; }
     [dir="rtl"] .admin-nav-item .admin-nav-text { text-align: right; }
     [dir="rtl"] .admin-logout { flex-direction: row-reverse; text-align: right; }
+    [dir="rtl"] .admin-sidebar-inner { text-align: right; }
+    [dir="rtl"] .admin-nav-item { justify-content: flex-start; }
 
     /* Sidebar layout matching screenshot */
     .admin-sidebar { width: var(--sidebar-w); }

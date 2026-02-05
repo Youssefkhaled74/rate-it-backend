@@ -11,11 +11,11 @@
 <div class="space-y-6">
 
   <div>
-    <label class="text-sm font-medium text-gray-700">Brand Name (EN)</label>
+    <label class="text-sm font-medium text-gray-700">{{ __('admin.brand_name_en') }}</label>
     <input
       name="name_en"
       value="{{ old('name_en', $brand->name_en ?? '') }}"
-      placeholder="Brand Name"
+      placeholder="{{ __('admin.brand_name_placeholder') }}"
       class="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
              focus:border-red-300 focus:ring-4 focus:ring-red-100"
       required
@@ -23,11 +23,11 @@
   </div>
 
   <div>
-    <label class="text-sm font-medium text-gray-700">Brand Name (AR)</label>
+    <label class="text-sm font-medium text-gray-700">{{ __('admin.brand_name_ar') }}</label>
     <input
       name="name_ar"
       value="{{ old('name_ar', $brand->name_ar ?? '') }}"
-      placeholder="Brand Name (Arabic)"
+      placeholder="{{ __('admin.brand_name_ar_placeholder') }}"
       class="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
              focus:border-red-300 focus:ring-4 focus:ring-red-100"
     >
@@ -35,18 +35,18 @@
 
   <x-admin.select
     name="subcategory_id"
-    label="Subcategory"
+    label="{{ __('admin.subcategory') }}"
     placeholder="Choose subcategory"
   >
     @foreach($subcategories ?? [] as $sub)
       <option value="{{ $sub->id }}" {{ (string) old('subcategory_id', $brand->subcategory_id ?? '') === (string) $sub->id ? 'selected' : '' }}>
-        {{ $sub->name_en ?? $sub->name_ar ?? 'Subcategory' }}
+        {{ $sub->name_en ?? $sub->name_ar ?? __('admin.subcategory') }}
       </option>
     @endforeach
   </x-admin.select>
 
   <div>
-    <label class="text-sm font-medium text-gray-700">Description (EN)</label>
+    <label class="text-sm font-medium text-gray-700">{{ __('admin.description_en') }}</label>
     <textarea
       name="description_en"
       rows="3"
@@ -57,7 +57,7 @@
   </div>
 
   <div>
-    <label class="text-sm font-medium text-gray-700">Description (AR)</label>
+    <label class="text-sm font-medium text-gray-700">{{ __('admin.description_ar') }}</label>
     <textarea
       name="description_ar"
       rows="3"
