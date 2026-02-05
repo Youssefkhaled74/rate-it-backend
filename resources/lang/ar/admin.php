@@ -208,4 +208,8 @@ return [
     'email' => 'البريد الإلكتروني',
     'password' => 'كلمة المرور',
     'confirm_password' => 'تأكيد كلمة المرور',
+    'contract_details' => 'تفاصيل العقد',
+    'choose_subcategory' => 'اختر التصنيف الفرعي',
+    'visible_in_app' => 'ظاهر في التطبيق',
+    'end_date_after_start' => 'يجب أن يكون تاريخ النهاية بعد أو يساوي تاريخ البداية.',
 ];

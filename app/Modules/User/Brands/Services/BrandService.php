@@ -14,7 +14,7 @@ class BrandService
         $nameCol = 'name_' . $locale;
         $descCol = 'description_' . $locale;
 
-        $brand = Brand::where('id', $brandId)->where('is_active', true)->firstOrFail();
+        $brand = Brand::activeForUser()->where('id', $brandId)->firstOrFail();
 
         // aggregate ratings from places
         $stats = DB::table('places')
@@ -36,6 +36,7 @@ class BrandService
         $locale = app()->getLocale() === 'ar' ? 'ar' : 'en';
         $nameCol = 'name_' . $locale;
 
+        Brand::activeForUser()->where('id', $brandId)->firstOrFail();
         $places = Place::where('brand_id', $brandId)->where('is_active', true)->get();
 
         // attach ratings

@@ -36,7 +36,7 @@
   <x-admin.select
     name="subcategory_id"
     label="{{ __('admin.subcategory') }}"
-    placeholder="Choose subcategory"
+    placeholder="{{ __('admin.choose_subcategory') }}"
   >
     @foreach($subcategories ?? [] as $sub)
       <option value="{{ $sub->id }}" {{ (string) old('subcategory_id', $brand->subcategory_id ?? '') === (string) $sub->id ? 'selected' : '' }}>
@@ -54,6 +54,32 @@
       class="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
              focus:border-red-300 focus:ring-4 focus:ring-red-100"
     >{{ old('description_en', $brand->description_en ?? '') }}</textarea>
+  </div>
+
+  <div class="rounded-2xl border border-gray-100 bg-gray-50/60 p-4">
+    <div class="text-sm font-semibold text-gray-900 mb-3">{{ __('admin.contract_details') }}</div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="text-sm font-medium text-gray-700">{{ __('admin.start_date') }}</label>
+        <input
+          type="date"
+          name="start_date"
+          value="{{ old('start_date', optional($brand->start_date ?? null)->format('Y-m-d')) }}"
+          class="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
+                 focus:border-red-300 focus:ring-4 focus:ring-red-100"
+        >
+      </div>
+      <div>
+        <label class="text-sm font-medium text-gray-700">{{ __('admin.end_date') }}</label>
+        <input
+          type="date"
+          name="end_date"
+          value="{{ old('end_date', optional($brand->end_date ?? null)->format('Y-m-d')) }}"
+          class="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
+                 focus:border-red-300 focus:ring-4 focus:ring-red-100"
+        >
+      </div>
+    </div>
   </div>
 
   <div>
@@ -132,8 +158,8 @@
       </span>
 
       <span class="text-sm text-gray-700">
-        <span class="font-semibold">Active</span>
-        <span class="text-gray-500">— visible in app</span>
+        <span class="font-semibold">{{ __('admin.active') }}</span>
+        <span class="text-gray-500">— {{ __('admin.visible_in_app') }}</span>
       </span>
     </label>
   </div>

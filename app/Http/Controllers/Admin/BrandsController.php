@@ -65,8 +65,13 @@ class BrandsController extends Controller
             'logo' => ['nullable', 'image', 'max:4096'],
             'cover_image' => ['nullable', 'image', 'max:6144'],
             'subcategory_id' => ['nullable', 'exists:subcategories,id'],
+            'start_date' => ['nullable', 'date'],
+            'end_date' => ['nullable', 'date'],
             'is_active' => ['nullable', 'boolean'],
         ]);
+        if (!empty($data['start_date']) && !empty($data['end_date']) && $data['end_date'] < $data['start_date']) {
+            return back()->withErrors(['end_date' => __('admin.end_date_after_start')])->withInput();
+        }
 
         $data['logo'] = $this->saveImageToPublicAssets($request, 'logo', 'brands');
         $data['cover_image'] = $this->saveImageToPublicAssets($request, 'cover_image', 'brands/covers');
@@ -104,8 +109,13 @@ class BrandsController extends Controller
             'logo' => ['nullable', 'image', 'max:4096'],
             'cover_image' => ['nullable', 'image', 'max:6144'],
             'subcategory_id' => ['nullable', 'exists:subcategories,id'],
+            'start_date' => ['nullable', 'date'],
+            'end_date' => ['nullable', 'date'],
             'is_active' => ['nullable', 'boolean'],
         ]);
+        if (!empty($data['start_date']) && !empty($data['end_date']) && $data['end_date'] < $data['start_date']) {
+            return back()->withErrors(['end_date' => __('admin.end_date_after_start')])->withInput();
+        }
 
         $newLogo = $this->saveImageToPublicAssets($request, 'logo', 'brands');
         if ($newLogo) {

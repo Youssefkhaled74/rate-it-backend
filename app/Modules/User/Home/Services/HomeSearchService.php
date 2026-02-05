@@ -59,9 +59,13 @@ class HomeSearchService
 
     protected function searchBrands(string $q, int $limit): array
     {
-        $qb = Brand::query()->select(['id', 'name', 'logo_url']);
-        $qb->where('name', 'like', "%{$q}%");
-        $qb->orderByRaw("CASE WHEN name LIKE ? THEN 0 ELSE 1 END", ["{$q}%"])->orderBy('name');
+        $locale = app()->getLocale() === 'ar' ? 'ar' : 'en';
+        $nameCol = 'name_' . $locale;
+
+        $qb = Brand::activeForUser()->select(['id', 'name_en', 'name_ar', 'logo', 'logo_url']);
+        $qb->where($nameCol, 'like', "%{$q}%");
+        $qb->orderByRaw("CASE WHEN {$nameCol} LIKE ? THEN 0 ELSE 1 END", ["{$q}%"])
+            ->orderBy($nameCol);
         $rows = $qb->take($limit)->get();
 
         $out = [];
@@ -69,8 +73,8 @@ class HomeSearchService
             $out[] = [
                 'type' => 'brand',
                 'id' => $r->id,
-                'name' => $r->name,
-                'logo_url' => $r->logo_url ? asset($r->logo_url) : null,
+                'name' => $r->{$nameCol} ?? $r->name,
+                'logo_url' => $r->logo ? asset($r->logo) : ($r->logo_url ? asset($r->logo_url) : null),
                 'meta' => [],
             ];
         }

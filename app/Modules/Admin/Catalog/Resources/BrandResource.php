@@ -14,6 +14,8 @@ class BrandResource extends JsonResource
             'name_en' => $this->name_en,
             'name_ar' => $this->name_ar,
             'logo' => $this->logo,
+            'start_date' => $this->start_date?->toDateString(),
+            'end_date' => $this->end_date?->toDateString(),
             'is_active' => (bool) $this->is_active,
             'sort_order' => $this->sort_order,
             'timestamps' => [

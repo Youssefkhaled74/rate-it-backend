@@ -110,6 +110,10 @@ return [
     'rewards_system' => 'Rewards System',
     'rating_questions' => 'Rating Questions',
     'banners_onboarding' => 'Banners & Onboarding',
+    'contract_details' => 'Contract Details',
+    'choose_subcategory' => 'Choose subcategory',
+    'visible_in_app' => 'visible in app',
+    'end_date_after_start' => 'End date must be on or after start date.',
 
     'questions' => 'Questions',
     'question_text' => 'Question Text',
