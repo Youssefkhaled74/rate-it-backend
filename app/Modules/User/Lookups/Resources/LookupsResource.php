@@ -11,6 +11,8 @@ class LookupsResource extends JsonResource
         return [
             'genders' => $this->resource['genders'] ?? [],
             'nationalities' => $this->resource['nationalities'] ?? [],
+            'cities' => $this->resource['cities'] ?? [],
+            'areas' => $this->resource['areas'] ?? [],
         ];
     }
 }
