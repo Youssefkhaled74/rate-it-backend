@@ -1,4 +1,4 @@
-﻿@php
+@php
   $isEdit = !empty($question);
   $type = old('type', $question->type ?? 'RATING');
   $choicesEn = old('choices_en', $isEdit && $question->type === 'MULTIPLE_CHOICE' ? $question->choices->pluck('choice_en')->filter()->values()->toArray() : []);

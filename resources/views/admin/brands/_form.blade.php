@@ -1,4 +1,4 @@
-﻿@php
+@php
   $isEdit = !empty($brand);
   $logoUrl = $isEdit && !empty($brand->logo)
     ? asset($brand->logo)

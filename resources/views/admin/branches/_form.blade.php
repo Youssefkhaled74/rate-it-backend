@@ -1,4 +1,4 @@
-﻿@php
+@php
   $isEdit = !empty($branch);
   $workingHoursValue = $isEdit && !empty($branch->working_hours)
     ? json_encode($branch->working_hours, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)

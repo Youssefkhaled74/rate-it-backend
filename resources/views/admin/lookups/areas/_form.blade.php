@@ -1,4 +1,4 @@
-﻿@php
+@php
   $isEdit = !empty($area);
 @endphp
 
