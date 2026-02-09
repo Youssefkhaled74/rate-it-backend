@@ -7,6 +7,7 @@
     ['label' => __('admin.brands'), 'route' => 'admin.brands.index', 'icon' => 'tag'],
     ['label' => __('admin.places'), 'route' => 'admin.places.index', 'icon' => 'home'],
     ['label' => __('admin.branches'), 'route' => 'admin.branches.index', 'icon' => 'branch'],
+    ['label' => __('admin.reviews'), 'route' => 'admin.reviews.index', 'icon' => 'star'],
     ['label' => __('admin.users'), 'route' => 'admin.users.index', 'icon' => 'users'],
     ['label' => __('admin.lookups'), 'route' => 'admin.lookups.index', 'icon' => 'search'],
     ['label' => __('admin.rewards_system'), 'route' => 'admin.rewards.index', 'icon' => 'trophy'],

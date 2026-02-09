@@ -50,6 +50,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     // Reviews (web)
     Route::middleware('auth:admin_web')->group(function () {
+        Route::get('reviews', [ReviewsPageController::class, 'index'])->name('reviews.index');
+        Route::get('reviews/export.csv', [ReviewsPageController::class, 'exportCsv'])->name('reviews.export.csv');
+        Route::get('reviews/export.pdf', [ReviewsPageController::class, 'exportPdf'])->name('reviews.export.pdf');
+        Route::post('reviews/{review}/toggle-hide', [ReviewsPageController::class, 'toggleHide'])->name('reviews.toggle-hide');
+        Route::post('reviews/{review}/toggle-featured', [ReviewsPageController::class, 'toggleFeatured'])->name('reviews.toggle-featured');
+        Route::post('reviews/{review}/reply', [ReviewsPageController::class, 'reply'])->name('reviews.reply');
         Route::get('reviews/{review}', [ReviewsPageController::class, 'show'])->name('reviews.show');
     });
 
