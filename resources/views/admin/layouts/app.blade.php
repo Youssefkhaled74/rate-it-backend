@@ -65,10 +65,8 @@
       padding-inline: 1.35rem;
       box-shadow: 0 30px 90px rgba(0,0,0,.18);
     }
-    .admin-nav-scroll { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.35) transparent; }
-    .admin-nav-scroll::-webkit-scrollbar { width: 8px; }
-    .admin-nav-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,.35); border-radius: 999px; }
-    .admin-nav-scroll::-webkit-scrollbar-track { background: transparent; }
+    .admin-nav-scroll { scrollbar-width: none; }
+    .admin-nav-scroll::-webkit-scrollbar { width: 0; height: 0; }
     [dir="rtl"] .admin-nav-scroll { padding-left: 0.25rem; padding-right: 0; }
     .admin-nav-item {
       padding-block: 0.7rem;
