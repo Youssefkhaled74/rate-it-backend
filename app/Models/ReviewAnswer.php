@@ -16,6 +16,7 @@ class ReviewAnswer extends Model
         'rating_value',
         'yes_no_value',
         'choice_id',
+        'text_value',
         'created_at',
         'updated_at',
     ];
@@ -41,5 +42,10 @@ class ReviewAnswer extends Model
     public function choice()
     {
         return $this->belongsTo(RatingCriteriaChoice::class, 'choice_id');
+    }
+
+    public function photos()
+    {
+        return $this->hasMany(ReviewAnswerPhoto::class, 'review_answer_id');
     }
 }

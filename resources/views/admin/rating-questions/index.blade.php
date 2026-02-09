@@ -53,6 +53,8 @@
               <option value="RATING" {{ request('type') === 'RATING' ? 'selected' : '' }}>{{ __('admin.rating') }}</option>
               <option value="YES_NO" {{ request('type') === 'YES_NO' ? 'selected' : '' }}>{{ __('admin.yes_no') }}</option>
               <option value="MULTIPLE_CHOICE" {{ request('type') === 'MULTIPLE_CHOICE' ? 'selected' : '' }}>{{ __('admin.multiple_choice') }}</option>
+              <option value="TEXT" {{ request('type') === 'TEXT' ? 'selected' : '' }}>{{ __('admin.text') }}</option>
+              <option value="PHOTO" {{ request('type') === 'PHOTO' ? 'selected' : '' }}>{{ __('admin.photo_upload') }}</option>
             </x-admin.select>
           </form>
 

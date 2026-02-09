@@ -12,6 +12,8 @@ class RatingCriteriaResource extends JsonResource
             'id' => $this->id,
             'question_text' => $this->question_text,
             'type' => $this->type,
+            'weight' => $this->weight ?? 0,
+            'points' => $this->points ?? 0,
             'is_required' => (bool) $this->is_required,
             'sort_order' => $this->sort_order,
             'choices' => $this->when($this->type === 'MULTIPLE_CHOICE', RatingCriteriaChoiceResource::collection($this->choices)),

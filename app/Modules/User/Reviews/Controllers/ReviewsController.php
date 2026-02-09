@@ -50,8 +50,9 @@ class ReviewsController extends BaseApiController
             $answers = json_decode($answers, true) ?? [];
         }
         $photos = $req->file('photos', []);
+        $answerPhotos = $req->file('answer_photos', []);
 
-        $result = $svc->createReview($user, $req->input('session_token'), $req->input('overall_rating'), $req->input('comment'), $answers, $photos);
+        $result = $svc->createReview($user, $req->input('session_token'), $req->input('overall_rating'), $req->input('comment'), $answers, $photos, $answerPhotos);
 
         // $result may be an array with review and points info
         if (is_array($result) && isset($result['review'])) {
@@ -70,7 +71,7 @@ class ReviewsController extends BaseApiController
     {
         $user = $req->user();
         $perPage = (int) $req->query('per_page', 15);
-        $p = Review::where('user_id', $user->id)->with(['photos','answers'])->paginate($perPage);
+        $p = Review::where('user_id', $user->id)->with(['photos','answers.photos'])->paginate($perPage);
         return $this->success(\App\Modules\User\Reviews\Resources\ReviewResource::collection($p), 'reviews.my_list');
     }
     public function show(Request $req, Review $review)
@@ -79,7 +80,7 @@ class ReviewsController extends BaseApiController
         if ($review->user_id !== $user->id) {
             return $this->error(trans('reviews.unauthorized'), 403);
         }
-        $review->load(['photos','answers.choice','answers.criteria']);
+        $review->load(['photos','answers.choice','answers.criteria','answers.photos']);
         return $this->success(new \App\Modules\User\Reviews\Resources\ReviewResource($review), 'reviews.details');
     }
 }

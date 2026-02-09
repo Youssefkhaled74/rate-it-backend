@@ -1,8 +1,8 @@
-﻿<?php
+﻿ï»؟<?php
 
 return [
     'dashboard' => 'Dashboard',
-    'dashboard_title' => 'Admin • Dashboard',
+    'dashboard_title' => 'Admin â€¢ Dashboard',
     'admin' => 'Admin',
     'welcome_back' => 'Welcome Back, :name!',
     'dashboard_subtitle' => "Here's what's happening with your platform today",
@@ -204,6 +204,11 @@ return [
     'rating' => 'Rating',
     'yes_no' => 'Yes / No',
     'multiple_choice' => 'Multiple Choice',
+    'text' => 'Text',
+    'photo_upload' => 'Photo Upload',
+    'weight' => 'Weight',
+    'weight_hint' => 'Weights are normalized so the total equals 5.',
+    'points_hint' => 'Points awarded for answering this question.',
     'sort_order' => 'Sort Order',
 
     'banners' => 'Banners',

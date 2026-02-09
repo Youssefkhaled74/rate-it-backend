@@ -76,6 +76,40 @@ class PointsService
         return $points;
     }
 
+    public function awardPointsForReviewAnswers($user, $review, int $points): int
+    {
+        if ($points <= 0) {
+            return 0;
+        }
+
+        $exists = PointsTransaction::where('user_id', $user->id)
+            ->where('reference_type', \App\Models\Review::class)
+            ->where('reference_id', $review->id)
+            ->where('type', 'EARN_REVIEW_ANSWERS')
+            ->exists();
+        if ($exists) {
+            return 0;
+        }
+
+        $meta = [
+            'review_id' => $review->id,
+            'answers_points' => $points,
+        ];
+
+        PointsTransaction::create([
+            'user_id' => $user->id,
+            'brand_id' => $review->brand_id ?? null,
+            'type' => 'EARN_REVIEW_ANSWERS',
+            'points' => $points,
+            'reference_type' => \App\Models\Review::class,
+            'reference_id' => $review->id,
+            'meta' => $meta,
+            'expires_at' => null,
+        ]);
+
+        return $points;
+    }
+
     public function redeemPoints($user, int $points): int
     {
         if ($points <= 0) {

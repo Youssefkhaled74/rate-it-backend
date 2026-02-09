@@ -17,6 +17,8 @@ class RatingCriteria extends Model
         'question_en',
         'question_ar',
         'type',
+        'weight',
+        'points',
         'is_required',
         'is_active',
         'sort_order',
@@ -25,6 +27,8 @@ class RatingCriteria extends Model
     protected $casts = [
         'is_required' => 'boolean',
         'sort_order' => 'integer',
+        'weight' => 'float',
+        'points' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];

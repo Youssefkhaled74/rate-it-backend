@@ -1,4 +1,4 @@
-@php
+﻿@php
   $isEdit = !empty($question);
   $type = old('type', $question->type ?? 'RATING');
   $choicesEn = old('choices_en', $isEdit && $question->type === 'MULTIPLE_CHOICE' ? $question->choices->pluck('choice_en')->filter()->values()->toArray() : []);
@@ -40,7 +40,7 @@
     >
       @foreach($subcategories as $sub)
         <option value="{{ $sub->id }}" {{ (string) old('subcategory_id', $question->subcategory_id ?? '') === (string) $sub->id ? 'selected' : '' }}>
-          {{ $sub->name_en }} {{ $sub->category?->name_en ? '— ' . $sub->category->name_en : '' }}
+          {{ $sub->name_en }} {{ $sub->category?->name_en ? 'â€” ' . $sub->category->name_en : '' }}
         </option>
       @endforeach
     </x-admin.select>
@@ -51,10 +51,40 @@
       :label="__('admin.type')"
       :required="true"
     >
-      <option value="RATING" {{ $type === 'RATING' ? 'selected' : '' }}>{{ __('admin.rating') }} (1–5)</option>
+      <option value="RATING" {{ $type === 'RATING' ? 'selected' : '' }}>{{ __('admin.rating') }} (1-5)</option>
       <option value="YES_NO" {{ $type === 'YES_NO' ? 'selected' : '' }}>{{ __('admin.yes_no') }}</option>
       <option value="MULTIPLE_CHOICE" {{ $type === 'MULTIPLE_CHOICE' ? 'selected' : '' }}>{{ __('admin.multiple_choice') }}</option>
+      <option value="TEXT" {{ $type === 'TEXT' ? 'selected' : '' }}>{{ __('admin.text') }}</option>
+      <option value="PHOTO" {{ $type === 'PHOTO' ? 'selected' : '' }}>{{ __('admin.photo_upload') }}</option>
     </x-admin.select>
+
+  </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div>
+      <label class="text-sm font-medium text-gray-700">{{ __('admin.weight') }}</label>
+      <input
+        name="weight"
+        type="number"
+        step="0.01"
+        min="0"
+        value="{{ old('weight', $question->weight ?? 0) }}"
+        class="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
+               focus:border-red-300 focus:ring-4 focus:ring-red-100"
+      >
+      <div class="text-xs text-gray-500 mt-1">{{ __('admin.weight_hint') }}</div>
+    </div>
+    <div>
+      <label class="text-sm font-medium text-gray-700">{{ __('admin.points') }}</label>
+      <input
+        name="points"
+        type="number"
+        min="0"
+        value="{{ old('points', $question->points ?? 0) }}"
+        class="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
+               focus:border-red-300 focus:ring-4 focus:ring-red-100"
+      >
+      <div class="text-xs text-gray-500 mt-1">{{ __('admin.points_hint') }}</div>
+    </div>
   </div>
 
   <div id="choices_block" class="{{ $type === 'MULTIPLE_CHOICE' ? '' : 'hidden' }}">
@@ -86,7 +116,7 @@
             >
             <button type="button"
                     class="remove-choice w-11 h-11 rounded-2xl bg-red-50 border border-red-100 text-red-700 hover:bg-red-100">
-              ✕
+              x
             </button>
           </div>
         </div>
@@ -164,7 +194,7 @@
                  class="flex-1 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
                         focus:border-red-300 focus:ring-4 focus:ring-red-100">
           <button type="button"
-                  class="remove-choice w-11 h-11 rounded-2xl bg-red-50 border border-red-100 text-red-700 hover:bg-red-100">✕</button>
+                  class="remove-choice w-11 h-11 rounded-2xl bg-red-50 border border-red-100 text-red-700 hover:bg-red-100">x</button>
         </div>
       </div>
     `;
@@ -183,4 +213,7 @@
     }
   })();
 </script>
+
+
+
 

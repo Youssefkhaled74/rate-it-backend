@@ -5,6 +5,7 @@ namespace App\Modules\User\Reviews\Services;
 use App\Models\BranchQrSession;
 use App\Models\Review;
 use App\Models\ReviewAnswer;
+use App\Models\ReviewAnswerPhoto;
 use App\Models\ReviewPhoto;
 use App\Models\RatingCriteria;
 use App\Models\RatingCriteriaChoice;
@@ -21,7 +22,7 @@ class ReviewService
 {
     use PublicUploadTrait;
 
-    public function createReview($user, string $sessionToken, $overallRating, $comment, array $answers, array $photos = [])
+    public function createReview($user, string $sessionToken, $overallRating, $comment, array $answers, array $photos = [], array $answerPhotos = [])
     {
         // Load session scoped to user, not consumed
         $session = BranchQrSession::query()
@@ -102,6 +103,7 @@ class ReviewService
                 'status' => 'ACTIVE',
             ]);
 
+            $pointsFromAnswers = 0;
             foreach ($answers as $ans) {
                 // Normalize incoming criteria id to int
                 $criteriaId = (int) Arr::get($ans, 'criteria_id');
@@ -172,9 +174,36 @@ class ReviewService
 
                         $data['choice_id'] = $choiceId;
                         break;
+                    case 'TEXT':
+                        $text = trim((string) Arr::get($ans, 'text_value', ''));
+                        if ($text === '') {
+                            throw new ApiException(trans('reviews.invalid_answer'), 422, ['criteria_id' => $criteriaId, 'type' => 'TEXT']);
+                        }
+                        $data['text_value'] = $text;
+                        break;
+                    case 'PHOTO':
+                        $files = $answerPhotos[$criteriaId] ?? [];
+                        if (! is_array($files) || count($files) === 0) {
+                            throw new ApiException(trans('reviews.invalid_answer'), 422, ['criteria_id' => $criteriaId, 'type' => 'PHOTO']);
+                        }
+                        break;
                 }
 
-                ReviewAnswer::create($data);
+                $answer = ReviewAnswer::create($data);
+
+                if ($crit->type === 'PHOTO') {
+                    $files = $answerPhotos[$criteriaId] ?? [];
+                    $uploaded = $this->uploadMany($files, 'review-answers/' . $review->id . '/' . $criteriaId, ['max_files' => 3]);
+                    foreach ($uploaded as $u) {
+                        ReviewAnswerPhoto::create([
+                            'review_answer_id' => $answer->id,
+                            'storage_path' => $u['path'],
+                            'encrypted' => false,
+                        ]);
+                    }
+                }
+
+                $pointsFromAnswers += (int) ($crit->points ?? 0);
             }
 
             // photos upload
@@ -193,22 +222,47 @@ class ReviewService
             $session->consumed_at = Carbon::now();
             $session->save();
 
-            // compute simple review_score (average of rating_value answers if any)
-            $ratingAnswers = ReviewAnswer::where('review_id', $review->id)->whereNotNull('rating_value')->pluck('rating_value')->toArray();
-            if (! empty($ratingAnswers)) {
-                $review->review_score = round(array_sum($ratingAnswers) / count($ratingAnswers), 2);
+            // compute weighted review_score using criteria weights (normalized to total 5)
+            $ratingRows = ReviewAnswer::query()
+                ->join('rating_criteria', 'rating_criteria.id', '=', 'review_answers.criteria_id')
+                ->where('review_answers.review_id', $review->id)
+                ->whereNotNull('review_answers.rating_value')
+                ->select('review_answers.rating_value', 'rating_criteria.weight')
+                ->get();
+
+            if ($ratingRows->count() > 0) {
+                $sumWeights = (float) $ratingRows->sum('weight');
+                if ($sumWeights > 0) {
+                    $weighted = 0;
+                    foreach ($ratingRows as $row) {
+                        $weighted += ((float) $row->rating_value) * ((float) $row->weight);
+                    }
+                    $review->review_score = round($weighted / $sumWeights, 2);
+                } else {
+                    $avg = $ratingRows->avg('rating_value');
+                    $review->review_score = round((float) $avg, 2);
+                }
                 $review->save();
             }
 
             // Award points for review (idempotent)
             $pointsSvc = app(PointsService::class);
             $pointsAwarded = 0;
+            $answersPointsAwarded = 0;
             try {
                 $pointsAwarded = $pointsSvc->awardPointsForReview($user, $review);
             } catch (\Throwable $ex) {
                 // Log and continue; do not fail the review creation for points errors
                 Log::error('points.award_failed: '.$ex->getMessage(), ['exception' => $ex, 'review_id' => $review->id]);
                 $pointsAwarded = 0;
+            }
+            if ($pointsFromAnswers > 0) {
+                try {
+                    $answersPointsAwarded = $pointsSvc->awardPointsForReviewAnswers($user, $review, $pointsFromAnswers);
+                } catch (\Throwable $ex) {
+                    Log::error('points.award_answers_failed: '.$ex->getMessage(), ['exception' => $ex, 'review_id' => $review->id]);
+                    $answersPointsAwarded = 0;
+                }
             }
 
             $pointsBalance = 0;
@@ -220,8 +274,13 @@ class ReviewService
 
             DB::commit();
 
-            $review->load(['answers.choice','photos']);
-            return ['review' => $review, 'points_awarded' => $pointsAwarded, 'points_balance' => $pointsBalance];
+            $review->load(['answers.choice','answers.photos','photos']);
+            return [
+                'review' => $review,
+                'points_awarded' => $pointsAwarded,
+                'points_awarded_answers' => $answersPointsAwarded,
+                'points_balance' => $pointsBalance,
+            ];
 
         } catch (\Throwable $e) {
             DB::rollBack();

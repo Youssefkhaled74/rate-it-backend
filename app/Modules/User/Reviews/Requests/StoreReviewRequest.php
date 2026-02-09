@@ -23,6 +23,9 @@ class StoreReviewRequest extends FormRequest
             'answers' => ['required'],
             'photos' => ['nullable','array','max:3'],
             'photos.*' => ['file','mimes:jpg,jpeg,png,webp','max:2048'],
+            'answer_photos' => ['nullable','array'],
+            'answer_photos.*' => ['nullable','array'],
+            'answer_photos.*.*' => ['file','mimes:jpg,jpeg,png,webp','max:2048'],
         ];
     }
 
@@ -90,8 +93,10 @@ class StoreReviewRequest extends FormRequest
                 $hasRating = array_key_exists('rating_value', $ans) && $ans['rating_value'] !== null && $ans['rating_value'] !== '';
                 $hasYesNo = array_key_exists('yes_no_value', $ans) && $ans['yes_no_value'] !== null && $ans['yes_no_value'] !== '';
                 $hasChoice = array_key_exists('choice_id', $ans) && $ans['choice_id'] !== null && $ans['choice_id'] !== '';
+                $hasText = array_key_exists('text_value', $ans) && is_string($ans['text_value']) && trim($ans['text_value']) !== '';
+                $hasPhoto = array_key_exists('has_photo', $ans) && in_array($ans['has_photo'], [1,'1',true], true);
 
-                $provided = intval($hasRating) + intval($hasYesNo) + intval($hasChoice);
+                $provided = intval($hasRating) + intval($hasYesNo) + intval($hasChoice) + intval($hasText) + intval($hasPhoto);
                 if ($provided !== 1) {
                     $validator->errors()->add($idx, trans('reviews.invalid_answer'));
                     continue;
@@ -116,6 +121,21 @@ class StoreReviewRequest extends FormRequest
                     $exists = RatingCriteriaChoice::where('id', $choiceId)->where('criteria_id', $criteriaId)->exists();
                     if (! $exists) {
                         $validator->errors()->add($idx . '.choice_id', trans('reviews.invalid_answer'));
+                    }
+                }
+
+                if ($hasText) {
+                    $v = trim((string) $ans['text_value']);
+                    if ($v === '' || mb_strlen($v) > 1000) {
+                        $validator->errors()->add($idx . '.text_value', trans('reviews.invalid_answer'));
+                    }
+                }
+
+                if ($hasPhoto) {
+                    $files = $this->file('answer_photos', []);
+                    $criteriaFiles = is_array($files) ? ($files[$criteriaId] ?? []) : [];
+                    if (! is_array($criteriaFiles) || count($criteriaFiles) === 0) {
+                        $validator->errors()->add($idx . '.has_photo', trans('reviews.invalid_answer'));
                     }
                 }
             }

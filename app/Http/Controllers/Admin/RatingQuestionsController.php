@@ -25,7 +25,7 @@ class RatingQuestionsController extends Controller
                        ->orWhere('question_ar', 'like', "%{$q}%");
                 });
             })
-            ->when(in_array($type, ['RATING','YES_NO','MULTIPLE_CHOICE'], true), function ($qq) use ($type) {
+            ->when(in_array($type, ['RATING','YES_NO','MULTIPLE_CHOICE','TEXT','PHOTO'], true), function ($qq) use ($type) {
                 $qq->where('type', $type);
             })
             ->when($subcategoryId > 0, function ($qq) use ($subcategoryId) {
@@ -60,8 +60,10 @@ class RatingQuestionsController extends Controller
         $data = $request->validate([
             'question_text' => ['required', 'string'],
             'question_ar' => ['nullable', 'string'],
-            'type' => ['required', 'in:RATING,YES_NO,MULTIPLE_CHOICE'],
+            'type' => ['required', 'in:RATING,YES_NO,MULTIPLE_CHOICE,TEXT,PHOTO'],
             'subcategory_id' => ['required', 'exists:subcategories,id'],
+            'weight' => ['nullable', 'numeric', 'min:0'],
+            'points' => ['nullable', 'integer', 'min:0'],
             'is_required' => ['nullable', 'boolean'],
             'is_active' => ['nullable', 'boolean'],
             'sort_order' => ['nullable', 'integer'],
@@ -75,6 +77,8 @@ class RatingQuestionsController extends Controller
         $data['is_required'] = (bool) $request->boolean('is_required', false);
         $data['is_active'] = (bool) $request->boolean('is_active', true);
         $data['question_en'] = $data['question_text'];
+        $data['weight'] = (float) ($data['weight'] ?? 0);
+        $data['points'] = (int) ($data['points'] ?? 0);
 
         $criteria = RatingCriteria::create($data);
 
@@ -99,6 +103,8 @@ class RatingQuestionsController extends Controller
             }
         }
 
+        $this->normalizeSubcategoryWeights((int) $data['subcategory_id']);
+
         return redirect()
             ->route('admin.rating-questions.index')
             ->with('success', 'Question created successfully.');
@@ -116,8 +122,10 @@ class RatingQuestionsController extends Controller
         $data = $request->validate([
             'question_text' => ['required', 'string'],
             'question_ar' => ['nullable', 'string'],
-            'type' => ['required', 'in:RATING,YES_NO,MULTIPLE_CHOICE'],
+            'type' => ['required', 'in:RATING,YES_NO,MULTIPLE_CHOICE,TEXT,PHOTO'],
             'subcategory_id' => ['required', 'exists:subcategories,id'],
+            'weight' => ['nullable', 'numeric', 'min:0'],
+            'points' => ['nullable', 'integer', 'min:0'],
             'is_required' => ['nullable', 'boolean'],
             'is_active' => ['nullable', 'boolean'],
             'sort_order' => ['nullable', 'integer'],
@@ -131,6 +139,8 @@ class RatingQuestionsController extends Controller
         $data['is_required'] = (bool) $request->boolean('is_required', false);
         $data['is_active'] = (bool) $request->boolean('is_active', false);
         $data['question_en'] = $data['question_text'];
+        $data['weight'] = (float) ($data['weight'] ?? 0);
+        $data['points'] = (int) ($data['points'] ?? 0);
 
         $question->update($data);
 
@@ -157,6 +167,8 @@ class RatingQuestionsController extends Controller
             }
         }
 
+        $this->normalizeSubcategoryWeights((int) $data['subcategory_id']);
+
         return redirect()
             ->route('admin.rating-questions.index')
             ->with('success', 'Question updated successfully.');
@@ -180,5 +192,34 @@ class RatingQuestionsController extends Controller
     {
         $items = array_map(fn ($v) => is_string($v) ? trim($v) : '', $raw);
         return array_values(array_filter($items, fn ($v) => $v !== ''));
+    }
+
+    private function normalizeSubcategoryWeights(int $subcategoryId): void
+    {
+        $items = RatingCriteria::where('subcategory_id', $subcategoryId)->orderBy('id')->get();
+        $count = $items->count();
+        if ($count === 0) return;
+
+        $total = (float) $items->sum('weight');
+        if ($total <= 0) {
+            $equal = round(5 / $count, 2);
+            $lastAdjust = 5 - ($equal * ($count - 1));
+            foreach ($items as $i => $row) {
+                $row->weight = $i === $count - 1 ? $lastAdjust : $equal;
+                $row->save();
+            }
+            return;
+        }
+
+        $running = 0;
+        foreach ($items as $i => $row) {
+            if ($i === $count - 1) {
+                $row->weight = round(5 - $running, 2);
+            } else {
+                $row->weight = round(5 * ($row->weight / $total), 2);
+                $running += $row->weight;
+            }
+            $row->save();
+        }
     }
 }
