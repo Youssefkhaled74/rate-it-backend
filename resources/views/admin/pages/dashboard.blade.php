@@ -52,9 +52,17 @@
   {{-- Charts Row --}}
   <div class="mt-5 grid grid-cols-1 lg:grid-cols-3 gap-5">
     <div class="lg:col-span-2 bg-white border border-gray-100 rounded-[24px] p-5 shadow-soft">
-      <div class="flex items-center justify-between">
+      <div class="flex items-center justify-between gap-3">
         <div class="text-sm font-semibold text-gray-900">{{ __('admin.reviews_over_time') }}</div>
-        <button class="text-xs text-red-700 font-semibold">{{ __('admin.filter') }}</button>
+        <form method="GET" class="flex items-center gap-2">
+          <span class="text-xs text-gray-400">{{ __('admin.filter') }}</span>
+          <select name="status" class="text-xs border border-gray-200 rounded-full px-3 py-1 focus:outline-none focus:ring-2 focus:ring-red-200" onchange="this.form.submit()">
+            <option value="all" {{ ($selectedStatus ?? 'all') === 'all' ? 'selected' : '' }}>{{ __('admin.all') }}</option>
+            <option value="urgent" {{ ($selectedStatus ?? 'all') === 'urgent' ? 'selected' : '' }}>{{ __('admin.urgent') }}</option>
+            <option value="high" {{ ($selectedStatus ?? 'all') === 'high' ? 'selected' : '' }}>{{ __('admin.high') }}</option>
+            <option value="normal" {{ ($selectedStatus ?? 'all') === 'normal' ? 'selected' : '' }}>{{ __('admin.normal') }}</option>
+          </select>
+        </form>
       </div>
       @php
         $chartLabels = $reviewsChart['labels'] ?? [];
@@ -114,7 +122,27 @@
   {{-- Bottom Row --}}
   <div class="mt-5 grid grid-cols-1 lg:grid-cols-3 gap-5">
     <div class="lg:col-span-2 bg-white border border-gray-100 rounded-[24px] p-5 shadow-soft">
-      <div class="text-sm font-semibold text-gray-900">{{ __('admin.recent_reviews_moderation') }}</div>
+      <div class="flex items-center justify-between gap-3">
+        <div class="text-sm font-semibold text-gray-900">{{ __('admin.recent_reviews_moderation') }}</div>
+        @php
+          $from = request('from');
+          $to = request('to');
+          $exportQuery = array_filter(['from' => $from, 'to' => $to]);
+        @endphp
+        <div class="flex items-center gap-2">
+          <form method="GET" class="flex items-center gap-2">
+            <input type="date" name="from" value="{{ $from }}" class="text-xs border border-gray-200 rounded-full px-3 py-1 focus:outline-none focus:ring-2 focus:ring-red-200">
+            <input type="date" name="to" value="{{ $to }}" class="text-xs border border-gray-200 rounded-full px-3 py-1 focus:outline-none focus:ring-2 focus:ring-red-200">
+            <button type="submit" class="text-xs font-semibold text-gray-700 border border-gray-200 rounded-full px-3 py-1 hover:border-gray-300">Apply</button>
+          </form>
+          <button type="button" id="exportCsvBtn" class="w-9 h-9 rounded-full border border-gray-200 grid place-items-center text-gray-600 hover:border-gray-300" title="Export CSV">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h8"/><path d="M8 9h2"/></svg>
+          </button>
+          <button type="button" id="exportPdfBtn" class="w-9 h-9 rounded-full border border-red-200 grid place-items-center text-red-700 hover:border-red-300" title="Export PDF">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6"/><path d="M9 17h6"/></svg>
+          </button>
+        </div>
+      </div>
       <div class="mt-4 overflow-x-auto">
         <table class="min-w-full text-sm">
           <thead>
@@ -132,7 +160,7 @@
                 <td class="py-3 text-gray-600">{{ \Illuminate\Support\Str::limit($review['text'] ?? '', 60) }}</td>
                 <td class="py-3 text-gray-700">{{ $review['rating'] ?? '-' }}</td>
                 <td class="py-3 text-right">
-                  <a href="#" class="text-xs font-semibold text-red-700">{{ __('admin.view') }}</a>
+                  <a href="{{ $review['url'] ?? '#' }}" class="text-xs font-semibold text-red-700">{{ __('admin.view') }}</a>
                 </td>
               </tr>
             @empty
@@ -245,6 +273,26 @@
         c.setAttribute('stroke', '#fff');
         c.setAttribute('stroke-width', '2');
         dots.appendChild(c);
+      });
+
+      const csvBtn = document.getElementById('exportCsvBtn');
+      const pdfBtn = document.getElementById('exportPdfBtn');
+      function buildExportUrl(base){
+        const from = document.querySelector('input[name="from"]')?.value || '';
+        const to = document.querySelector('input[name="to"]')?.value || '';
+        const params = new URLSearchParams();
+        if (from) params.set('from', from);
+        if (to) params.set('to', to);
+        const qs = params.toString();
+        return qs ? (base + '?' + qs) : base;
+      }
+      csvBtn?.addEventListener('click', function(){
+        const url = buildExportUrl('{{ route('admin.reports.dashboard.csv', ['period' => 'week']) }}');
+        window.location.href = url;
+      });
+      pdfBtn?.addEventListener('click', function(){
+        const url = buildExportUrl('{{ route('admin.reports.dashboard.pdf', ['period' => 'week']) }}');
+        window.location.href = url;
       });
     })();
   </script>

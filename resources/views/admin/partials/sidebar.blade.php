@@ -12,6 +12,7 @@
     ['label' => __('admin.rewards_system'), 'route' => 'admin.rewards.index', 'icon' => 'trophy'],
     ['label' => __('admin.rating_questions'), 'route' => 'admin.rating-questions.index', 'icon' => 'checklist'],
     ['label' => __('admin.banners_onboarding'), 'route' => 'admin.banners.index', 'icon' => 'flag'],
+    ['label' => __('admin.notifications'), 'route' => 'admin.notifications.send', 'icon' => 'bell'],
     ['label' => __('admin.settings'), 'route' => 'admin.settings.index', 'icon' => 'gear'],
   ];
 
@@ -47,6 +48,7 @@
       'trophy' => '<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 4h8v3a4 4 0 1 1-8 0z"/><path d="M6 4H4a2 2 0 0 0 2 2"/><path d="M18 4h2a2 2 0 0 1-2 2"/><path d="M12 12v4"/><path d="M8 20h8"/><path d="M10 16h4"/></svg>',
       'checklist' => '<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 6h11"/><path d="M9 12h11"/><path d="M9 18h11"/><path d="M4 6l1 1 2-2"/><path d="M4 12l1 1 2-2"/><path d="M4 18l1 1 2-2"/></svg>',
       'flag' => '<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4v16"/><path d="M4 5h12l-1.5 3L16 11H4z"/></svg>',
+      'bell' => '<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 7h18s-3 0-3-7"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>',
       default => '<span class="w-5 h-5 inline-block"></span>',
     };
   };
@@ -67,18 +69,20 @@
     </div>
 
     {{-- Nav --}}
-    <nav class="space-y-1">
-      @foreach($items as $it)
-        @php $active = $isActive($it['route']); @endphp
+    <div class="admin-nav-scroll flex-1 overflow-y-auto pr-1">
+      <nav class="space-y-1">
+        @foreach($items as $it)
+          @php $active = $isActive($it['route']); @endphp
 
-        <a href="{{ Route::has($it['route']) ? route($it['route'], ['lang' => $currentLang]) : '#' }}"
-           class="admin-nav-item group flex items-center gap-3 px-4 py-3 transition
-                  {{ $active ? 'is-active' : '' }}">
-          <span class="admin-nav-icon text-white/90">{!! $iconSvg($it['icon']) !!}</span>
-          <span class="admin-nav-text text-sm font-medium">{{ $it['label'] }}</span>
-        </a>
-      @endforeach
-    </nav>
+          <a href="{{ Route::has($it['route']) ? route($it['route'], ['lang' => $currentLang]) : '#' }}"
+             class="admin-nav-item group flex items-center gap-3 px-4 py-3 transition
+                    {{ $active ? 'is-active' : '' }}">
+            <span class="admin-nav-icon text-white/90">{!! $iconSvg($it['icon']) !!}</span>
+            <span class="admin-nav-text text-sm font-medium">{{ $it['label'] }}</span>
+          </a>
+        @endforeach
+      </nav>
+    </div>
 
     {{-- Logout bottom --}}
     <div class="mt-auto pt-6">

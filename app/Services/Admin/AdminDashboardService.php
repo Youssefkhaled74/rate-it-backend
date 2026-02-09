@@ -34,10 +34,11 @@ class AdminDashboardService
             $avgRounded = round($avg, 1);
             $avgDelta = $prevAvg > 0 ? round((($avg - $prevAvg) / $prevAvg) * 100, 1) : null;
 
-            // Total reviews and percent change vs previous 30 days
-            $total = Review::count();
-            $totalPrev = Review::whereBetween('created_at', [$prevStart, $prevEnd])->count();
-            $totalChange = $totalPrev > 0 ? round((($total - $totalPrev) / max(1, $totalPrev)) * 100, 1) : null;
+            // Reviews last 30 days and percent change vs previous 30 days
+            $totalAll = Review::count();
+            $total30 = Review::whereBetween('created_at', [$periodStart, $periodEnd])->count();
+            $totalPrev30 = Review::whereBetween('created_at', [$prevStart, $prevEnd])->count();
+            $totalChange = $totalPrev30 > 0 ? round((($total30 - $totalPrev30) / max(1, $totalPrev30)) * 100, 1) : null;
 
             // New in last 7 days
             $new7 = Review::where('created_at', '>=', $now->copy()->subDays(7))->count();
@@ -48,7 +49,8 @@ class AdminDashboardService
             return [
                 'average_rating' => $avgRounded,
                 'average_delta_percent' => $avgDelta,
-                'total_reviews' => $total,
+                'total_reviews' => $total30,
+                'total_reviews_all' => $totalAll,
                 'total_delta_percent' => $totalChange,
                 'new_7_days' => $new7,
                 'pending_reply' => $pending,
@@ -106,12 +108,15 @@ class AdminDashboardService
             $items = $query->limit($limit)->get();
 
             $negativeKeywords = [
+                // English
                 'bad','poor','terrible','awful','worst','hate','disappoint','rude','slow','late','missing',
+                // Arabic (common complaints)
+                'سيء','سيئ','وحش','أسوأ','رديء','سيئة','خدمة سيئة','تجربة سيئة','بطيء','بطء','تأخير','تأخرت','قذر','غير محترم','غالي','مخيب','مخيبة',
             ];
-
             $now = Carbon::now();
+            $hasHelpfulCount = Schema::hasColumn('reviews', 'helpful_count');
 
-            $mapped = $items->map(function (Review $r) use ($negativeKeywords, $now) {
+            $mapped = $items->map(function (Review $r) use ($negativeKeywords, $now, $hasHelpfulCount) {
                 $name = $r->user?->name ?? 'Anonymous';
                 $metaParts = [];
                 $metaParts[] = $r->created_at?->diffForHumans();
@@ -121,11 +126,12 @@ class AdminDashboardService
                 $meta = implode(' • ', $metaParts);
 
                 $text = $r->comment ?? '';
+                $lowerText = Str::lower($text);
 
                 $isPending = empty($r->admin_reply_text) && empty($r->replied_at);
                 $pendingOver24 = $isPending && $r->created_at && $r->created_at->diffInHours($now) > 24;
 
-                $containsNeg = Str::lower($text) && collect($negativeKeywords)->contains(fn($k) => str_contains(Str::lower($text), $k));
+                $containsNeg = $lowerText !== '' && collect($negativeKeywords)->contains(fn($k) => str_contains($lowerText, Str::lower($k)));
 
                 // status rules
                 $status = 'normal';
@@ -139,26 +145,27 @@ class AdminDashboardService
                     'text' => $text,
                     'status' => $status,
                     'rating' => $r->overall_rating,
-                    'helpful_count' => 0, // placeholder if not present
+                    'helpful_count' => $hasHelpfulCount ? (int) ($r->helpful_count ?? 0) : 0,
                     'photo_count' => $r->photos_count ?? 0,
                     'created_at' => $r->created_at,
+                    'url' => route('admin.reviews.show', $r),
                 ];
             })->toArray();
 
-            // Filter by requested status if not 'all'
-            if ($status && $status !== 'all') {
-                $mapped = array_values(array_filter($mapped, fn($i) => $i['status'] === $status));
-            }
-
             // counts for chips (all/urgent/high/normal) — compute based on recent sample (could be distinct query if needed)
             $counts = [
-                'all' => $items->count(),
+                'all' => count($mapped),
                 'urgent' => 0,
                 'high' => 0,
                 'normal' => 0,
             ];
             foreach ($mapped as $m) {
                 $counts[$m['status']] = ($counts[$m['status']] ?? 0) + 1;
+            }
+
+            // Filter by requested status if not 'all'
+            if ($status && $status !== 'all') {
+                $mapped = array_values(array_filter($mapped, fn($i) => $i['status'] === $status));
             }
 
             return ['items' => $mapped, 'counts' => $counts];
@@ -254,3 +261,4 @@ class AdminDashboardService
         ];
     }
 }
+

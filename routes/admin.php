@@ -3,6 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\Auth\AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\DashboardReportsController;
+use App\Http\Controllers\Admin\NotificationsPageController;
+use App\Http\Controllers\Admin\ReviewsPageController;
 
 Route::prefix('admin')->name('admin.')->group(function () {
 
@@ -43,6 +46,23 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('users', [\App\Http\Controllers\Admin\UsersController::class, 'index'])->name('users.index');
         Route::get('users/export', [\App\Http\Controllers\Admin\UsersController::class, 'export'])->name('users.export');
         Route::get('users/{user}', [\App\Http\Controllers\Admin\UsersController::class, 'show'])->name('users.show');
+    });
+
+    // Reviews (web)
+    Route::middleware('auth:admin_web')->group(function () {
+        Route::get('reviews/{review}', [ReviewsPageController::class, 'show'])->name('reviews.show');
+    });
+
+    // Dashboard reports (exports)
+    Route::middleware('auth:admin_web')->group(function () {
+        Route::get('reports/dashboard.csv', [DashboardReportsController::class, 'csv'])->name('reports.dashboard.csv');
+        Route::get('reports/dashboard.pdf', [DashboardReportsController::class, 'pdf'])->name('reports.dashboard.pdf');
+    });
+
+    // Notifications (web)
+    Route::middleware('auth:admin_web')->group(function () {
+        Route::get('notifications/send', [NotificationsPageController::class, 'create'])->name('notifications.send');
+        Route::post('notifications/send', [NotificationsPageController::class, 'store'])->name('notifications.send.post');
     });
 
     // Profile routes (self)
