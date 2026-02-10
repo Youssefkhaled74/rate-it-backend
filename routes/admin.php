@@ -10,6 +10,11 @@ use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\SubscriptionPlansController;
 use App\Http\Controllers\Admin\RewardsController;
 use App\Http\Controllers\Admin\VouchersController;
+use App\Http\Controllers\Admin\FeaturedPlacesController;
+use App\Http\Controllers\Admin\SearchSuggestionsController;
+use App\Http\Controllers\Admin\KpiReportsController;
+use App\Http\Controllers\Admin\SubscriptionsController;
+use App\Http\Controllers\Admin\QrManagementController;
 
 Route::prefix('admin')->name('admin.')->group(function () {
 
@@ -114,6 +119,32 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware('auth:admin_web')->group(function () {
         Route::get('vouchers', [VouchersController::class, 'index'])->name('vouchers.index');
         Route::get('vouchers/export.csv', [VouchersController::class, 'exportCsv'])->name('vouchers.export.csv');
+    });
+    // Featured Places + Search Suggestions
+    Route::middleware('auth:admin_web')->group(function () {
+        Route::get('featured-places', [FeaturedPlacesController::class, 'index'])->name('featured-places.index');
+        Route::patch('featured-places/{place}/toggle', [FeaturedPlacesController::class, 'toggle'])->name('featured-places.toggle');
+
+        Route::get('search-suggestions', [SearchSuggestionsController::class, 'index'])->name('search-suggestions.index');
+        Route::get('search-suggestions/create', [SearchSuggestionsController::class, 'create'])->name('search-suggestions.create');
+        Route::post('search-suggestions', [SearchSuggestionsController::class, 'store'])->name('search-suggestions.store');
+        Route::get('search-suggestions/{suggestion}/edit', [SearchSuggestionsController::class, 'edit'])->name('search-suggestions.edit');
+        Route::match(['put','patch'], 'search-suggestions/{suggestion}', [SearchSuggestionsController::class, 'update'])->name('search-suggestions.update');
+        Route::patch('search-suggestions/{suggestion}/toggle', [SearchSuggestionsController::class, 'toggle'])->name('search-suggestions.toggle');
+        Route::delete('search-suggestions/{suggestion}', [SearchSuggestionsController::class, 'destroy'])->name('search-suggestions.destroy');
+    });
+    // KPI Reports
+    Route::middleware('auth:admin_web')->group(function () {
+        Route::get('kpi-reports', [KpiReportsController::class, 'index'])->name('kpi-reports.index');
+    });
+    // Subscriptions (Admin)
+    Route::middleware('auth:admin_web')->group(function () {
+        Route::get('subscriptions', [SubscriptionsController::class, 'index'])->name('subscriptions.index');
+    });
+    // QR Management
+    Route::middleware('auth:admin_web')->group(function () {
+        Route::get('qr-management', [QrManagementController::class, 'index'])->name('qr-management.index');
+        Route::get('qr-management/export.csv', [QrManagementController::class, 'exportCsv'])->name('qr-management.export.csv');
     });
     Route::middleware('auth:admin_web')->group(function () {
         Route::get('categories', [\App\Http\Controllers\Admin\CategoriesController::class, 'index'])->name('categories.index');
