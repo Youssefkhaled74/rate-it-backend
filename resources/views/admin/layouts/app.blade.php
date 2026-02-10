@@ -167,7 +167,7 @@
 
   <script>
     (function(){
-      const overlay = document.querySelector('[data-admin-sidebar-overlay]');
+      const sidebarOverlay = document.querySelector('[data-admin-sidebar-overlay]');
       document.addEventListener('click', function(e){
         const btn = e.target.closest('[data-admin-sidebar-toggle]');
         if (btn) {
@@ -175,7 +175,7 @@
           document.body.classList.toggle('admin-sidebar-open');
           return;
         }
-        if (overlay && e.target === overlay) {
+        if (sidebarOverlay && e.target === sidebarOverlay) {
           document.body.classList.remove('admin-sidebar-open');
         }
       });
