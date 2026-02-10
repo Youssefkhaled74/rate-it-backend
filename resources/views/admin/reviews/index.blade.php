@@ -11,14 +11,14 @@
         <div class="text-sm text-gray-500 mt-1">{{ __('admin.reviews_subtitle') }}</div>
       </div>
       <div class="flex items-center gap-2">
-        <button type="button" id="exportReviewsCsv" class="w-9 h-9 rounded-full border border-gray-200 grid place-items-center text-gray-600 hover:border-gray-300" title="Export Excel">
+        <button type="button" id="exportReviewsCsv" data-export-base="{{ route('admin.reviews.export.csv') }}" class="w-9 h-9 rounded-full border border-gray-200 grid place-items-center text-gray-600 hover:border-gray-300" title="Export Excel">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
             <path d="M14 2v6h6"/>
             <path d="M9 12l6 6M15 12l-6 6"/>
           </svg>
         </button>
-        <button type="button" id="exportReviewsPdf" class="w-9 h-9 rounded-full border border-red-200 grid place-items-center text-red-700 hover:border-red-300" title="Export PDF">
+        <button type="button" id="exportReviewsPdf" data-export-base="{{ route('admin.reviews.export.pdf') }}" class="w-9 h-9 rounded-full border border-red-200 grid place-items-center text-red-700 hover:border-red-300" title="Export PDF">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
             <path d="M14 2v6h6"/>
@@ -149,10 +149,14 @@
       const csvBtn = document.getElementById('exportReviewsCsv');
       const pdfBtn = document.getElementById('exportReviewsPdf');
       csvBtn?.addEventListener('click', function(){
-        window.location.href = buildExportUrl(@json(route('admin.reviews.export.csv')));
+        const base = csvBtn.getAttribute('data-export-base') || '';
+        if (!base) return;
+        window.location.href = buildExportUrl(base);
       });
       pdfBtn?.addEventListener('click', function(){
-        window.location.href = buildExportUrl(@json(route('admin.reviews.export.pdf')));
+        const base = pdfBtn.getAttribute('data-export-base') || '';
+        if (!base) return;
+        window.location.href = buildExportUrl(base);
       });
     })();
   </script>

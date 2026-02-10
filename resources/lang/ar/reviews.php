@@ -11,5 +11,6 @@ return [
     'max_photos' => 'ا�"حد ا�"أ�,ص�? 3 ص�^ر',
     'invalid_answer' => 'إجابة غ�Sر صا�"حة �"�"�.ع�Sار',
     'unauthorized' => 'غ�Sر �.س�.�^ح �"�f بعرض �?ذا ا�"ت�,�S�S�.',
+    'subscription_required' => 'الاشتراك مطلوب لإضافة تقييم',
 ];
 

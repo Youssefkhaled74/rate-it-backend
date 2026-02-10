@@ -11,4 +11,5 @@ return [
     'max_photos' => 'Maximum 3 photos allowed',
     'invalid_answer' => 'Invalid answer for criteria',
     'unauthorized' => 'You are not allowed to view this review',
+    'subscription_required' => 'Subscription required to add a review',
 ];

@@ -110,7 +110,7 @@
           <div class="flex items-center gap-3">
             <div class="w-8 text-xs text-gray-500">{{ $label }}</div>
             <div class="flex-1 h-2 rounded-full bg-gray-100 overflow-hidden">
-              <div class="h-2 rounded-full bg-red-800" style="width: {{ round(($value / $growthMax) * 100) }}%"></div>
+              <div class="h-2 rounded-full bg-red-800 js-bar" data-width="{{ round(($value / $growthMax) * 100) }}"></div>
             </div>
             <div class="text-[10px] text-gray-400">( {{ $value }} )</div>
           </div>
@@ -135,14 +135,14 @@
             <input type="date" name="to" value="{{ $to }}" class="text-xs border border-gray-200 rounded-full px-3 py-1 focus:outline-none focus:ring-2 focus:ring-red-200">
             <button type="submit" class="text-xs font-semibold text-gray-700 border border-gray-200 rounded-full px-3 py-1 hover:border-gray-300">Apply</button>
           </form>
-          <button type="button" id="exportCsvBtn" class="w-9 h-9 rounded-full border border-gray-200 grid place-items-center text-gray-600 hover:border-gray-300" title="Export Excel">
+          <button type="button" id="exportCsvBtn" data-export-base="{{ route('admin.reports.dashboard.csv', ['period' => 'week']) }}" class="w-9 h-9 rounded-full border border-gray-200 grid place-items-center text-gray-600 hover:border-gray-300" title="Export Excel">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
               <path d="M14 2v6h6"/>
               <path d="M9 12l6 6M15 12l-6 6"/>
             </svg>
           </button>
-          <button type="button" id="exportPdfBtn" class="w-9 h-9 rounded-full border border-red-200 grid place-items-center text-red-700 hover:border-red-300" title="Export PDF">
+          <button type="button" id="exportPdfBtn" data-export-base="{{ route('admin.reports.dashboard.pdf', ['period' => 'week']) }}" class="w-9 h-9 rounded-full border border-red-200 grid place-items-center text-red-700 hover:border-red-300" title="Export PDF">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
               <path d="M14 2v6h6"/>
@@ -304,11 +304,15 @@
         return qs ? (base + '?' + qs) : base;
       }
       csvBtn?.addEventListener('click', function(){
-        const url = buildExportUrl(@json(route('admin.reports.dashboard.csv', ['period' => 'week'])));
+        const base = csvBtn.getAttribute('data-export-base') || '';
+        if (!base) return;
+        const url = buildExportUrl(base);
         window.location.href = url;
       });
       pdfBtn?.addEventListener('click', function(){
-        const url = buildExportUrl(@json(route('admin.reports.dashboard.pdf', ['period' => 'week'])));
+        const base = pdfBtn.getAttribute('data-export-base') || '';
+        if (!base) return;
+        const url = buildExportUrl(base);
         window.location.href = url;
       });
     })();

@@ -17,6 +17,7 @@ use App\Support\Exceptions\ApiException;
 use Illuminate\Support\Facades\Log;
 use App\Modules\User\Reviews\Support\CriteriaResolver;
 use App\Modules\User\Points\Services\PointsService;
+use App\Models\Subscription;
 
 class ReviewService
 {
@@ -50,6 +51,11 @@ class ReviewService
         $branch = $session->branch;
         if (! $branch) {
             throw new ApiException(trans('reviews.invalid_qr'), 422);
+        }
+
+        $subscription = $this->ensureUserSubscription($user);
+        if (! $this->hasSubscriptionAccess($subscription)) {
+            throw new ApiException('reviews.subscription_required', 402);
         }
 
         // Instrumentation: log branch and subcategory
@@ -286,5 +292,39 @@ class ReviewService
             DB::rollBack();
             throw $e;
         }
+    }
+
+    private function ensureUserSubscription($user): Subscription
+    {
+        $sub = Subscription::where('user_id', $user->id)->orderBy('created_at', 'desc')->first();
+        if ($sub) return $sub;
+
+        $started = $user->created_at ? Carbon::parse($user->created_at) : Carbon::now();
+        return Subscription::create([
+            'user_id' => $user->id,
+            'subscription_plan_id' => null,
+            'status' => 'FREE',
+            'subscription_status' => 'trialing',
+            'started_at' => $started,
+            'free_until' => $started->copy()->addMonths(6),
+            'paid_until' => null,
+            'auto_renew' => false,
+            'provider' => null,
+            'provider_subscription_id' => null,
+            'provider_transaction_id' => null,
+            'meta' => null,
+        ]);
+    }
+
+    private function hasSubscriptionAccess(Subscription $sub): bool
+    {
+        $now = Carbon::now();
+        $freeUntil = $sub->free_until;
+        $paidUntil = $sub->paid_until;
+
+        if ($freeUntil && $freeUntil->isFuture()) return true;
+        if ($paidUntil && $paidUntil->isFuture()) return true;
+
+        return false;
     }
 }

@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Hash;
 use App\Support\Exceptions\ApiException;
 use Illuminate\Support\Facades\Log;
 use App\Support\PhoneNormalizer;
+use App\Models\Subscription;
+use Carbon\Carbon;
 
 class AuthService
 {
@@ -25,6 +27,23 @@ class AuthService
             'gender_id' => $data['gender_id'] ?? null,
             'nationality_id' => $data['nationality_id'] ?? null,
             'password' => $data['password'], // Let 'hashed' cast handle hashing
+        ]);
+
+        // Create default free subscription (6 months) for new users
+        $now = Carbon::now();
+        Subscription::create([
+            'user_id' => $user->id,
+            'subscription_plan_id' => null,
+            'status' => 'FREE',
+            'subscription_status' => 'trialing',
+            'started_at' => $now,
+            'free_until' => $now->copy()->addMonths(6),
+            'paid_until' => null,
+            'auto_renew' => false,
+            'provider' => null,
+            'provider_subscription_id' => null,
+            'provider_transaction_id' => null,
+            'meta' => null,
         ]);
 
         // If user was invited, attempt to complete the invite and award points.
