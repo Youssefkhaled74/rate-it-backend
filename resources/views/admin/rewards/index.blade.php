@@ -239,31 +239,6 @@
     @else
       <div class="mt-5 text-sm text-gray-500">{{ __('admin.no_levels') }}</div>
     @endif
-                </div>
-              </div>
-              <div class="flex items-center gap-2">
-                <a href="{{ route('admin.rewards.levels.edit', $lvl) }}"
-                   class="px-3 py-2 rounded-full border border-gray-200 text-gray-700 text-xs font-semibold hover:bg-gray-50 transition">
-                  {{ __('admin.edit') }}
-                </a>
-                <form method="POST" action="{{ route('admin.rewards.levels.destroy', $lvl) }}"
-                      data-confirm="{{ __('admin.confirm_delete_level') }}"
-                      onsubmit="return confirm(this.dataset.confirm)">
-                  @csrf
-                  @method('DELETE')
-                  <button type="submit"
-                    class="px-3 py-2 rounded-full border border-red-200 text-red-600 text-xs font-semibold hover:bg-red-50 transition">
-                    {{ __('admin.delete') }}
-                  </button>
-                </form>
-              </div>
-            </div>
-          @endforeach
-        </div>
-      </form>
-    @else
-      <div class="mt-5 text-sm text-gray-500">{{ __('admin.no_levels') }}</div>
-    @endif
   </div>
 @endsection
 
