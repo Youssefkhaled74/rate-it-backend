@@ -12,6 +12,7 @@ class OnboardingScreen extends Model
         'title',
         'body',
         'sort_order',
+        'image',
         'is_active',
     ];
 

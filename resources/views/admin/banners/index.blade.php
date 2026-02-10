@@ -10,6 +10,12 @@
     <h2 class="text-2xl font-semibold text-gray-900">{{ __('admin.banners_onboarding') }}</h2>
   </div>
 
+  @if (session('error'))
+    <div class="rounded-2xl bg-red-50 border border-red-100 text-red-700 text-sm px-4 py-3">
+      {{ session('error') }}
+    </div>
+  @endif
+
   {{-- Banners --}}
   <div class="space-y-4">
     <div class="text-sm font-semibold text-gray-900">{{ __('admin.banners') }}</div>
@@ -116,15 +122,21 @@
         </div>
       @endforeach
 
-      <a href="{{ route('admin.onboardings.create') }}"
-         class="group rounded-[22px] border-2 border-dashed border-gray-200 bg-white hover:border-gray-300 transition shadow-soft p-6 flex flex-col items-center justify-center min-h-[120px]">
-        <div class="w-12 h-12 rounded-2xl bg-gray-50 border border-gray-100 grid place-items-center text-gray-700 group-hover:scale-105 transition">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 5v14M5 12h14"/>
-          </svg>
+      @if ($onboardings->count() < 3)
+        <a href="{{ route('admin.onboardings.create') }}"
+           class="group rounded-[22px] border-2 border-dashed border-gray-200 bg-white hover:border-gray-300 transition shadow-soft p-6 flex flex-col items-center justify-center min-h-[120px]">
+          <div class="w-12 h-12 rounded-2xl bg-gray-50 border border-gray-100 grid place-items-center text-gray-700 group-hover:scale-105 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 5v14M5 12h14"/>
+            </svg>
+          </div>
+          <div class="mt-3 text-sm font-semibold text-gray-900">{{ __('admin.add_onboarding') }}</div>
+        </a>
+      @else
+        <div class="rounded-[22px] border border-gray-200 bg-gray-50 p-6 text-sm text-gray-600">
+          Maximum of 3 onboarding screens reached.
         </div>
-        <div class="mt-3 text-sm font-semibold text-gray-900">{{ __('admin.add_onboarding') }}</div>
-      </a>
+      @endif
     </div>
   </div>
 </div>

@@ -17,8 +17,10 @@ class OnboardingScreenResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
-            'body' => $this->body,
-            'sort_order' => $this->sort_order,
+            'body' => $this->subtitle ?? null,
+            'subtitle' => $this->subtitle ?? null,
+            'sort_order' => $this->sort_order ?? null,
+            'image_url' => $this->image ? asset($this->image) : null,
         ];
     }
 }

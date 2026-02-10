@@ -17,6 +17,13 @@ class OnboardingsController extends Controller
 
     public function store(Request $request)
     {
+        if (Onboarding::count() >= 3) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->withErrors(['limit' => 'You can only create exactly 3 onboarding screens.']);
+        }
+
         $data = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'subtitle' => ['nullable', 'string', 'max:255'],
@@ -80,6 +87,10 @@ class OnboardingsController extends Controller
 
     public function destroy(Onboarding $onboarding)
     {
+        if (Onboarding::count() <= 3) {
+            return back()->with('error', 'Onboarding must have exactly 3 screens.');
+        }
+
         $this->deletePublicAssetIfExists($onboarding->image);
         $onboarding->delete();
 
