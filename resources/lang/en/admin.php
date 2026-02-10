@@ -1,4 +1,4 @@
-ï»؟<?php
+<?php
 
 return [
     'dashboard' => 'Dashboard',
@@ -69,6 +69,16 @@ return [
     'days' => 'days',
     'save_changes' => 'Save Changes',
     'settings_saved' => 'Settings saved successfully',
+    'choices' => 'Choices',
+    'choices_en' => 'Choice (EN)',
+    'choices_ar' => 'Choice (AR)',
+    'choice_value' => 'Score (1-5)',
+    'choice_weight' => 'Weight',
+    'yes_no_scoring' => 'Yes/No Scoring',
+    'yes_value' => 'Yes score (1-5)',
+    'no_value' => 'No score (1-5)',
+    'yes_weight' => 'Yes weight',
+    'no_weight' => 'No weight',
     'notifications' => 'Notifications',
     'profile' => 'Profile',
     'logout' => 'Logout',
@@ -163,7 +173,6 @@ return [
     'question_text_ar' => 'Question Text (AR)',
     'subcategories' => 'Subcategories',
     'type' => 'Type',
-    'choices' => 'Choices',
     'add_at_least_two_choices' => 'Add at least 2 choices.',
     'edit_brand' => 'Edit Brand',
     'edit_brand_hint' => 'Update brand details and status.',
@@ -199,8 +208,6 @@ return [
     'address' => 'Address',
     'average_rating' => 'Average Rating',
     'qr_code' => 'QR Code',
-    'choices_en' => 'Choices (EN)',
-    'choices_ar' => 'Choices (AR)',
     'required' => 'Required',
     'add_question' => 'Add Question',
     'edit_question' => 'Edit Question',

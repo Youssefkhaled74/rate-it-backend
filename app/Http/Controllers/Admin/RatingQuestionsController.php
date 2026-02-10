@@ -64,6 +64,10 @@ class RatingQuestionsController extends Controller
             'subcategory_id' => ['required', 'exists:subcategories,id'],
             'weight' => ['nullable', 'numeric', 'min:0'],
             'points' => ['nullable', 'integer', 'min:0'],
+            'yes_value' => ['nullable', 'integer', 'min:1', 'max:5'],
+            'no_value' => ['nullable', 'integer', 'min:1', 'max:5'],
+            'yes_weight' => ['nullable', 'numeric', 'min:0'],
+            'no_weight' => ['nullable', 'numeric', 'min:0'],
             'is_required' => ['nullable', 'boolean'],
             'is_active' => ['nullable', 'boolean'],
             'sort_order' => ['nullable', 'integer'],
@@ -71,6 +75,10 @@ class RatingQuestionsController extends Controller
             'choices_en.*' => ['nullable', 'string'],
             'choices_ar' => ['nullable', 'array'],
             'choices_ar.*' => ['nullable', 'string'],
+            'choices_value' => ['nullable', 'array'],
+            'choices_value.*' => ['nullable', 'integer', 'min:1', 'max:5'],
+            'choices_weight' => ['nullable', 'array'],
+            'choices_weight.*' => ['nullable', 'numeric', 'min:0'],
         ]);
 
         $type = strtoupper($data['type']);
@@ -79,12 +87,20 @@ class RatingQuestionsController extends Controller
         $data['question_en'] = $data['question_text'];
         $data['weight'] = (float) ($data['weight'] ?? 0);
         $data['points'] = (int) ($data['points'] ?? 0);
+        $data['yes_value'] = (int) ($data['yes_value'] ?? 5);
+        $data['no_value'] = (int) ($data['no_value'] ?? 1);
+        $data['yes_weight'] = (float) ($data['yes_weight'] ?? 1);
+        $data['no_weight'] = (float) ($data['no_weight'] ?? 1);
 
         $criteria = RatingCriteria::create($data);
 
         if ($type === 'MULTIPLE_CHOICE') {
-            $choicesEn = $this->normalizeChoices($data['choices_en'] ?? []);
-            $choicesAr = $this->normalizeChoices($data['choices_ar'] ?? []);
+            [$choicesEn, $choicesAr, $choicesValue, $choicesWeight] = $this->normalizeChoicesPack(
+                $data['choices_en'] ?? [],
+                $data['choices_ar'] ?? [],
+                $data['choices_value'] ?? [],
+                $data['choices_weight'] ?? []
+            );
             if (count($choicesEn) < 2) {
                 $criteria->delete();
                 return back()->withErrors(['choices_en' => 'Please add at least 2 choices.'])->withInput();
@@ -96,7 +112,8 @@ class RatingQuestionsController extends Controller
                     'choice_text' => $choiceEn,
                     'choice_en' => $choiceEn,
                     'choice_ar' => $choicesAr[$i] ?? null,
-                    'value' => $i + 1,
+                    'value' => isset($choicesValue[$i]) && $choicesValue[$i] !== null ? (int) $choicesValue[$i] : ($i + 1),
+                    'weight' => isset($choicesWeight[$i]) && $choicesWeight[$i] !== null ? (float) $choicesWeight[$i] : 1,
                     'sort_order' => $i + 1,
                     'is_active' => true,
                 ]);
@@ -126,6 +143,10 @@ class RatingQuestionsController extends Controller
             'subcategory_id' => ['required', 'exists:subcategories,id'],
             'weight' => ['nullable', 'numeric', 'min:0'],
             'points' => ['nullable', 'integer', 'min:0'],
+            'yes_value' => ['nullable', 'integer', 'min:1', 'max:5'],
+            'no_value' => ['nullable', 'integer', 'min:1', 'max:5'],
+            'yes_weight' => ['nullable', 'numeric', 'min:0'],
+            'no_weight' => ['nullable', 'numeric', 'min:0'],
             'is_required' => ['nullable', 'boolean'],
             'is_active' => ['nullable', 'boolean'],
             'sort_order' => ['nullable', 'integer'],
@@ -133,6 +154,10 @@ class RatingQuestionsController extends Controller
             'choices_en.*' => ['nullable', 'string'],
             'choices_ar' => ['nullable', 'array'],
             'choices_ar.*' => ['nullable', 'string'],
+            'choices_value' => ['nullable', 'array'],
+            'choices_value.*' => ['nullable', 'integer', 'min:1', 'max:5'],
+            'choices_weight' => ['nullable', 'array'],
+            'choices_weight.*' => ['nullable', 'numeric', 'min:0'],
         ]);
 
         $type = strtoupper($data['type']);
@@ -141,14 +166,22 @@ class RatingQuestionsController extends Controller
         $data['question_en'] = $data['question_text'];
         $data['weight'] = (float) ($data['weight'] ?? 0);
         $data['points'] = (int) ($data['points'] ?? 0);
+        $data['yes_value'] = (int) ($data['yes_value'] ?? 5);
+        $data['no_value'] = (int) ($data['no_value'] ?? 1);
+        $data['yes_weight'] = (float) ($data['yes_weight'] ?? 1);
+        $data['no_weight'] = (float) ($data['no_weight'] ?? 1);
 
         $question->update($data);
 
         if ($type !== 'MULTIPLE_CHOICE') {
             $question->choices()->delete();
         } else {
-            $choicesEn = $this->normalizeChoices($data['choices_en'] ?? []);
-            $choicesAr = $this->normalizeChoices($data['choices_ar'] ?? []);
+            [$choicesEn, $choicesAr, $choicesValue, $choicesWeight] = $this->normalizeChoicesPack(
+                $data['choices_en'] ?? [],
+                $data['choices_ar'] ?? [],
+                $data['choices_value'] ?? [],
+                $data['choices_weight'] ?? []
+            );
             if (count($choicesEn) < 2) {
                 return back()->withErrors(['choices_en' => 'Please add at least 2 choices.'])->withInput();
             }
@@ -160,7 +193,8 @@ class RatingQuestionsController extends Controller
                     'choice_text' => $choiceEn,
                     'choice_en' => $choiceEn,
                     'choice_ar' => $choicesAr[$i] ?? null,
-                    'value' => $i + 1,
+                    'value' => isset($choicesValue[$i]) && $choicesValue[$i] !== null ? (int) $choicesValue[$i] : ($i + 1),
+                    'weight' => isset($choicesWeight[$i]) && $choicesWeight[$i] !== null ? (float) $choicesWeight[$i] : 1,
                     'sort_order' => $i + 1,
                     'is_active' => true,
                 ]);
@@ -192,6 +226,26 @@ class RatingQuestionsController extends Controller
     {
         $items = array_map(fn ($v) => is_string($v) ? trim($v) : '', $raw);
         return array_values(array_filter($items, fn ($v) => $v !== ''));
+    }
+
+    private function normalizeChoicesPack(array $rawEn, array $rawAr, array $rawValue, array $rawWeight): array
+    {
+        $outEn = [];
+        $outAr = [];
+        $outValue = [];
+        $outWeight = [];
+
+        $count = max(count($rawEn), count($rawAr), count($rawValue), count($rawWeight));
+        for ($i = 0; $i < $count; $i++) {
+            $en = isset($rawEn[$i]) && is_string($rawEn[$i]) ? trim($rawEn[$i]) : '';
+            if ($en === '') continue;
+            $outEn[] = $en;
+            $outAr[] = isset($rawAr[$i]) && is_string($rawAr[$i]) ? trim($rawAr[$i]) : null;
+            $outValue[] = isset($rawValue[$i]) && $rawValue[$i] !== '' ? (int) $rawValue[$i] : null;
+            $outWeight[] = isset($rawWeight[$i]) && $rawWeight[$i] !== '' ? (float) $rawWeight[$i] : null;
+        }
+
+        return [$outEn, $outAr, $outValue, $outWeight];
     }
 
     private function normalizeSubcategoryWeights(int $subcategoryId): void

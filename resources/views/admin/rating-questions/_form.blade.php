@@ -3,7 +3,11 @@
   $type = old('type', $question->type ?? 'RATING');
   $choicesEn = old('choices_en', $isEdit && $question->type === 'MULTIPLE_CHOICE' ? $question->choices->pluck('choice_en')->filter()->values()->toArray() : []);
   $choicesAr = old('choices_ar', $isEdit && $question->type === 'MULTIPLE_CHOICE' ? $question->choices->pluck('choice_ar')->filter()->values()->toArray() : []);
+  $choicesValue = old('choices_value', $isEdit && $question->type === 'MULTIPLE_CHOICE' ? $question->choices->pluck('value')->values()->toArray() : []);
+  $choicesWeight = old('choices_weight', $isEdit && $question->type === 'MULTIPLE_CHOICE' ? $question->choices->pluck('weight')->values()->toArray() : []);
   if (empty($choicesEn)) $choicesEn = ['',''];
+  if (empty($choicesValue)) $choicesValue = array_fill(0, count($choicesEn), null);
+  if (empty($choicesWeight)) $choicesWeight = array_fill(0, count($choicesEn), 1);
 @endphp
 
 <div class="space-y-6">
@@ -98,11 +102,22 @@
 
     <div id="choices_list" class="mt-3 space-y-3">
       @foreach($choicesEn as $i => $choiceEn)
-        <div class="choice-row grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div class="choice-row grid grid-cols-1 lg:grid-cols-4 gap-3">
           <input
             name="choices_en[]"
             value="{{ $choiceEn }}"
             placeholder="{{ __('admin.choices_en') }}"
+            class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
+                   focus:border-red-300 focus:ring-4 focus:ring-red-100"
+          >
+          <input
+            name="choices_value[]"
+            type="number"
+            min="1"
+            max="5"
+            step="1"
+            value="{{ $choicesValue[$i] ?? '' }}"
+            placeholder="{{ __('admin.choice_value') }}"
             class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
                    focus:border-red-300 focus:ring-4 focus:ring-red-100"
           >
@@ -112,6 +127,16 @@
               value="{{ $choicesAr[$i] ?? '' }}"
               placeholder="{{ __('admin.choices_ar') }}"
               class="flex-1 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
+                     focus:border-red-300 focus:ring-4 focus:ring-red-100"
+            >
+            <input
+              name="choices_weight[]"
+              type="number"
+              min="0"
+              step="0.01"
+              value="{{ $choicesWeight[$i] ?? 1 }}"
+              placeholder="{{ __('admin.choice_weight') }}"
+              class="w-28 rounded-2xl border border-gray-200 bg-white px-3 py-3 text-sm outline-none transition
                      focus:border-red-300 focus:ring-4 focus:ring-red-100"
             >
             <button type="button"
@@ -124,6 +149,62 @@
     </div>
 
     <div class="text-xs text-gray-500 mt-2">{{ __('admin.add_at_least_two_choices') }}</div>
+  </div>
+
+  <div id="yesno_block" class="{{ $type === 'YES_NO' ? '' : 'hidden' }}">
+    <div class="text-sm font-medium text-gray-700 mb-2">{{ __('admin.yes_no_scoring') }}</div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="text-xs text-gray-500">{{ __('admin.yes_value') }}</label>
+        <input
+          name="yes_value"
+          type="number"
+          min="1"
+          max="5"
+          step="1"
+          value="{{ old('yes_value', $question->yes_value ?? 5) }}"
+          class="mt-1 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
+                 focus:border-red-300 focus:ring-4 focus:ring-red-100"
+        >
+      </div>
+      <div>
+        <label class="text-xs text-gray-500">{{ __('admin.no_value') }}</label>
+        <input
+          name="no_value"
+          type="number"
+          min="1"
+          max="5"
+          step="1"
+          value="{{ old('no_value', $question->no_value ?? 1) }}"
+          class="mt-1 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
+                 focus:border-red-300 focus:ring-4 focus:ring-red-100"
+        >
+      </div>
+      <div>
+        <label class="text-xs text-gray-500">{{ __('admin.yes_weight') }}</label>
+        <input
+          name="yes_weight"
+          type="number"
+          min="0"
+          step="0.01"
+          value="{{ old('yes_weight', $question->yes_weight ?? 1) }}"
+          class="mt-1 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
+                 focus:border-red-300 focus:ring-4 focus:ring-red-100"
+        >
+      </div>
+      <div>
+        <label class="text-xs text-gray-500">{{ __('admin.no_weight') }}</label>
+        <input
+          name="no_weight"
+          type="number"
+          min="0"
+          step="0.01"
+          value="{{ old('no_weight', $question->no_weight ?? 1) }}"
+          class="mt-1 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
+                 focus:border-red-300 focus:ring-4 focus:ring-red-100"
+        >
+      </div>
+    </div>
   </div>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -174,10 +255,15 @@
   (function(){
     const typeSelect = document.getElementById('question_type');
     const block = document.getElementById('choices_block');
+    const yesNoBlock = document.getElementById('yesno_block');
     if (!typeSelect || !block) return;
     const toggle = () => {
       if (typeSelect.value === 'MULTIPLE_CHOICE') block.classList.remove('hidden');
       else block.classList.add('hidden');
+      if (yesNoBlock) {
+        if (typeSelect.value === 'YES_NO') yesNoBlock.classList.remove('hidden');
+        else yesNoBlock.classList.add('hidden');
+      }
     };
     typeSelect.addEventListener('change', toggle);
     toggle();
@@ -185,13 +271,19 @@
     const list = document.getElementById('choices_list');
     const addBtn = document.getElementById('add_choice_btn');
     const rowHtml = () => `
-      <div class="choice-row grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div class="choice-row grid grid-cols-1 lg:grid-cols-4 gap-3">
         <input name="choices_en[]" placeholder="{{ __('admin.choices_en') }}"
+               class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
+                      focus:border-red-300 focus:ring-4 focus:ring-red-100">
+        <input name="choices_value[]" type="number" min="1" max="5" step="1" placeholder="{{ __('admin.choice_value') }}"
                class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
                       focus:border-red-300 focus:ring-4 focus:ring-red-100">
         <div class="flex gap-2">
           <input name="choices_ar[]" placeholder="{{ __('admin.choices_ar') }}"
                  class="flex-1 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
+                        focus:border-red-300 focus:ring-4 focus:ring-red-100">
+          <input name="choices_weight[]" type="number" min="0" step="0.01" placeholder="{{ __('admin.choice_weight') }}"
+                 class="w-28 rounded-2xl border border-gray-200 bg-white px-3 py-3 text-sm outline-none transition
                         focus:border-red-300 focus:ring-4 focus:ring-red-100">
           <button type="button"
                   class="remove-choice w-11 h-11 rounded-2xl bg-red-50 border border-red-100 text-red-700 hover:bg-red-100">x</button>

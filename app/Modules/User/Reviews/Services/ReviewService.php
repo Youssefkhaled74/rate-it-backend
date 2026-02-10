@@ -238,24 +238,57 @@ class ReviewService
             $session->consumed_at = Carbon::now();
             $session->save();
 
-            // compute weighted review_score using criteria weights (normalized to total 5)
-            $ratingRows = ReviewAnswer::query()
-                ->join('rating_criteria', 'rating_criteria.id', '=', 'review_answers.criteria_id')
-                ->where('review_answers.review_id', $review->id)
-                ->whereNotNull('review_answers.rating_value')
-                ->select('review_answers.rating_value', 'rating_criteria.weight')
+            // compute weighted review_score using criteria + answer weights (normalized to total 5)
+            $answerRows = ReviewAnswer::query()
+                ->with(['criteria', 'choice'])
+                ->where('review_id', $review->id)
                 ->get();
 
-            if ($ratingRows->count() > 0) {
-                $sumWeights = (float) $ratingRows->sum('weight');
+            $sumWeights = 0.0;
+            $sumWeighted = 0.0;
+            $scores = [];
+
+            foreach ($answerRows as $row) {
+                $crit = $row->criteria;
+                if (! $crit) continue;
+
+                $score = null;
+                $answerWeight = 1.0;
+
+                switch ($crit->type) {
+                    case 'RATING':
+                        $score = $row->rating_value;
+                        $answerWeight = 1.0;
+                        break;
+                    case 'YES_NO':
+                        if ($row->yes_no_value === null) break;
+                        $isYes = (bool) $row->yes_no_value;
+                        $score = $isYes ? (int) ($crit->yes_value ?? 5) : (int) ($crit->no_value ?? 1);
+                        $answerWeight = $isYes ? (float) ($crit->yes_weight ?? 1) : (float) ($crit->no_weight ?? 1);
+                        break;
+                    case 'MULTIPLE_CHOICE':
+                        if (! $row->choice || $row->choice->value === null) break;
+                        $score = (int) $row->choice->value;
+                        $answerWeight = (float) ($row->choice->weight ?? 1);
+                        break;
+                    default:
+                        break;
+                }
+
+                if ($score === null) continue;
+                $scores[] = (float) $score;
+
+                $critWeight = (float) ($crit->weight ?? 0);
+                $weight = $critWeight * $answerWeight;
+                $sumWeights += $weight;
+                $sumWeighted += ((float) $score) * $weight;
+            }
+
+            if (count($scores) > 0) {
                 if ($sumWeights > 0) {
-                    $weighted = 0;
-                    foreach ($ratingRows as $row) {
-                        $weighted += ((float) $row->rating_value) * ((float) $row->weight);
-                    }
-                    $review->review_score = round($weighted / $sumWeights, 2);
+                    $review->review_score = round($sumWeighted / $sumWeights, 2);
                 } else {
-                    $avg = $ratingRows->avg('rating_value');
+                    $avg = array_sum($scores) / count($scores);
                     $review->review_score = round((float) $avg, 2);
                 }
                 $review->save();
