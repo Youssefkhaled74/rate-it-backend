@@ -93,116 +93,141 @@
 
   <div id="choices_block" class="{{ $type === 'MULTIPLE_CHOICE' ? '' : 'hidden' }}">
     <div class="flex items-center justify-between">
-      <label class="text-sm font-medium text-gray-700">{{ __('admin.choices') }}</label>
+      <div>
+        <label class="text-sm font-medium text-gray-700">{{ __('admin.choices') }}</label>
+        <div class="text-xs text-gray-500 mt-1">{{ __('admin.add_at_least_two_choices') }}</div>
+      </div>
       <button type="button" id="add_choice_btn"
               class="text-xs font-semibold text-red-900 hover:text-red-950">
         + {{ __('admin.add') }}
       </button>
     </div>
 
-    <div id="choices_list" class="mt-3 space-y-3">
+    <div class="mt-3 hidden lg:grid lg:grid-cols-12 gap-3 text-[11px] uppercase tracking-wide text-gray-400">
+      <div class="lg:col-span-4">{{ __('admin.choices_en') }}</div>
+      <div class="lg:col-span-2">{{ __('admin.choice_value') }}</div>
+      <div class="lg:col-span-4">{{ __('admin.choices_ar') }}</div>
+      <div class="lg:col-span-1">{{ __('admin.choice_weight') }}</div>
+      <div class="lg:col-span-1 text-right">{{ __('admin.actions') }}</div>
+    </div>
+
+    <div id="choices_list" class="mt-2 space-y-3">
       @foreach($choicesEn as $i => $choiceEn)
-        <div class="choice-row grid grid-cols-1 lg:grid-cols-4 gap-3">
-          <input
-            name="choices_en[]"
-            value="{{ $choiceEn }}"
-            placeholder="{{ __('admin.choices_en') }}"
-            class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
-                   focus:border-red-300 focus:ring-4 focus:ring-red-100"
-          >
-          <input
-            name="choices_value[]"
-            type="number"
-            min="1"
-            max="5"
-            step="1"
-            value="{{ $choicesValue[$i] ?? '' }}"
-            placeholder="{{ __('admin.choice_value') }}"
-            class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
-                   focus:border-red-300 focus:ring-4 focus:ring-red-100"
-          >
-          <div class="flex gap-2">
-            <input
-              name="choices_ar[]"
-              value="{{ $choicesAr[$i] ?? '' }}"
-              placeholder="{{ __('admin.choices_ar') }}"
-              class="flex-1 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
-                     focus:border-red-300 focus:ring-4 focus:ring-red-100"
-            >
-            <input
-              name="choices_weight[]"
-              type="number"
-              min="0"
-              step="0.01"
-              value="{{ $choicesWeight[$i] ?? 1 }}"
-              placeholder="{{ __('admin.choice_weight') }}"
-              class="w-28 rounded-2xl border border-gray-200 bg-white px-3 py-3 text-sm outline-none transition
-                     focus:border-red-300 focus:ring-4 focus:ring-red-100"
-            >
-            <button type="button"
-                    class="remove-choice w-11 h-11 rounded-2xl bg-red-50 border border-red-100 text-red-700 hover:bg-red-100">
-              x
-            </button>
+        <div class="choice-row rounded-2xl border border-gray-100 bg-gray-50/60 p-3">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 items-center">
+            <div class="lg:col-span-4">
+              <label class="text-[11px] text-gray-500 lg:hidden">{{ __('admin.choices_en') }}</label>
+              <input
+                name="choices_en[]"
+                value="{{ $choiceEn }}"
+                placeholder="{{ __('admin.choices_en') }}"
+                class="mt-1 lg:mt-0 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
+                       focus:border-red-300 focus:ring-4 focus:ring-red-100"
+              >
+            </div>
+            <div class="lg:col-span-2">
+              <label class="text-[11px] text-gray-500 lg:hidden">{{ __('admin.choice_value') }}</label>
+              <input
+                name="choices_value[]"
+                type="number"
+                min="1"
+                max="5"
+                step="1"
+                value="{{ $choicesValue[$i] ?? '' }}"
+                placeholder="{{ __('admin.choice_value') }}"
+                class="mt-1 lg:mt-0 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
+                       focus:border-red-300 focus:ring-4 focus:ring-red-100"
+              >
+            </div>
+            <div class="lg:col-span-4">
+              <label class="text-[11px] text-gray-500 lg:hidden">{{ __('admin.choices_ar') }}</label>
+              <input
+                name="choices_ar[]"
+                value="{{ $choicesAr[$i] ?? '' }}"
+                placeholder="{{ __('admin.choices_ar') }}"
+                class="mt-1 lg:mt-0 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
+                       focus:border-red-300 focus:ring-4 focus:ring-red-100"
+              >
+            </div>
+            <div class="lg:col-span-1">
+              <label class="text-[11px] text-gray-500 lg:hidden">{{ __('admin.choice_weight') }}</label>
+              <input
+                name="choices_weight[]"
+                type="number"
+                min="0"
+                step="0.01"
+                value="{{ $choicesWeight[$i] ?? 1 }}"
+                placeholder="{{ __('admin.choice_weight') }}"
+                class="mt-1 lg:mt-0 w-full rounded-2xl border border-gray-200 bg-white px-3 py-3 text-sm outline-none transition
+                       focus:border-red-300 focus:ring-4 focus:ring-red-100"
+              >
+            </div>
+            <div class="lg:col-span-1 flex lg:justify-end">
+              <button type="button"
+                      class="remove-choice w-11 h-11 rounded-2xl bg-red-50 border border-red-100 text-red-700 hover:bg-red-100">
+                x
+              </button>
+            </div>
           </div>
         </div>
       @endforeach
     </div>
-
-    <div class="text-xs text-gray-500 mt-2">{{ __('admin.add_at_least_two_choices') }}</div>
   </div>
 
   <div id="yesno_block" class="{{ $type === 'YES_NO' ? '' : 'hidden' }}">
-    <div class="text-sm font-medium text-gray-700 mb-2">{{ __('admin.yes_no_scoring') }}</div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <div>
-        <label class="text-xs text-gray-500">{{ __('admin.yes_value') }}</label>
-        <input
-          name="yes_value"
-          type="number"
-          min="1"
-          max="5"
-          step="1"
-          value="{{ old('yes_value', $question->yes_value ?? 5) }}"
-          class="mt-1 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
-                 focus:border-red-300 focus:ring-4 focus:ring-red-100"
-        >
-      </div>
-      <div>
-        <label class="text-xs text-gray-500">{{ __('admin.no_value') }}</label>
-        <input
-          name="no_value"
-          type="number"
-          min="1"
-          max="5"
-          step="1"
-          value="{{ old('no_value', $question->no_value ?? 1) }}"
-          class="mt-1 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
-                 focus:border-red-300 focus:ring-4 focus:ring-red-100"
-        >
-      </div>
-      <div>
-        <label class="text-xs text-gray-500">{{ __('admin.yes_weight') }}</label>
-        <input
-          name="yes_weight"
-          type="number"
-          min="0"
-          step="0.01"
-          value="{{ old('yes_weight', $question->yes_weight ?? 1) }}"
-          class="mt-1 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
-                 focus:border-red-300 focus:ring-4 focus:ring-red-100"
-        >
-      </div>
-      <div>
-        <label class="text-xs text-gray-500">{{ __('admin.no_weight') }}</label>
-        <input
-          name="no_weight"
-          type="number"
-          min="0"
-          step="0.01"
-          value="{{ old('no_weight', $question->no_weight ?? 1) }}"
-          class="mt-1 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
-                 focus:border-red-300 focus:ring-4 focus:ring-red-100"
-        >
+    <div class="rounded-2xl border border-gray-100 bg-gray-50/60 p-4">
+      <div class="text-sm font-medium text-gray-700 mb-2">{{ __('admin.yes_no_scoring') }}</div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="text-xs text-gray-500">{{ __('admin.yes_value') }}</label>
+          <input
+            name="yes_value"
+            type="number"
+            min="1"
+            max="5"
+            step="1"
+            value="{{ old('yes_value', $question->yes_value ?? 5) }}"
+            class="mt-1 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
+                   focus:border-red-300 focus:ring-4 focus:ring-red-100"
+          >
+        </div>
+        <div>
+          <label class="text-xs text-gray-500">{{ __('admin.no_value') }}</label>
+          <input
+            name="no_value"
+            type="number"
+            min="1"
+            max="5"
+            step="1"
+            value="{{ old('no_value', $question->no_value ?? 1) }}"
+            class="mt-1 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
+                   focus:border-red-300 focus:ring-4 focus:ring-red-100"
+          >
+        </div>
+        <div>
+          <label class="text-xs text-gray-500">{{ __('admin.yes_weight') }}</label>
+          <input
+            name="yes_weight"
+            type="number"
+            min="0"
+            step="0.01"
+            value="{{ old('yes_weight', $question->yes_weight ?? 1) }}"
+            class="mt-1 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
+                   focus:border-red-300 focus:ring-4 focus:ring-red-100"
+          >
+        </div>
+        <div>
+          <label class="text-xs text-gray-500">{{ __('admin.no_weight') }}</label>
+          <input
+            name="no_weight"
+            type="number"
+            min="0"
+            step="0.01"
+            value="{{ old('no_weight', $question->no_weight ?? 1) }}"
+            class="mt-1 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
+                   focus:border-red-300 focus:ring-4 focus:ring-red-100"
+          >
+        </div>
       </div>
     </div>
   </div>

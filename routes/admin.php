@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\DashboardReportsController;
 use App\Http\Controllers\Admin\NotificationsPageController;
 use App\Http\Controllers\Admin\ReviewsPageController;
 use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\SubscriptionPlansController;
 
 Route::prefix('admin')->name('admin.')->group(function () {
 
@@ -83,6 +84,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware('auth:admin_web')->group(function () {
         Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
         Route::post('settings/subscription', [SettingsController::class, 'updateSubscription'])->name('settings.subscription.update');
+    });
+
+    // Subscription Plans
+    Route::middleware('auth:admin_web')->group(function () {
+        Route::get('subscription-plans', [SubscriptionPlansController::class, 'index'])->name('subscription-plans.index');
+        Route::get('subscription-plans/create', [SubscriptionPlansController::class, 'create'])->name('subscription-plans.create');
+        Route::post('subscription-plans', [SubscriptionPlansController::class, 'store'])->name('subscription-plans.store');
+        Route::get('subscription-plans/{plan}/edit', [SubscriptionPlansController::class, 'edit'])->name('subscription-plans.edit');
+        Route::match(['put', 'patch'], 'subscription-plans/{plan}', [SubscriptionPlansController::class, 'update'])->name('subscription-plans.update');
+        Route::patch('subscription-plans/{plan}/toggle', [SubscriptionPlansController::class, 'toggle'])->name('subscription-plans.toggle');
     });
     Route::middleware('auth:admin_web')->group(function () {
         Route::get('categories', [\App\Http\Controllers\Admin\CategoriesController::class, 'index'])->name('categories.index');

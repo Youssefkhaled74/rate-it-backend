@@ -12,9 +12,10 @@
     ['label' => __('admin.lookups'), 'route' => 'admin.lookups.index', 'icon' => 'search'],
     ['label' => __('admin.rewards_system'), 'route' => 'admin.rewards.index', 'icon' => 'trophy'],
     ['label' => __('admin.rating_questions'), 'route' => 'admin.rating-questions.index', 'icon' => 'checklist'],
+    ['label' => __('admin.subscription_plans'), 'route' => 'admin.subscription-plans.index', 'icon' => 'trophy'],
     ['label' => __('admin.banners_onboarding'), 'route' => 'admin.banners.index', 'icon' => 'flag'],
     ['label' => __('admin.notifications'), 'route' => 'admin.notifications.send', 'icon' => 'bell'],
-    ['label' => __('admin.settings'), 'route' => 'admin.settings.index', 'icon' => 'gear'],
+    ['label' => __('admin.subscription_settings'), 'route' => 'admin.settings.index', 'icon' => 'gear'],
   ];
 
   // Add Admins menu if permitted
