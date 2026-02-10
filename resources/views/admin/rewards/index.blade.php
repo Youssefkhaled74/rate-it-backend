@@ -18,6 +18,12 @@
       </div>
     @endif
 
+    @if(session('error'))
+      <div class="mt-4 rounded-2xl bg-red-50 border border-red-100 text-red-700 text-sm px-4 py-3">
+        {{ session('error') }}
+      </div>
+    @endif
+
     <div class="mt-5 grid grid-cols-1 xl:grid-cols-2 gap-6">
       <div class="rounded-2xl border border-gray-100 bg-gray-50 p-5">
         <div class="text-xs uppercase tracking-wide text-gray-500">{{ __('admin.active_rules') }}</div>
@@ -173,44 +179,91 @@
       </div>
     </form>
 
-    <div class="mt-5 space-y-3">
-      @forelse($levels as $lvl)
-        <div class="rounded-2xl border border-gray-100 p-4 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <div>
-            <div class="text-sm font-semibold text-gray-900">{{ $lvl->name }}</div>
-            <div class="text-xs text-gray-500 mt-1">
-              {{ __('admin.min_reviews') }}: {{ $lvl->min_reviews }} ·
-              {{ __('admin.bonus_percent') }}: {{ number_format((float)($lvl->bonus_percent ?? 0), 2) }}%
-            </div>
-            @if(!empty($lvl->benefits))
-              <ul class="mt-2 text-xs text-gray-600 list-disc list-inside">
-                @foreach($lvl->benefits as $b)
-                  <li>{{ $b }}</li>
-                @endforeach
-              </ul>
-            @endif
-          </div>
-          <div class="flex items-center gap-2">
-            <a href="{{ route('admin.rewards.levels.edit', $lvl) }}"
-               class="px-3 py-2 rounded-full border border-gray-200 text-gray-700 text-xs font-semibold hover:bg-gray-50 transition">
-              {{ __('admin.edit') }}
-            </a>
-            <form method="POST" action="{{ route('admin.rewards.levels.destroy', $lvl) }}"
-                  data-confirm="{{ __('admin.confirm_delete_level') }}"
-                  onsubmit="return confirm(this.dataset.confirm)">
-              @csrf
-              @method('DELETE')
-              <button type="submit"
-                class="px-3 py-2 rounded-full border border-red-200 text-red-600 text-xs font-semibold hover:bg-red-50 transition">
-                {{ __('admin.delete') }}
-              </button>
-            </form>
-          </div>
+    @if($levels->count())
+      <form id="levels-bulk-form" method="POST" action="{{ route('admin.rewards.levels.bulk-destroy') }}"
+            data-confirm="{{ __('admin.confirm_delete_levels') }}"
+            onsubmit="return confirm(this.dataset.confirm)">
+        @csrf
+        @method('DELETE')
+        <div class="mt-5 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <label class="inline-flex items-center gap-2 text-sm text-gray-600">
+            <input id="levels_select_all" type="checkbox" class="rounded border-gray-300">
+            {{ __('admin.select_all') }}
+          </label>
+          <button id="levels_delete_selected" type="submit" disabled
+                  class="px-4 py-2 rounded-full border border-red-200 text-red-600 text-xs font-semibold hover:bg-red-50 transition disabled:opacity-50 disabled:cursor-not-allowed">
+            {{ __('admin.delete_selected') }}
+          </button>
         </div>
-      @empty
-        <div class="text-sm text-gray-500">{{ __('admin.no_levels') }}</div>
-      @endforelse
-    </div>
+      </form>
+
+      <div class="mt-4 space-y-3">
+        @foreach($levels as $lvl)
+          <div class="rounded-2xl border border-gray-100 p-4 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div class="flex items-start gap-3">
+              <input type="checkbox" name="level_ids[]" form="levels-bulk-form" value="{{ $lvl->id }}" class="mt-1 rounded border-gray-300 level-checkbox">
+              <div>
+                <div class="text-sm font-semibold text-gray-900">{{ $lvl->name }}</div>
+                <div class="text-xs text-gray-500 mt-1">
+                  {{ __('admin.min_reviews') }}: {{ $lvl->min_reviews }} ·
+                  {{ __('admin.bonus_percent') }}: {{ number_format((float)($lvl->bonus_percent ?? 0), 2) }}%
+                </div>
+                @if(!empty($lvl->benefits))
+                  <ul class="mt-2 text-xs text-gray-600 list-disc list-inside">
+                    @foreach($lvl->benefits as $b)
+                      <li>{{ $b }}</li>
+                    @endforeach
+                  </ul>
+                @endif
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <a href="{{ route('admin.rewards.levels.edit', $lvl) }}"
+                 class="px-3 py-2 rounded-full border border-gray-200 text-gray-700 text-xs font-semibold hover:bg-gray-50 transition">
+                {{ __('admin.edit') }}
+              </a>
+              <form method="POST" action="{{ route('admin.rewards.levels.destroy', $lvl) }}"
+                    data-confirm="{{ __('admin.confirm_delete_level') }}"
+                    onsubmit="return confirm(this.dataset.confirm)">
+                @csrf
+                @method('DELETE')
+                <button type="submit"
+                  class="px-3 py-2 rounded-full border border-red-200 text-red-600 text-xs font-semibold hover:bg-red-50 transition">
+                  {{ __('admin.delete') }}
+                </button>
+              </form>
+            </div>
+          </div>
+        @endforeach
+      </div>
+    @else
+      <div class="mt-5 text-sm text-gray-500">{{ __('admin.no_levels') }}</div>
+    @endif
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <a href="{{ route('admin.rewards.levels.edit', $lvl) }}"
+                   class="px-3 py-2 rounded-full border border-gray-200 text-gray-700 text-xs font-semibold hover:bg-gray-50 transition">
+                  {{ __('admin.edit') }}
+                </a>
+                <form method="POST" action="{{ route('admin.rewards.levels.destroy', $lvl) }}"
+                      data-confirm="{{ __('admin.confirm_delete_level') }}"
+                      onsubmit="return confirm(this.dataset.confirm)">
+                  @csrf
+                  @method('DELETE')
+                  <button type="submit"
+                    class="px-3 py-2 rounded-full border border-red-200 text-red-600 text-xs font-semibold hover:bg-red-50 transition">
+                    {{ __('admin.delete') }}
+                  </button>
+                </form>
+              </div>
+            </div>
+          @endforeach
+        </div>
+      </form>
+    @else
+      <div class="mt-5 text-sm text-gray-500">{{ __('admin.no_levels') }}</div>
+    @endif
   </div>
 @endsection
 
@@ -264,6 +317,28 @@
     });
 
     renderFromTextarea();
+
+    const selectAll = document.getElementById('levels_select_all');
+    const deleteBtn = document.getElementById('levels_delete_selected');
+    const checkboxes = Array.from(document.querySelectorAll('.level-checkbox'));
+
+    function syncBulkState() {
+      const checked = checkboxes.filter(cb => cb.checked);
+      if (deleteBtn) deleteBtn.disabled = checked.length === 0;
+      if (selectAll) selectAll.checked = checked.length > 0 && checked.length === checkboxes.length;
+    }
+
+    if (selectAll) {
+      selectAll.addEventListener('change', function () {
+        checkboxes.forEach(cb => { cb.checked = selectAll.checked; });
+        syncBulkState();
+      });
+    }
+
+    checkboxes.forEach(cb => cb.addEventListener('change', syncBulkState));
+    syncBulkState();
   })();
 </script>
 @endpush
+
+

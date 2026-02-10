@@ -278,6 +278,11 @@ return [
     'level_deleted' => 'Level deleted successfully.',
     'no_levels' => 'No levels found.',
     'confirm_delete_level' => 'Delete this level?',
+    'confirm_delete_levels' => 'Delete selected levels?',
+    'delete_selected' => 'Delete Selected',
+    'select_all' => 'Select All',
+    'levels_deleted' => 'Selected levels deleted successfully.',
+    'no_levels_selected' => 'Please select at least one level.',
     'rating_questions' => 'Rating Questions',
     'search_suggestions' => 'Search Suggestions',
     'search_suggestions_hint' => 'Manage manual search suggestions.',
@@ -408,3 +413,5 @@ return [
     'choose_city' => 'Choose city',
     'visible' => 'visible in app',
 ];
+
+
