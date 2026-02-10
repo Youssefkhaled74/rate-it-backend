@@ -1,5 +1,11 @@
 <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-  <div>
+  <div class="flex items-center gap-3">
+    <button id="adminSidebarToggle" type="button" data-admin-sidebar-toggle
+      class="lg:hidden w-11 h-11 rounded-full bg-white border border-gray-200 grid place-items-center shadow-sm hover:shadow-md transition">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-red-800" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
     <h1 class="text-lg font-semibold">@yield('page_title', __('admin.dashboard'))</h1>
   </div>
 

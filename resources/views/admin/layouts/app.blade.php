@@ -56,6 +56,46 @@
     [dir="rtl"] .admin-sidebar-inner { text-align: right; }
     [dir="rtl"] .admin-nav-item { justify-content: flex-start; }
 
+    /* Mobile sidebar */
+    @media (max-width: 1024px) {
+      :root {
+        --sidebar-w: 15.5rem;
+        --sidebar-gap: 0.75rem;
+      }
+      .admin-main { margin-inline-start: 0; padding: 1rem; }
+      .admin-sidebar-spacer { display: none !important; }
+      .admin-sidebar-fixed {
+        position: fixed !important;
+        top: 0.75rem;
+        bottom: 0.75rem;
+        left: 0.75rem;
+        transform: translateX(-110%);
+        transition: transform 200ms ease;
+        z-index: 60;
+      }
+      [dir="rtl"] .admin-sidebar-fixed {
+        left: auto;
+        right: 0.75rem;
+        transform: translateX(110%);
+      }
+      body.admin-sidebar-open .admin-sidebar-fixed {
+        transform: translateX(0);
+      }
+      .admin-sidebar-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.25);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 200ms ease;
+        z-index: 50;
+      }
+      body.admin-sidebar-open .admin-sidebar-overlay {
+        opacity: 1;
+        pointer-events: auto;
+      }
+    }
+
     /* Sidebar layout matching screenshot */
     .admin-sidebar { width: var(--sidebar-w); }
     .admin-sidebar-inner {
@@ -103,6 +143,7 @@
   <div class="min-h-screen flex admin-shell">
     {{-- Sidebar --}}
     @include('admin.partials.sidebar')
+    <div class="admin-sidebar-overlay" data-admin-sidebar-overlay></div>
 
     {{-- Main --}}
     <div class="flex-1 p-6 admin-main">
@@ -126,6 +167,19 @@
 
   <script>
     (function(){
+      const overlay = document.querySelector('[data-admin-sidebar-overlay]');
+      document.addEventListener('click', function(e){
+        const btn = e.target.closest('[data-admin-sidebar-toggle]');
+        if (btn) {
+          e.preventDefault();
+          document.body.classList.toggle('admin-sidebar-open');
+          return;
+        }
+        if (overlay && e.target === overlay) {
+          document.body.classList.remove('admin-sidebar-open');
+        }
+      });
+
       // Simple confirm modal handler
       const modal = document.getElementById('confirmModal');
       if (!modal) return;
