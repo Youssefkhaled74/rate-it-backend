@@ -94,6 +94,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('subscription-plans/{plan}/edit', [SubscriptionPlansController::class, 'edit'])->name('subscription-plans.edit');
         Route::match(['put', 'patch'], 'subscription-plans/{plan}', [SubscriptionPlansController::class, 'update'])->name('subscription-plans.update');
         Route::patch('subscription-plans/{plan}/toggle', [SubscriptionPlansController::class, 'toggle'])->name('subscription-plans.toggle');
+        Route::patch('subscription-plans/{plan}/best-value', [SubscriptionPlansController::class, 'toggleBestValue'])->name('subscription-plans.best-value');
+        Route::delete('subscription-plans/{plan}', [SubscriptionPlansController::class, 'destroy'])->name('subscription-plans.destroy');
     });
     Route::middleware('auth:admin_web')->group(function () {
         Route::get('categories', [\App\Http\Controllers\Admin\CategoriesController::class, 'index'])->name('categories.index');

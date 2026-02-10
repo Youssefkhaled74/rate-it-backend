@@ -30,7 +30,14 @@ class SubscriptionPlansController extends Controller
             ->paginate(12)
             ->withQueryString();
 
-        return view('admin.subscription-plans.index', compact('plans', 'q', 'active'));
+        $stats = [
+            'total' => SubscriptionPlan::count(),
+            'active' => SubscriptionPlan::where('is_active', true)->count(),
+            'inactive' => SubscriptionPlan::where('is_active', false)->count(),
+            'best_value' => SubscriptionPlan::where('is_best_value', true)->count(),
+        ];
+
+        return view('admin.subscription-plans.index', compact('plans', 'q', 'active', 'stats'));
     }
 
     public function create()
