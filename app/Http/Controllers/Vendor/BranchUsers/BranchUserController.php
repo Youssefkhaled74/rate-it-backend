@@ -23,7 +23,10 @@ class BranchUserController extends Controller
     public function index()
     {
         $vendor = Auth::guard('vendor_web')->user();
-        $vendor?->loadMissing('brand', 'branch.place');
+        if (! $vendor) {
+            abort(403);
+        }
+        $vendor->loadMissing('brand', 'branch.place');
 
         $filters = request()->only(['branch_id', 'q', 'is_active']);
         $staff = $this->service->list($vendor, $filters);
@@ -40,7 +43,10 @@ class BranchUserController extends Controller
     public function create()
     {
         $vendor = Auth::guard('vendor_web')->user();
-        $vendor?->loadMissing('brand', 'branch.place');
+        if (! $vendor) {
+            abort(403);
+        }
+        $vendor->loadMissing('brand', 'branch.place');
         $branches = $this->branchService->listBranches($vendor);
 
         return view('vendor.branch_users.create', [
@@ -52,7 +58,10 @@ class BranchUserController extends Controller
     public function store(BranchStaffStoreRequest $request)
     {
         $vendor = Auth::guard('vendor_web')->user();
-        $vendor?->loadMissing('brand', 'branch.place');
+        if (! $vendor) {
+            abort(403);
+        }
+        $vendor->loadMissing('brand', 'branch.place');
 
         $staff = $this->service->create($vendor, $request->validated());
 
@@ -65,7 +74,10 @@ class BranchUserController extends Controller
     public function edit(int $id)
     {
         $vendor = Auth::guard('vendor_web')->user();
-        $vendor?->loadMissing('brand', 'branch.place');
+        if (! $vendor) {
+            abort(403);
+        }
+        $vendor->loadMissing('brand', 'branch.place');
 
         $staff = $this->service->find($vendor, $id);
         if (! $staff) {
@@ -84,7 +96,10 @@ class BranchUserController extends Controller
     public function update(int $id, BranchStaffUpdateRequest $request)
     {
         $vendor = Auth::guard('vendor_web')->user();
-        $vendor?->loadMissing('brand', 'branch.place');
+        if (! $vendor) {
+            abort(403);
+        }
+        $vendor->loadMissing('brand', 'branch.place');
 
         $staff = $this->service->update($vendor, $id, $request->validated());
         if (! $staff) {
@@ -97,7 +112,10 @@ class BranchUserController extends Controller
     public function destroy(int $id)
     {
         $vendor = Auth::guard('vendor_web')->user();
-        $vendor?->loadMissing('brand', 'branch.place');
+        if (! $vendor) {
+            abort(403);
+        }
+        $vendor->loadMissing('brand', 'branch.place');
 
         $deleted = $this->service->delete($vendor, $id);
         if (! $deleted) {

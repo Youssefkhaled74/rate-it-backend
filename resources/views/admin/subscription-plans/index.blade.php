@@ -133,7 +133,8 @@
             </a>
 
             <form method="POST" action="{{ route('admin.subscription-plans.destroy', $p) }}"
-                  onsubmit="return confirm(@js(__('admin.confirm_delete_plan')))">
+                  data-confirm="{{ __('admin.confirm_delete_plan') }}"
+                  onsubmit="return confirm(this.dataset.confirm)">
               @csrf
               @method('DELETE')
               <button type="submit"

@@ -74,7 +74,8 @@
                     {{ __('admin.edit') }}
                   </a>
                   <form method="POST" action="{{ route('admin.search-suggestions.destroy', $s) }}"
-                        onsubmit="return confirm(@js(__('admin.confirm_delete_suggestion')))">
+                        data-confirm="{{ __('admin.confirm_delete_suggestion') }}"
+                        onsubmit="return confirm(this.dataset.confirm)">
                     @csrf
                     @method('DELETE')
                     <button type="submit"

@@ -176,7 +176,8 @@
               {{ __('admin.edit') }}
             </a>
             <form method="POST" action="{{ route('admin.rewards.levels.destroy', $lvl) }}"
-                  onsubmit="return confirm('{{ __('admin.confirm_delete_level') }}')">
+                  data-confirm="{{ __('admin.confirm_delete_level') }}"
+                  onsubmit="return confirm(this.dataset.confirm)">
               @csrf
               @method('DELETE')
               <button type="submit"

@@ -23,7 +23,10 @@ class ReviewController extends Controller
     public function index(ReviewFilterRequest $request)
     {
         $vendor = Auth::guard('vendor_web')->user();
-        $vendor?->loadMissing('brand', 'branch.place');
+        if (! $vendor) {
+            abort(403);
+        }
+        $vendor->loadMissing('brand', 'branch.place');
 
         $filters = $request->validated();
         $reviews = $this->service->list($vendor, $filters);
@@ -40,7 +43,10 @@ class ReviewController extends Controller
     public function show(int $id)
     {
         $vendor = Auth::guard('vendor_web')->user();
-        $vendor?->loadMissing('brand', 'branch.place');
+        if (! $vendor) {
+            abort(403);
+        }
+        $vendor->loadMissing('brand', 'branch.place');
 
         $review = $this->service->find($vendor, $id);
         if (! $review) {
@@ -56,7 +62,10 @@ class ReviewController extends Controller
     public function exportCsv(ReviewFilterRequest $request): StreamedResponse
     {
         $vendor = Auth::guard('vendor_web')->user();
-        $vendor?->loadMissing('brand', 'branch.place');
+        if (! $vendor) {
+            abort(403);
+        }
+        $vendor->loadMissing('brand', 'branch.place');
 
         $filters = $request->validated();
         $filters['per_page'] = 10000; // export cap
@@ -100,7 +109,10 @@ class ReviewController extends Controller
     public function exportXlsx(ReviewFilterRequest $request)
     {
         $vendor = Auth::guard('vendor_web')->user();
-        $vendor?->loadMissing('brand', 'branch.place');
+        if (! $vendor) {
+            abort(403);
+        }
+        $vendor->loadMissing('brand', 'branch.place');
 
         $filters = $request->validated();
         $filters['per_page'] = 10000;

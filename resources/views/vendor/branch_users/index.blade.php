@@ -73,7 +73,8 @@
                 <div class="flex items-center justify-end gap-3">
                   <a href="{{ route('vendor.staff.edit', $item->id) }}" class="text-red-700 text-xs font-semibold">{{ __('vendor.edit') }}</a>
                   <form method="POST" action="{{ route('vendor.staff.destroy', $item->id) }}"
-                        onsubmit="return confirm(@js(__('vendor.confirm_delete_user')))">
+                        data-confirm="{{ __('vendor.confirm_delete_user') }}"
+                        onsubmit="return confirm(this.dataset.confirm)">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="text-xs font-semibold text-gray-600 dark:text-gray-300">
