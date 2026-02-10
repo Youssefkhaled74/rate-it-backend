@@ -16,3 +16,8 @@ Route::get('storage-proxy/{path}', [PublicAssetController::class, 'storageProxy'
 Route::middleware(['web', 'admin.guard'])->group(function () {
     require __DIR__ . '/admin.php';
 });
+
+// Vendor panel routes (web)
+Route::middleware(['web'])->group(function () {
+    require __DIR__ . '/vendor.php';
+});

@@ -149,10 +149,10 @@
       const csvBtn = document.getElementById('exportReviewsCsv');
       const pdfBtn = document.getElementById('exportReviewsPdf');
       csvBtn?.addEventListener('click', function(){
-        window.location.href = buildExportUrl('{{ route('admin.reviews.export.csv') }}');
+        window.location.href = buildExportUrl(@json(route('admin.reviews.export.csv')));
       });
       pdfBtn?.addEventListener('click', function(){
-        window.location.href = buildExportUrl('{{ route('admin.reviews.export.pdf') }}');
+        window.location.href = buildExportUrl(@json(route('admin.reviews.export.pdf')));
       });
     })();
   </script>

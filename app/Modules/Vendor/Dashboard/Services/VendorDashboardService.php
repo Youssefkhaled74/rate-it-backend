@@ -98,7 +98,7 @@ class VendorDashboardService
     protected function getTopBranchesByRating(int $brandId, int $limit): array
     {
         return Branch::query()
-            ->with(['place:id,name,brand_id', 'reviews' => function($q) {
+            ->with(['place', 'reviews' => function($q) {
                 $q->select('id', 'branch_id', 'overall_rating')
                     ->whereNull('deleted_at');
             }])
@@ -113,7 +113,7 @@ class VendorDashboardService
                     'id' => $branch->id,
                     'name' => $branch->name,
                     'place_id' => $branch->place_id,
-                    'place_name' => $branch->place->name ?? null,
+                    'place_name' => $branch->place?->display_name ?? null,
                     'reviews_count' => $branch->reviews_count ?? 0,
                     'average_rating' => $branch->reviews_avg_overall_rating 
                         ? round((float) $branch->reviews_avg_overall_rating, 2) 

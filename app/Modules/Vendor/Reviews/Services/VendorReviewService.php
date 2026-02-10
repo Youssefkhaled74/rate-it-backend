@@ -24,7 +24,7 @@ class VendorReviewService
         
         // Query reviews under vendor's brand
         $query = Review::query()
-            ->with(['user:id,name,phone,nickname', 'place:id,name,brand_id', 'branch:id,name'])
+            ->with(['user', 'place', 'branch:id,name'])
             ->withCount(['photos'])
             ->whereHas('place', fn($q) => $q->where('brand_id', $brandId));
 
@@ -87,8 +87,8 @@ class VendorReviewService
         $brandId = $this->getVendorBrandId($vendor);
         
         $review = Review::with([
-            'user:id,name,phone,nickname',
-            'place:id,name,brand_id',
+            'user',
+            'place',
             'branch:id,name,address',
             'answers.criteria',
             'answers.choice',

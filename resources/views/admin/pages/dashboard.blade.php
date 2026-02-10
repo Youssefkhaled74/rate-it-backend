@@ -86,7 +86,7 @@
             <g id="reviewsDots"></g>
           </svg>
         </div>
-        <div class="mt-2 text-[11px] text-gray-500 grid gap-1" style="grid-template-columns: repeat({{ $chartCols }}, minmax(0, 1fr));">
+        <div class="mt-2 text-[11px] text-gray-500 grid gap-1" data-chart-cols="{{ $chartCols }}">
           @foreach($chartLabels as $label)
             <div class="text-center">{{ $label }}</div>
           @endforeach
@@ -284,6 +284,14 @@
         dots.appendChild(c);
       });
 
+      const labelGrid = document.querySelector('[data-chart-cols]');
+      if (labelGrid) {
+        const cols = parseInt(labelGrid.getAttribute('data-chart-cols') || '0', 10);
+        if (cols > 0) {
+          labelGrid.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
+        }
+      }
+
       const csvBtn = document.getElementById('exportCsvBtn');
       const pdfBtn = document.getElementById('exportPdfBtn');
       function buildExportUrl(base){
@@ -296,11 +304,11 @@
         return qs ? (base + '?' + qs) : base;
       }
       csvBtn?.addEventListener('click', function(){
-        const url = buildExportUrl('{{ route('admin.reports.dashboard.csv', ['period' => 'week']) }}');
+        const url = buildExportUrl(@json(route('admin.reports.dashboard.csv', ['period' => 'week'])));
         window.location.href = url;
       });
       pdfBtn?.addEventListener('click', function(){
-        const url = buildExportUrl('{{ route('admin.reports.dashboard.pdf', ['period' => 'week']) }}');
+        const url = buildExportUrl(@json(route('admin.reports.dashboard.pdf', ['period' => 'week'])));
         window.location.href = url;
       });
     })();

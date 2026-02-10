@@ -8,6 +8,7 @@
   <title>{{ config('app.name', 'Rate It') }}</title>
 
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
     :root{
       --bg: #fafafa;
       --fg: #0a0a0a;
@@ -16,7 +17,8 @@
 
       --card: rgba(255,255,255,.72);
       --line: rgba(0,0,0,.10);
-      --shadow: 0 30px 90px rgba(0,0,0,.12);
+      --shadow: 0 30px 90px rgba(0,0,0,.10);
+      --shadowStrong: 0 30px 120px rgba(0,0,0,.18);
 
       --red1:#b91c1c; --red2:#ef4444; --amber:#f59e0b; --sky:#38bdf8; --green:#34d399;
       --r: 24px;
@@ -26,7 +28,7 @@
     html,body{height:100%}
     body{
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      font-family: "Space Grotesk", "Segoe UI", Tahoma, sans-serif;
       color: var(--fg);
       background:
         radial-gradient(1200px 600px at 18% 10%, rgba(239,68,68,.12), transparent 60%),
@@ -36,7 +38,7 @@
     }
 
     a{color:inherit;text-decoration:none}
-    .wrap{max-width:1120px;margin:0 auto;padding:22px}
+    .wrap{max-width:1180px;margin:0 auto;padding:26px}
 
     /* ===== Ambient background polish ===== */
     #page{position:relative; overflow:hidden;}
@@ -154,6 +156,7 @@
       background: linear-gradient(135deg,var(--red1),var(--amber));
       box-shadow: 0 18px 60px rgba(0,0,0,.20);
       display:grid;place-items:center;color:white;
+      font-weight:700;
     }
     .kicker{font-size:12px;color:var(--muted2);margin-bottom:2px}
     .name{font-size:16px;font-weight:750;letter-spacing:-.02em}
@@ -175,9 +178,10 @@
       border-color: transparent;
       background: linear-gradient(135deg,var(--red1),var(--red2));
       color:white;
-      box-shadow: 0 18px 50px rgba(185,28,28,.18);
+      box-shadow: 0 18px 50px rgba(185,28,28,.20);
       font-weight: 750;
     }
+    .btnPrimary:focus{box-shadow: 0 0 0 3px rgba(239,68,68,.35)}
 
     .badge{
       display:inline-flex;align-items:center;gap:8px;
@@ -189,9 +193,9 @@
     }
     .dot{width:9px;height:9px;border-radius:99px;background:var(--green);box-shadow:0 0 0 6px rgba(52,211,153,.14)}
 
-    .grid{margin-top:18px;display:grid;grid-template-columns:1.15fr .85fr;gap:16px}
+    .grid{margin-top:20px;display:grid;grid-template-columns:1.18fr .82fr;gap:18px}
 
-    .pad{padding:22px}
+    .pad{padding:24px}
 
     .heroBadge{margin-bottom:14px}
     .h1{
@@ -199,6 +203,7 @@
       font-size:48px;
       line-height:1.05;
       letter-spacing:-.03em;
+      font-family: "Newsreader", "Times New Roman", serif;
     }
     .sub{margin:14px 0 0;color:var(--muted);line-height:1.7}
 
@@ -211,7 +216,7 @@
       background: rgba(0,0,0,.03);
       transition: transform .15s ease, background .15s ease, border-color .15s ease;
     }
-    .mini:hover{transform: translateY(-1px);border-color: rgba(127,127,127,.25)}
+    .mini:hover{transform: translateY(-2px);border-color: rgba(127,127,127,.25)}
     .mini b{display:block;margin-bottom:6px}
 
     .sep{height:1px;background:var(--line);margin:18px 0}
@@ -236,6 +241,56 @@
 
     .twoBtn{margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
+    .portalGrid{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0,1fr));
+      gap:10px;
+    }
+    .portalCard{
+      padding:14px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.60);
+      display:grid;
+      gap:8px;
+      transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+    }
+    .portalCard:hover{
+      transform: translateY(-2px);
+      border-color: rgba(127,127,127,.25);
+      box-shadow: var(--shadowStrong);
+    }
+    .portalTitle{
+      font-size:15px;
+      font-weight:700;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .portalMeta{font-size:12px;color:var(--muted2)}
+    .portalCard .btn{width:100%}
+
+    .storeRow{
+      margin-top:12px;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+    .storeBtn{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:12px 14px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.04);
+      font-weight:700;
+      letter-spacing:.01em;
+    }
+    .storeBtn:hover{transform: translateY(-1px)}
+
     .footer{
       margin-top:18px;padding-top:16px;border-top:1px solid var(--line);
       display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
@@ -250,6 +305,8 @@
       .h1{font-size:40px}
       .miniGrid{grid-template-columns:1fr}
       .twoBtn{grid-template-columns:1fr}
+      .portalGrid{grid-template-columns:1fr}
+      .storeRow{grid-template-columns:1fr}
     }
 
     /* Reduce motion accessibility */
@@ -288,6 +345,8 @@
     #page.dark .mini{ background: rgba(255,255,255,.06); }
     #page.dark .badge{ background: rgba(255,255,255,.08); }
     #page.dark .pill{ background: rgba(255,255,255,.07); }
+    #page.dark .portalCard{ background: rgba(255,255,255,.06); }
+    #page.dark .storeBtn{ background: rgba(255,255,255,.08); }
 
     #page.dark .particles span{ background: rgba(255,255,255,.18); }
     #page.dark .gridlines{
@@ -319,7 +378,7 @@
     <div class="wrap">
       <header class="top">
         <div class="brand">
-          <div class="logo" aria-hidden="true">★</div>
+          <div class="logo" aria-hidden="true">&#9733;</div>
           <div>
             <div class="kicker" data-i18n="welcome">Welcome to</div>
             <div class="name">{{ config('app.name','Rate It') }}</div>
@@ -334,7 +393,7 @@
 
       <main class="grid">
         <section class="card pad">
-          <div class="badge heroBadge"><span class="dot"></span><span data-i18n="taglineBadge">Real reviews • Rewards • Trust</span></div>
+          <div class="badge heroBadge"><span class="dot"></span><span data-i18n="taglineBadge">Real reviews &bull; Rewards &bull; Trust</span></div>
 
           <h1 class="h1">
             <span data-i18n="heroTitle1">Rate places.</span>
@@ -371,7 +430,7 @@
 
           <div class="pillRow">
             <span class="pill"><span class="pDot" style="background:var(--green)"></span><span data-i18n="pill1">Verified visit (QR)</span></span>
-            <span class="pill"><span class="pDot" style="background:var(--amber)"></span><span data-i18n="pill2">Points → Vouchers</span></span>
+            <span class="pill"><span class="pDot" style="background:var(--amber)"></span><span data-i18n="pill2">Points &rarr; Vouchers</span></span>
             <span class="pill"><span class="pDot" style="background:var(--sky)"></span><span data-i18n="pill3">Vendor verification</span></span>
           </div>
         </section>
@@ -380,42 +439,49 @@
           <div class="rightTitle">
             <div>
               <div class="small" data-i18n="rightKicker">Choose your portal</div>
-              <div class="title" data-i18n="rightTitle">User / Vendor</div>
+              <div class="title" data-i18n="rightTitle">Portals & Access</div>
             </div>
             <span class="badge"><span class="dot"></span><span data-i18n="status">Live</span></span>
           </div>
 
           <div class="sep"></div>
 
-          <div class="title" style="font-size:16px" data-i18n="userCardTitle">For Users</div>
-          <ul class="list">
-            <li class="li"><span style="background:var(--green)"></span><div data-i18n="userBullet1">Browse places and reviews</div></li>
-            <li class="li"><span style="background:var(--amber)"></span><div data-i18n="userBullet2">Rate after scanning QR</div></li>
-            <li class="li"><span style="background:var(--sky)"></span><div data-i18n="userBullet3">Earn points & redeem vouchers</div></li>
-          </ul>
-          <div class="twoBtn">
-            <a class="btn btnPrimary" href="{{ url('/app/download') }}" data-i18n="downloadApp">Download App</a>
-            <a class="btn" href="{{ url('/app') }}" data-i18n="explorePlaces">Explore Places</a>
+          <div class="title" style="font-size:16px" data-i18n="portalTitle">Admin, Vendor & Branch Staff</div>
+          <div class="portalGrid">
+            <div class="portalCard">
+              <div class="portalTitle"><span class="pDot" style="background:var(--amber)"></span><span data-i18n="adminTitle">Admin Portal</span></div>
+              <div class="portalMeta" data-i18n="adminDesc">Manage brands, approvals, and platform analytics.</div>
+              <a class="btn btnPrimary" href="{{ url('/admin/login') }}" data-i18n="adminLogin">Admin Login</a>
+            </div>
+            <div class="portalCard">
+              <div class="portalTitle"><span class="pDot" style="background:var(--green)"></span><span data-i18n="vendorTitle">Vendor Portal</span></div>
+              <div class="portalMeta" data-i18n="vendorDesc">Manage branches, reviews, and vouchers.</div>
+              <a class="btn btnPrimary" href="{{ url('/vendor/login') }}" data-i18n="vendorLogin">Vendor Login</a>
+            </div>
+            <div class="portalCard">
+              <div class="portalTitle"><span class="pDot" style="background:var(--sky)"></span><span data-i18n="staffTitle">Branch Staff</span></div>
+              <div class="portalMeta" data-i18n="staffDesc">Verify visits and redeem vouchers in-branch.</div>
+              <a class="btn btnPrimary" href="{{ url('/vendor/verify') }}" data-i18n="staffVerify">Verify Voucher</a>
+            </div>
           </div>
 
           <div class="sep"></div>
 
-          <div class="title" style="font-size:16px" data-i18n="vendorCardTitle">For Vendors</div>
+          <div class="title" style="font-size:16px" data-i18n="appTitle">Get the App</div>
           <ul class="list">
-            <li class="li"><span style="background:var(--green)"></span><div data-i18n="vendorBullet1">See reviews and insights for your branches</div></li>
-            <li class="li"><span style="background:var(--amber)"></span><div data-i18n="vendorBullet2">Control review frequency per branch</div></li>
-            <li class="li"><span style="background:var(--sky)"></span><div data-i18n="vendorBullet3">Verify & redeem vouchers (branch staff)</div></li>
+            <li class="li"><span style="background:var(--green)"></span><div data-i18n="appBullet1">Download the app to rate instantly after visiting.</div></li>
+            <li class="li"><span style="background:var(--amber)"></span><div data-i18n="appBullet2">Available on Google Play and the App Store.</div></li>
           </ul>
-          <div class="twoBtn">
-            <a class="btn btnPrimary" href="{{ url('/vendor/login') }}" data-i18n="vendorLogin">Vendor Login</a>
-            <a class="btn" href="{{ url('/vendor/verify') }}" data-i18n="verifyVoucher">Verify Voucher</a>
+          <div class="storeRow">
+            <a class="storeBtn" href="{{ url('/app/download?platform=android') }}" data-i18n="playStore">Google Play</a>
+            <a class="storeBtn" href="{{ url('/app/download?platform=ios') }}" data-i18n="appStore">App Store</a>
           </div>
         </aside>
       </main>
 
       <footer class="footer">
         <div data-i18n="footerLeft">Trusted reviews. Real rewards.</div>
-        <div>© {{ date('Y') }} {{ config('app.name','Rate It') }}</div>
+        <div>&copy; {{ date('Y') }} {{ config('app.name','Rate It') }}</div>
       </footer>
     </div>
   </div>
@@ -444,20 +510,23 @@
       pill2:"Points → Vouchers",
       pill3:"Vendor verification",
       rightKicker:"Choose your portal",
-      rightTitle:"User / Vendor",
+      rightTitle:"Portals & Access",
       status:"Live",
-      userCardTitle:"For Users",
-      userBullet1:"Browse places and reviews",
-      userBullet2:"Rate after scanning QR",
-      userBullet3:"Earn points & redeem vouchers",
-      downloadApp:"Download App",
-      explorePlaces:"Explore Places",
-      vendorCardTitle:"For Vendors",
-      vendorBullet1:"See reviews and insights for your branches",
-      vendorBullet2:"Control review frequency per branch",
-      vendorBullet3:"Verify & redeem vouchers (branch staff)",
+      portalTitle:"Admin, Vendor & Branch Staff",
+      adminTitle:"Admin Portal",
+      adminDesc:"Manage brands, approvals, and platform analytics.",
+      adminLogin:"Admin Login",
+      vendorTitle:"Vendor Portal",
+      vendorDesc:"Manage branches, reviews, and vouchers.",
       vendorLogin:"Vendor Login",
-      verifyVoucher:"Verify Voucher",
+      staffTitle:"Branch Staff",
+      staffDesc:"Verify visits and redeem vouchers in-branch.",
+      staffVerify:"Verify Voucher",
+      appTitle:"Get the App",
+      appBullet1:"Download the app to rate instantly after visiting.",
+      appBullet2:"Available on Google Play and the App Store.",
+      playStore:"Google Play",
+      appStore:"App Store",
       footerLeft:"Trusted reviews. Real rewards."
     },
     ar: {
@@ -481,20 +550,23 @@
       pill2:"نقاط ← قسائم",
       pill3:"تحقق البائع",
       rightKicker:"اختر البوابة",
-      rightTitle:"مستخدم / بائع",
+      rightTitle:"الوصول والبوابات",
       status:"نشط",
-      userCardTitle:"للمستخدمين",
-      userBullet1:"تصفح الأماكن والتقييمات",
-      userBullet2:"قيّم بعد مسح QR",
-      userBullet3:"اكسب نقاط واستبدلها بقسائم",
-      downloadApp:"تحميل التطبيق",
-      explorePlaces:"استكشف الأماكن",
-      vendorCardTitle:"للبائعين",
-      vendorBullet1:"عرض التقييمات والإحصاءات لفروعك",
-      vendorBullet2:"التحكم في تكرار التقييم لكل فرع",
-      vendorBullet3:"التحقق من القسائم واستبدالها (موظف الفرع)",
+      portalTitle:"الإدارة والبائع وموظفو الفروع",
+      adminTitle:"بوابة الإدارة",
+      adminDesc:"إدارة العلامات، الموافقات، وتحليلات المنصة.",
+      adminLogin:"تسجيل دخول الإدارة",
+      vendorTitle:"بوابة البائع",
+      vendorDesc:"إدارة الفروع، التقييمات، والقسائم.",
       vendorLogin:"تسجيل دخول البائع",
-      verifyVoucher:"التحقق من القسيمة",
+      staffTitle:"موظفو الفرع",
+      staffDesc:"التحقق من الزيارة واستبدال القسائم داخل الفرع.",
+      staffVerify:"التحقق من القسيمة",
+      appTitle:"احصل على التطبيق",
+      appBullet1:"حمّل التطبيق للتقييم مباشرة بعد الزيارة.",
+      appBullet2:"متاح على Google Play و App Store.",
+      playStore:"Google Play",
+      appStore:"App Store",
       footerLeft:"تقييمات موثوقة. مكافآت حقيقية."
     }
   };
