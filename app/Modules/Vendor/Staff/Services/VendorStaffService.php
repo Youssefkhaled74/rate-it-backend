@@ -146,6 +146,22 @@ class VendorStaffService
     }
 
     /**
+     * Delete staff member
+     */
+    public function delete(VendorUser $vendor, int $staffId): bool
+    {
+        $staff = $this->find($vendor, $staffId);
+        if (! $staff) {
+            return false;
+        }
+
+        $staff->tokens()->delete();
+        $staff->delete();
+
+        return true;
+    }
+
+    /**
      * Reset staff password
      */
     public function resetPassword(VendorUser $vendor, int $staffId, string $newPassword): ?VendorUser

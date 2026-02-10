@@ -70,7 +70,17 @@
                 </span>
               </td>
               <td class="py-2 text-right">
-                <a href="{{ route('vendor.staff.edit', $item->id) }}" class="text-red-700 text-xs font-semibold">{{ __('vendor.edit') }}</a>
+                <div class="flex items-center justify-end gap-3">
+                  <a href="{{ route('vendor.staff.edit', $item->id) }}" class="text-red-700 text-xs font-semibold">{{ __('vendor.edit') }}</a>
+                  <form method="POST" action="{{ route('vendor.staff.destroy', $item->id) }}"
+                        onsubmit="return confirm(@js(__('vendor.confirm_delete_user')))">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="text-xs font-semibold text-gray-600 dark:text-gray-300">
+                      {{ __('vendor.delete') }}
+                    </button>
+                  </form>
+                </div>
               </td>
             </tr>
           @empty

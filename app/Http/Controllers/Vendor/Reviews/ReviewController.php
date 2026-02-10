@@ -99,7 +99,51 @@ class ReviewController extends Controller
 
     public function exportXlsx(ReviewFilterRequest $request)
     {
-        abort(501, 'Excel export is not enabled. Install maatwebsite/excel and wire a VendorReviewsExport.');
+        $vendor = Auth::guard('vendor_web')->user();
+        $vendor?->loadMissing('brand', 'branch.place');
+
+        $filters = $request->validated();
+        $filters['per_page'] = 10000;
+        $filters['page'] = 1;
+
+        $reviews = $this->service->list($vendor, $filters);
+
+        $filename = 'vendor-reviews-' . now()->format('Ymd_His') . '.xlsx';
+
+        $callback = function () use ($reviews) {
+            $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+            $sheet->setTitle('Reviews');
+
+            $headers = [
+                'ID', 'Date', 'Rating', 'Review Score', 'Comment', 'User Name', 'User Phone', 'Branch', 'Place', 'Has Photos'
+            ];
+            $sheet->fromArray($headers, null, 'A1');
+
+            $row = 2;
+            foreach ($reviews->items() as $review) {
+                $sheet->fromArray([
+                    $review->id,
+                    optional($review->created_at)->format('Y-m-d H:i'),
+                    $review->overall_rating,
+                    $review->review_score,
+                    $review->comment,
+                    $review->user?->nickname ?? $review->user?->name,
+                    $review->user?->phone,
+                    $review->branch?->name,
+                    $review->place?->name,
+                    $review->photos_count > 0 ? 'yes' : 'no',
+                ], null, 'A' . $row);
+                $row++;
+            }
+
+            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+            $writer->save('php://output');
+        };
+
+        return response()->streamDownload($callback, $filename, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ]);
     }
 }
 

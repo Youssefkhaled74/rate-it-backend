@@ -35,6 +35,7 @@ Route::prefix('vendor')->name('vendor.')->group(function () {
             Route::post('staff', [BranchUserController::class, 'store'])->name('staff.store');
             Route::get('staff/{id}/edit', [BranchUserController::class, 'edit'])->name('staff.edit');
             Route::post('staff/{id}', [BranchUserController::class, 'update'])->name('staff.update');
+            Route::delete('staff/{id}', [BranchUserController::class, 'destroy'])->name('staff.destroy');
         });
 
         // Voucher verify & history (both roles, scoped)

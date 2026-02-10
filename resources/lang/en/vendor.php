@@ -30,6 +30,13 @@ return [
     'export_csv' => 'Export CSV',
     'export_excel' => 'Export Excel',
     'excel_requires_package' => 'Excel export requires maatwebsite/excel',
+    'delete' => 'Delete',
+    'confirm_delete_user' => 'Delete this user?',
+    'staff' => [
+        'created' => 'Staff user created',
+        'updated' => 'Staff user updated',
+        'deleted' => 'Staff user deleted',
+    ],
     'branch' => 'Branch',
     'place' => 'Place',
     'user' => 'User',
@@ -77,7 +84,5 @@ return [
     'expired' => 'Expired',
     'last_7_days' => 'Last 7 days',
     'last_30_days' => 'Last 30 days',
-    'created' => 'Staff user created',
-    'updated' => 'Staff user updated',
     'forbidden' => 'Forbidden',
 ];

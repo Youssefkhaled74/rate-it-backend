@@ -93,5 +93,18 @@ class BranchUserController extends Controller
 
         return redirect()->route('vendor.staff.index')->with('success', __('vendor.staff.updated'));
     }
+
+    public function destroy(int $id)
+    {
+        $vendor = Auth::guard('vendor_web')->user();
+        $vendor?->loadMissing('brand', 'branch.place');
+
+        $deleted = $this->service->delete($vendor, $id);
+        if (! $deleted) {
+            abort(404);
+        }
+
+        return redirect()->route('vendor.staff.index')->with('success', __('vendor.staff.deleted'));
+    }
 }
 
