@@ -11,6 +11,7 @@ use App\Modules\User\Auth\Services\PasswordResetService;
 use App\Modules\User\Auth\Repositories\OtpCodeRepository;
 use App\Modules\User\Auth\Repositories\PasswordResetRepository;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\URL;
 use App\Models\Admin;
 use App\Policies\AdminPolicy;
 
@@ -40,6 +41,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (env('FORCE_HTTPS', false)) {
+            URL::forceScheme('https');
+        }
+
         // Register Admin policy if present
         if (class_exists(Admin::class) && class_exists(AdminPolicy::class)) {
             Gate::policy(Admin::class, AdminPolicy::class);

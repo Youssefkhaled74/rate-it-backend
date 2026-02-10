@@ -143,11 +143,28 @@
         <input name="min_reviews" type="number" min="0" value="{{ old('min_reviews', 0) }}"
           class="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-200" required>
       </div>
+      <div>
+        <label class="text-xs text-gray-500">{{ __('admin.bonus_percent') }}</label>
+        <input name="bonus_percent" type="number" min="0" step="0.01" value="{{ old('bonus_percent', 0) }}"
+          class="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-200">
+        <div class="text-[11px] text-gray-500 mt-1">{{ __('admin.bonus_percent') }} = % {{ __('admin.points') }}</div>
+      </div>
       <div class="md:col-span-3">
         <label class="text-xs text-gray-500">{{ __('admin.level_benefits') }}</label>
-        <textarea name="benefits_text" rows="3"
-          class="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-200"
-          placeholder="{{ __('admin.benefits_placeholder') }}">{{ old('benefits_text') }}</textarea>
+        <div class="mt-2 rounded-2xl border border-gray-200 p-3 bg-gray-50">
+          <div class="flex flex-col md:flex-row gap-2">
+            <input id="benefit_input" type="text"
+              class="flex-1 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-200"
+              placeholder="{{ __('admin.benefits_placeholder') }}">
+            <button id="benefit_add_btn" type="button"
+              class="rounded-xl bg-gray-900 text-white px-4 py-2 text-xs font-semibold hover:bg-black transition">
+              + {{ __('admin.add') }}
+            </button>
+          </div>
+          <div id="benefits_list" class="mt-3 flex flex-wrap gap-2"></div>
+        </div>
+        <textarea id="benefits_textarea" name="benefits_text" rows="3" class="hidden">{{ old('benefits_text') }}</textarea>
+        <div class="text-[11px] text-gray-500 mt-1">{{ __('admin.benefits_placeholder') }}</div>
       </div>
       <div class="md:col-span-3">
         <button type="submit" class="rounded-full bg-red-800 text-white px-6 py-2 text-sm font-semibold hover:bg-red-900 transition">
@@ -161,7 +178,10 @@
         <div class="rounded-2xl border border-gray-100 p-4 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div>
             <div class="text-sm font-semibold text-gray-900">{{ $lvl->name }}</div>
-            <div class="text-xs text-gray-500 mt-1">{{ __('admin.min_reviews') }}: {{ $lvl->min_reviews }}</div>
+            <div class="text-xs text-gray-500 mt-1">
+              {{ __('admin.min_reviews') }}: {{ $lvl->min_reviews }} ·
+              {{ __('admin.bonus_percent') }}: {{ number_format((float)($lvl->bonus_percent ?? 0), 2) }}%
+            </div>
             @if(!empty($lvl->benefits))
               <ul class="mt-2 text-xs text-gray-600 list-disc list-inside">
                 @foreach($lvl->benefits as $b)
@@ -193,3 +213,57 @@
     </div>
   </div>
 @endsection
+
+@push('scripts')
+<script>
+  (function () {
+    const input = document.getElementById('benefit_input');
+    const addBtn = document.getElementById('benefit_add_btn');
+    const list = document.getElementById('benefits_list');
+    const textarea = document.getElementById('benefits_textarea');
+    if (!input || !addBtn || !list || !textarea) return;
+
+    function renderFromTextarea() {
+      list.innerHTML = '';
+      const lines = (textarea.value || '').split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+      lines.forEach(addChip);
+      syncTextarea();
+    }
+
+    function addChip(text) {
+      const chip = document.createElement('span');
+      chip.className = 'inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-gray-200 text-xs text-gray-700';
+      chip.innerHTML = `<span>${text}</span><button type="button" class="text-gray-400 hover:text-red-600">×</button>`;
+      chip.querySelector('button').addEventListener('click', function () {
+        chip.remove();
+        syncTextarea();
+      });
+      list.appendChild(chip);
+    }
+
+    function syncTextarea() {
+      const values = Array.from(list.querySelectorAll('span > span')).map(el => el.textContent.trim()).filter(Boolean);
+      textarea.value = values.join('\n');
+    }
+
+    function addFromInput() {
+      const value = (input.value || '').trim();
+      if (!value) return;
+      addChip(value);
+      syncTextarea();
+      input.value = '';
+      input.focus();
+    }
+
+    addBtn.addEventListener('click', addFromInput);
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        addFromInput();
+      }
+    });
+
+    renderFromTextarea();
+  })();
+</script>
+@endpush

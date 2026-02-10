@@ -93,11 +93,28 @@ class RewardsController extends Controller
             ->with('success', __('admin.level_deleted'));
     }
 
+    public function bulkDestroyLevels(Request $request)
+    {
+        $ids = $request->input('level_ids', []);
+        if (!is_array($ids) || empty($ids)) {
+            return redirect()
+                ->route('admin.rewards.index')
+                ->with('error', __('admin.no_levels_selected'));
+        }
+
+        UserLevel::whereIn('id', $ids)->delete();
+
+        return redirect()
+            ->route('admin.rewards.index')
+            ->with('success', __('admin.levels_deleted'));
+    }
+
     private function validateLevel(Request $request): array
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'min_reviews' => ['required', 'integer', 'min:0'],
+            'bonus_percent' => ['nullable', 'numeric', 'min:0'],
             'benefits_text' => ['nullable', 'string'],
         ]);
 
@@ -110,6 +127,7 @@ class RewardsController extends Controller
 
         unset($data['benefits_text']);
         $data['benefits'] = $benefits;
+        $data['bonus_percent'] = (float) ($data['bonus_percent'] ?? 0);
 
         return $data;
     }

@@ -271,6 +271,7 @@ return [
     'level_name' => 'Level Name',
     'min_reviews' => 'Minimum Reviews',
     'level_benefits' => 'Benefits',
+    'bonus_percent' => 'Bonus Points (%)',
     'benefits_placeholder' => 'One benefit per line',
     'level_created' => 'Level created successfully.',
     'level_updated' => 'Level updated successfully.',

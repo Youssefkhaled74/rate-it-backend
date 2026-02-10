@@ -4,6 +4,8 @@ namespace App\Modules\User\Points\Services;
 
 use App\Models\PointsSetting;
 use App\Models\PointsTransaction;
+use App\Models\UserLevel;
+use App\Models\Review;
 use App\Support\Exceptions\ApiException;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -44,6 +46,10 @@ class PointsService
             return 0;
         }
 
+        $bonusPercent = $this->getUserBonusPercent($user);
+        $bonus = $this->applyBonus($points, $bonusPercent);
+        $totalPoints = $points + $bonus;
+
         // Prevent duplicates (check existing reference record or legacy source keys)
         $exists = PointsTransaction::where('user_id', $user->id)
             ->where(function($q) use ($review) {
@@ -66,14 +72,24 @@ class PointsService
             'user_id' => $user->id,
             'brand_id' => $review->brand_id ?? null,
             'type' => 'EARN_REVIEW',
-            'points' => $points,
+            'points' => $totalPoints,
             'reference_type' => \App\Models\Review::class,
             'reference_id' => $review->id,
-            'meta' => $meta ? array_merge($meta, ['settings_version' => $setting->version ?? null]) : ['settings_version' => $setting->version ?? null],
+            'meta' => $meta ? array_merge($meta, [
+                'settings_version' => $setting->version ?? null,
+                'base_points' => $points,
+                'bonus_percent' => $bonusPercent,
+                'bonus_points' => $bonus,
+            ]) : [
+                'settings_version' => $setting->version ?? null,
+                'base_points' => $points,
+                'bonus_percent' => $bonusPercent,
+                'bonus_points' => $bonus,
+            ],
             'expires_at' => null,
         ]);
 
-        return $points;
+        return $totalPoints;
     }
 
     public function awardPointsForReviewAnswers($user, $review, int $points): int
@@ -81,6 +97,10 @@ class PointsService
         if ($points <= 0) {
             return 0;
         }
+
+        $bonusPercent = $this->getUserBonusPercent($user);
+        $bonus = $this->applyBonus($points, $bonusPercent);
+        $totalPoints = $points + $bonus;
 
         $exists = PointsTransaction::where('user_id', $user->id)
             ->where('reference_type', \App\Models\Review::class)
@@ -94,20 +114,41 @@ class PointsService
         $meta = [
             'review_id' => $review->id,
             'answers_points' => $points,
+            'bonus_percent' => $bonusPercent,
+            'bonus_points' => $bonus,
         ];
 
         PointsTransaction::create([
             'user_id' => $user->id,
             'brand_id' => $review->brand_id ?? null,
             'type' => 'EARN_REVIEW_ANSWERS',
-            'points' => $points,
+            'points' => $totalPoints,
             'reference_type' => \App\Models\Review::class,
             'reference_id' => $review->id,
             'meta' => $meta,
             'expires_at' => null,
         ]);
 
-        return $points;
+        return $totalPoints;
+    }
+
+    private function getUserBonusPercent($user): float
+    {
+        $reviewsCount = Review::where('user_id', $user->id)->count();
+        $level = UserLevel::query()
+            ->where('min_reviews', '<=', $reviewsCount)
+            ->orderByDesc('min_reviews')
+            ->first();
+
+        return (float) ($level->bonus_percent ?? 0);
+    }
+
+    private function applyBonus(int $points, float $percent): int
+    {
+        if ($points <= 0 || $percent <= 0) {
+            return 0;
+        }
+        return (int) round($points * ($percent / 100));
     }
 
     public function redeemPoints($user, int $points): int

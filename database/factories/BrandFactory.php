@@ -15,9 +15,9 @@ class BrandFactory extends Factory
         return [
             'name_en' => $this->faker->company,
             'name_ar' => $this->faker->word,
-            'logo_url' => $this->faker->imageUrl(200,200),
-            'logo' => $this->faker->imageUrl(200,200),
-            'cover_image' => $this->faker->imageUrl(400,200),
+            'logo_url' => null,
+            'logo' => 'assets/images/category-icon-placeholder.png',
+            'cover_image' => 'assets/images/category-placeholder.png',
             'description_en' => $this->faker->paragraph,
             'description_ar' => $this->faker->paragraph,
             'points_expiry_days' => $this->faker->optional()->numberBetween(30,365),

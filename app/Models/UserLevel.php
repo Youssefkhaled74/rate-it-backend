@@ -11,5 +11,6 @@ class UserLevel extends Model
 
     protected $casts = [
         'benefits' => 'array',
+        'bonus_percent' => 'float',
     ];
 }

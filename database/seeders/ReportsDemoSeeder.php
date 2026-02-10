@@ -23,6 +23,7 @@ class ReportsDemoSeeder extends Seeder
         $this->call([
             DemoSubscriptionTransactionsSeeder::class,
             DemoQrSessionsSeeder::class,
+            FixDemoImagesSeeder::class,
         ]);
     }
 }

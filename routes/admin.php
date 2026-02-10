@@ -111,6 +111,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('rewards/settings/{setting}/activate', [RewardsController::class, 'activateSettings'])->name('rewards.settings.activate');
 
         Route::post('rewards/levels', [RewardsController::class, 'storeLevel'])->name('rewards.levels.store');
+        Route::delete('rewards/levels', [RewardsController::class, 'bulkDestroyLevels'])->name('rewards.levels.bulk-destroy');
         Route::get('rewards/levels/{level}/edit', [RewardsController::class, 'editLevel'])->name('rewards.levels.edit');
         Route::match(['put','patch'], 'rewards/levels/{level}', [RewardsController::class, 'updateLevel'])->name('rewards.levels.update');
         Route::delete('rewards/levels/{level}', [RewardsController::class, 'destroyLevel'])->name('rewards.levels.destroy');

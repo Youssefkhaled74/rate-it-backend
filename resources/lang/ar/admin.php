@@ -395,4 +395,5 @@ return [
     'qr_generated_at' => 'تاريخ توليد QR',
     'view_qr' => 'عرض QR',
     'download_pdf' => 'تنزيل PDF',
+    'bonus_percent' => '???? ???? ?????? (%)',
 ];

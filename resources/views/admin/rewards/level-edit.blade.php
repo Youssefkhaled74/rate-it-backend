@@ -33,6 +33,11 @@
         <input name="min_reviews" type="number" min="0" value="{{ old('min_reviews', $level->min_reviews) }}"
           class="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-200" required>
       </div>
+      <div>
+        <label class="text-xs text-gray-500">{{ __('admin.bonus_percent') }}</label>
+        <input name="bonus_percent" type="number" min="0" step="0.01" value="{{ old('bonus_percent', $level->bonus_percent ?? 0) }}"
+          class="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-200">
+      </div>
       <div class="md:col-span-2">
         <label class="text-xs text-gray-500">{{ __('admin.level_benefits') }}</label>
         <textarea name="benefits_text" rows="4"

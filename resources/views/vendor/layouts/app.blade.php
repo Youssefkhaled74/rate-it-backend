@@ -11,21 +11,24 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700&display=swap" rel="stylesheet">
 
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif'],
-            ar: ['Almarai', 'ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif'],
+  @if (file_exists(public_path('build/manifest.json')))
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+  @else
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif'],
+              ar: ['Almarai', 'ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif'],
+            },
           },
         },
-      },
-      darkMode: 'class'
-    }
-  </script>
+        darkMode: 'class'
+      }
+    </script>
+  @endif
   <script>
     (function() {
       const saved = localStorage.getItem('vendor_theme');
@@ -37,7 +40,10 @@
 
   @stack('styles')
   <style>
-    body { font-feature-settings: "cv02", "cv03", "cv04", "cv11"; }
+    body {
+      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+      font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    }
     [dir="rtl"] body { font-family: 'Almarai', ui-sans-serif, system-ui, -apple-system, sans-serif; }
     :root { --sidebar-w: 16.5rem; --sidebar-gap: 1.5rem; }
     .vendor-sidebar-spacer { width: 0 !important; padding: 0 !important; }
