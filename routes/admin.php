@@ -8,6 +8,8 @@ use App\Http\Controllers\Admin\NotificationsPageController;
 use App\Http\Controllers\Admin\ReviewsPageController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\SubscriptionPlansController;
+use App\Http\Controllers\Admin\RewardsController;
+use App\Http\Controllers\Admin\VouchersController;
 
 Route::prefix('admin')->name('admin.')->group(function () {
 
@@ -96,6 +98,22 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::patch('subscription-plans/{plan}/toggle', [SubscriptionPlansController::class, 'toggle'])->name('subscription-plans.toggle');
         Route::patch('subscription-plans/{plan}/best-value', [SubscriptionPlansController::class, 'toggleBestValue'])->name('subscription-plans.best-value');
         Route::delete('subscription-plans/{plan}', [SubscriptionPlansController::class, 'destroy'])->name('subscription-plans.destroy');
+    });
+    // Rewards System (Points Rules + User Levels)
+    Route::middleware('auth:admin_web')->group(function () {
+        Route::get('rewards', [RewardsController::class, 'index'])->name('rewards.index');
+        Route::post('rewards/settings', [RewardsController::class, 'storeSettings'])->name('rewards.settings.store');
+        Route::post('rewards/settings/{setting}/activate', [RewardsController::class, 'activateSettings'])->name('rewards.settings.activate');
+
+        Route::post('rewards/levels', [RewardsController::class, 'storeLevel'])->name('rewards.levels.store');
+        Route::get('rewards/levels/{level}/edit', [RewardsController::class, 'editLevel'])->name('rewards.levels.edit');
+        Route::match(['put','patch'], 'rewards/levels/{level}', [RewardsController::class, 'updateLevel'])->name('rewards.levels.update');
+        Route::delete('rewards/levels/{level}', [RewardsController::class, 'destroyLevel'])->name('rewards.levels.destroy');
+    });
+    // Vouchers (Admin)
+    Route::middleware('auth:admin_web')->group(function () {
+        Route::get('vouchers', [VouchersController::class, 'index'])->name('vouchers.index');
+        Route::get('vouchers/export.csv', [VouchersController::class, 'exportCsv'])->name('vouchers.export.csv');
     });
     Route::middleware('auth:admin_web')->group(function () {
         Route::get('categories', [\App\Http\Controllers\Admin\CategoriesController::class, 'index'])->name('categories.index');
