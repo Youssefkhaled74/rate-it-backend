@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use App\Support\PhoneNormalizer;
 use App\Models\Subscription;
 use Carbon\Carbon;
+use App\Models\SubscriptionSetting;
 
 class AuthService
 {
@@ -31,13 +32,14 @@ class AuthService
 
         // Create default free subscription (6 months) for new users
         $now = Carbon::now();
+        $freeTrialDays = SubscriptionSetting::getFreeTrialDays();
         Subscription::create([
             'user_id' => $user->id,
             'subscription_plan_id' => null,
             'status' => 'FREE',
             'subscription_status' => 'trialing',
             'started_at' => $now,
-            'free_until' => $now->copy()->addMonths(6),
+            'free_until' => $now->copy()->addDays($freeTrialDays),
             'paid_until' => null,
             'auto_renew' => false,
             'provider' => null,

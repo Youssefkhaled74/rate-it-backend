@@ -34,7 +34,7 @@
     </div>
   </div>
   {{-- Quick Stats --}}
-  <div class="mt-5 grid grid-cols-1 md:grid-cols-3 gap-4">
+  <div class="mt-5 grid grid-cols-1 md:grid-cols-4 gap-4">
     <div class="rounded-[22px] bg-white border border-gray-100 p-5 shadow-soft flex items-center justify-between">
       <div class="text-sm text-gray-600">{{ __('admin.total_users') }}</div>
       <div class="text-2xl font-semibold text-gray-900">{{ $stats['total_users'] ?? 0 }}</div>
@@ -46,6 +46,10 @@
     <div class="rounded-[22px] bg-white border border-gray-100 p-5 shadow-soft flex items-center justify-between">
       <div class="text-sm text-gray-600">{{ __('admin.average_rating') }}</div>
       <div class="text-2xl font-semibold text-gray-900">{{ $stats['average_rating'] ?? '0.0' }}</div>
+    </div>
+    <div class="rounded-[22px] bg-white border border-gray-100 p-5 shadow-soft flex items-center justify-between">
+      <div class="text-sm text-gray-600">{{ __('admin.subscription_free_days') }}</div>
+      <div class="text-2xl font-semibold text-gray-900">{{ $freeTrialDays ?? 0 }}</div>
     </div>
   </div>
 

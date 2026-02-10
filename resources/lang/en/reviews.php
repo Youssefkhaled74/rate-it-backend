@@ -12,4 +12,5 @@ return [
     'invalid_answer' => 'Invalid answer for criteria',
     'unauthorized' => 'You are not allowed to view this review',
     'subscription_required' => 'Subscription required to add a review',
+    'subscription_required_with_date' => 'Subscription required to add a review. Free access ended on :date',
 ];

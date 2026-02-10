@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 return [
     'login_success' => 'ت�. تسج�S�" ا�"دخ�^�" ب�?جاح',

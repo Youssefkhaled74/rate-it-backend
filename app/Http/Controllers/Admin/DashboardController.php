@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\Admin\AdminDashboardService;
+use App\Models\SubscriptionSetting;
 
 class DashboardController extends Controller
 {
@@ -25,6 +26,7 @@ class DashboardController extends Controller
         $userGrowth = $this->service->getUserGrowthMonthly(12);
 
         $welcomeName = auth()->guard('admin_web')->user()?->name ?? 'Admin';
+        $freeTrialDays = SubscriptionSetting::getFreeTrialDays();
 
         return view('admin.pages.dashboard', [
             'stats' => $stats,
@@ -35,6 +37,7 @@ class DashboardController extends Controller
             'selectedStatus' => $selectedStatus,
             'reviewsChart' => $reviewsChart,
             'userGrowth' => $userGrowth,
+            'freeTrialDays' => $freeTrialDays,
         ]);
     }
 }

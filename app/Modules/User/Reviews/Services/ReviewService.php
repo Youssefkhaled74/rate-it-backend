@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Log;
 use App\Modules\User\Reviews\Support\CriteriaResolver;
 use App\Modules\User\Points\Services\PointsService;
 use App\Models\Subscription;
+use App\Models\SubscriptionSetting;
 
 class ReviewService
 {
@@ -55,7 +56,16 @@ class ReviewService
 
         $subscription = $this->ensureUserSubscription($user);
         if (! $this->hasSubscriptionAccess($subscription)) {
-            throw new ApiException('reviews.subscription_required', 402);
+            $freeUntil = $this->resolveFreeUntil($subscription);
+            $dateText = $freeUntil ? $freeUntil->format('Y-m-d') : null;
+            $message = $dateText
+                ? __('reviews.subscription_required_with_date', ['date' => $dateText])
+                : __('reviews.subscription_required');
+            throw new ApiException($message, 402, [
+                'free_until' => $freeUntil?->toDateTimeString(),
+                'days_left' => $freeUntil ? max(0, Carbon::now()->diffInDays($freeUntil, false)) : 0,
+                'action' => 'SUBSCRIBE_REQUIRED',
+            ]);
         }
 
         // Instrumentation: log branch and subcategory
@@ -300,13 +310,14 @@ class ReviewService
         if ($sub) return $sub;
 
         $started = $user->created_at ? Carbon::parse($user->created_at) : Carbon::now();
+        $freeTrialDays = SubscriptionSetting::getFreeTrialDays();
         return Subscription::create([
             'user_id' => $user->id,
             'subscription_plan_id' => null,
             'status' => 'FREE',
             'subscription_status' => 'trialing',
             'started_at' => $started,
-            'free_until' => $started->copy()->addMonths(6),
+            'free_until' => $started->copy()->addDays($freeTrialDays),
             'paid_until' => null,
             'auto_renew' => false,
             'provider' => null,
@@ -319,12 +330,21 @@ class ReviewService
     private function hasSubscriptionAccess(Subscription $sub): bool
     {
         $now = Carbon::now();
-        $freeUntil = $sub->free_until;
+        $freeUntil = $this->resolveFreeUntil($sub);
         $paidUntil = $sub->paid_until;
 
         if ($freeUntil && $freeUntil->isFuture()) return true;
         if ($paidUntil && $paidUntil->isFuture()) return true;
 
         return false;
+    }
+
+    private function resolveFreeUntil(Subscription $sub): ?Carbon
+    {
+        if ($sub->free_until) return $sub->free_until;
+        if (! $sub->started_at) return null;
+
+        $freeTrialDays = SubscriptionSetting::getFreeTrialDays();
+        return $sub->started_at->copy()->addDays($freeTrialDays);
     }
 }

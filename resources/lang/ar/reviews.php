@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 return [
     'qr_scanned' => 'ت�. �.سح ر�.ز ا�"استجابة ا�"سر�Sعة ب�?جاح',
@@ -12,5 +12,6 @@ return [
     'invalid_answer' => 'إجابة غ�Sر صا�"حة �"�"�.ع�Sار',
     'unauthorized' => 'غ�Sر �.س�.�^ح �"�f بعرض �?ذا ا�"ت�,�S�S�.',
     'subscription_required' => 'الاشتراك مطلوب لإضافة تقييم',
+    'subscription_required_with_date' => 'الاشتراك مطلوب لإضافة تقييم. انتهت الفترة المجانية بتاريخ :date',
 ];
 

@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DashboardReportsController;
 use App\Http\Controllers\Admin\NotificationsPageController;
 use App\Http\Controllers\Admin\ReviewsPageController;
+use App\Http\Controllers\Admin\SettingsController;
 
 Route::prefix('admin')->name('admin.')->group(function () {
 
@@ -76,6 +77,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('profile', [\App\Http\Controllers\Admin\AdminProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('profile/photo', [\App\Http\Controllers\Admin\AdminProfileController::class, 'updatePhoto'])->name('profile.photo.update');
         Route::delete('profile/photo', [\App\Http\Controllers\Admin\AdminProfileController::class, 'removePhoto'])->name('profile.photo.remove');
+    });
+
+    // Settings
+    Route::middleware('auth:admin_web')->group(function () {
+        Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
+        Route::post('settings/subscription', [SettingsController::class, 'updateSubscription'])->name('settings.subscription.update');
     });
     Route::middleware('auth:admin_web')->group(function () {
         Route::get('categories', [\App\Http\Controllers\Admin\CategoriesController::class, 'index'])->name('categories.index');

@@ -1,4 +1,4 @@
-﻿ï»؟<?php
+ï»؟<?php
 
 return [
     'dashboard' => 'Dashboard',
@@ -62,6 +62,13 @@ return [
     'confirm_message' => 'Are you sure?',
     'language' => 'Language',
     'settings' => 'Settings',
+    'subscription_settings' => 'Subscription Settings',
+    'subscription_settings_help' => 'Control the free trial duration for new users.',
+    'free_trial_days' => 'Free Trial Duration (Days)',
+    'subscription_free_days' => 'Free Trial Days',
+    'days' => 'days',
+    'save_changes' => 'Save Changes',
+    'settings_saved' => 'Settings saved successfully',
     'notifications' => 'Notifications',
     'profile' => 'Profile',
     'logout' => 'Logout',
