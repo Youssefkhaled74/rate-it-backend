@@ -4,8 +4,11 @@
 
 @section('content')
 @php
-  $placeName = $branch->place?->display_name ?: 'Place';
-  $brandName = $branch->place?->brand?->name_en ?: '-';
+  $isArabic = app()->getLocale() === 'ar' || request('lang') === 'ar';
+  $placeName = $branch->display_name ?: ($branch->name ?: 'Branch');
+  $brandName = $isArabic
+    ? ($branch->brand?->name_ar ?? $branch->brand?->name_en ?? '-')
+    : ($branch->brand?->name_en ?? $branch->brand?->name_ar ?? '-');
   $coverUrl = $branch->cover_url;
   $logoUrl = $branch->logo_url;
 @endphp
@@ -55,7 +58,7 @@
 
       <div class="mt-6">
         <div class="text-sm font-semibold text-gray-800">Branch Name</div>
-        <div class="text-sm text-gray-600 mt-2">{{ $branch->name ?: '-' }}</div>
+        <div class="text-sm text-gray-600 mt-2">{{ $branch->display_name ?: '-' }}</div>
       </div>
 
       <div class="mt-4">
@@ -69,7 +72,7 @@
     <div class="lg:col-span-2 bg-white rounded-3xl shadow-soft border border-gray-100 overflow-hidden">
       <div class="p-6">
         <div class="text-sm text-gray-500">Branch Name</div>
-        <div class="text-xl font-semibold text-gray-900 mt-1">{{ $branch->name ?: $placeName }}</div>
+        <div class="text-xl font-semibold text-gray-900 mt-1">{{ $branch->display_name ?: $placeName }}</div>
         <div class="text-sm text-gray-500 mt-1">{{ $brandName }}</div>
 
         <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -139,7 +142,7 @@
                alt="Branch QR"
                class="w-48 h-48 object-contain">
         </div>
-        <div class="text-sm text-gray-600 mt-3 font-semibold">{{ $branch->name ?: $placeName }}</div>
+        <div class="text-sm text-gray-600 mt-3 font-semibold">{{ $branch->display_name ?: $placeName }}</div>
       </div>
 
       <div class="mt-6 flex items-center gap-3">

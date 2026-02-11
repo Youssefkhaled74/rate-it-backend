@@ -15,6 +15,8 @@ class UpdateBranchRequest extends FormRequest
     {
         return [
             'name' => 'sometimes|string|max:255',
+            'name_en' => 'sometimes|string|max:255',
+            'name_ar' => 'sometimes|string|max:255',
             'phone' => 'sometimes|regex:/^[0-9+\-\s()]+$/|max:20',
             'email' => 'nullable|email|max:255',
             'address' => 'sometimes|string|max:500',
@@ -29,5 +31,22 @@ class UpdateBranchRequest extends FormRequest
             'phone.regex' => __('vendor.branch.phone_invalid'),
             'address.string' => __('vendor.branch.address_required'),
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $nameEn = $this->input('name_en');
+        $nameAr = $this->input('name_ar');
+        $name = $this->input('name');
+
+        if ($this->has('name') && empty($nameEn) && !empty($name)) {
+            $this->merge(['name_en' => $name]);
+        }
+        if ($this->has('name_en') && empty($name) && !empty($nameEn)) {
+            $this->merge(['name' => $nameEn]);
+        }
+        if ($this->has('name_ar') && !$this->has('name') && !$this->has('name_en') && !empty($nameAr)) {
+            $this->merge(['name' => $nameAr, 'name_en' => $nameAr]);
+        }
     }
 }

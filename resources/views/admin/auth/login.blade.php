@@ -1,8 +1,9 @@
 @extends('admin.layouts.auth')
-@section('title', 'Admin Login')
+@section('title', __('admin.admin_login'))
 
 @section('content')
-<div class="min-h-screen flex items-center justify-center px-4 py-10
+@php($isRtl = app()->getLocale() === 'ar')
+<div dir="{{ $isRtl ? 'rtl' : 'ltr' }}" class="min-h-screen flex items-center justify-center px-4 py-10
             bg-[radial-gradient(1200px_600px_at_20%_10%,rgba(185,28,28,.12),transparent_60%),radial-gradient(900px_500px_at_90%_20%,rgba(0,0,0,.10),transparent_55%),linear-gradient(to_br,rgba(243,244,246,1),rgba(229,231,235,1))]">
 
     {{-- subtle grid --}}
@@ -25,6 +26,15 @@
             <div class="pointer-events-none absolute -bottom-28 -left-28 w-72 h-72 rounded-full bg-gray-200/70 blur-3xl"></div>
 
             <div class="relative">
+                <div class="absolute top-0 {{ $isRtl ? 'left-0' : 'right-0' }}">
+                    <div class="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white/80 px-3 py-1 text-xs text-gray-600">
+                        <a href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}"
+                           class="{{ app()->getLocale() === 'en' ? 'text-red-800 font-semibold' : 'text-gray-500' }}">EN</a>
+                        <span class="text-gray-300">|</span>
+                        <a href="{{ request()->fullUrlWithQuery(['lang' => 'ar']) }}"
+                           class="{{ app()->getLocale() === 'ar' ? 'text-red-800 font-semibold' : 'text-gray-500' }}">AR</a>
+                    </div>
+                </div>
 
                 {{-- Brand --}}
                 <div class="flex items-center justify-center mb-8">
@@ -38,15 +48,15 @@
                         </div>
                         <div>
                             <div class="text-xl font-semibold leading-tight">Rateit</div>
-                            <div class="text-xs text-gray-500">Admin Dashboard</div>
+                            <div class="text-xs text-gray-500">{{ __('admin.admin_dashboard') }}</div>
                         </div>
                     </div>
                 </div>
 
                 {{-- Heading --}}
                 <div class="text-center mb-8">
-                    <h1 class="text-2xl font-semibold tracking-tight text-gray-900">Welcome back</h1>
-                    <p class="text-sm text-gray-500 mt-1">Sign in to continue</p>
+                    <h1 class="text-2xl font-semibold tracking-tight text-gray-900">{{ __('admin.login_welcome') }}</h1>
+                    <p class="text-sm text-gray-500 mt-1">{{ __('admin.login_subtitle') }}</p>
                 </div>
 
                 {{-- Error --}}
@@ -62,9 +72,9 @@
 
                     {{-- Email --}}
                     <div>
-                        <label class="text-sm font-medium text-gray-700">Email address</label>
+                        <label class="text-sm font-medium text-gray-700">{{ __('admin.email_address') }}</label>
                         <div class="mt-2 relative">
-                            <span class="absolute inset-y-0 left-3 flex items-center text-gray-400">
+                            <span class="absolute inset-y-0 {{ $isRtl ? 'right-3' : 'left-3' }} flex items-center text-gray-400">
                                 {{-- mail icon --}}
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                                     <path d="M4 4h16v16H4z"></path>
@@ -76,8 +86,8 @@
                                 type="email"
                                 value="{{ old('email') }}"
                                 required
-                                placeholder="admin@rateit.com"
-                                class="w-full rounded-2xl border border-gray-200 bg-white/90 pl-11 pr-4 py-3
+                                placeholder="{{ __('admin.login_email_placeholder') }}"
+                                class="w-full rounded-2xl border border-gray-200 bg-white/90 {{ $isRtl ? 'pr-11 pl-4' : 'pl-11 pr-4' }} py-3
                        text-sm outline-none transition
                        focus:border-red-400 focus:ring-4 focus:ring-red-100">
                         </div>
@@ -85,9 +95,9 @@
 
                     {{-- Password --}}
                     <div>
-                        <label class="text-sm font-medium text-gray-700">Password</label>
+                        <label class="text-sm font-medium text-gray-700">{{ __('admin.password') }}</label>
                         <div class="mt-2 relative">
-                            <span class="absolute inset-y-0 left-3 flex items-center text-gray-400">
+                            <span class="absolute inset-y-0 {{ $isRtl ? 'right-3' : 'left-3' }} flex items-center text-gray-400">
                                 {{-- lock icon --}}
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                                     <path d="M7 11V8a5 5 0 0 1 10 0v3"></path>
@@ -100,8 +110,8 @@
                                 name="password"
                                 type="password"
                                 required
-                                placeholder="••••••••"
-                                class="w-full rounded-2xl border border-gray-200 bg-white/90 pl-11 pr-12 py-3
+                                placeholder="{{ __('admin.login_password_placeholder') }}"
+                                class="w-full rounded-2xl border border-gray-200 bg-white/90 {{ $isRtl ? 'pr-11 pl-12' : 'pl-11 pr-12' }} py-3
                        text-sm outline-none transition
                        focus:border-red-400 focus:ring-4 focus:ring-red-100">
 
@@ -109,7 +119,7 @@
                             <button
                                 type="button"
                                 id="toggle_password"
-                                class="absolute inset-y-0 right-2 px-3 rounded-xl
+                                class="absolute inset-y-0 {{ $isRtl ? 'left-2' : 'right-2' }} px-3 rounded-xl
                        text-gray-500 hover:text-gray-900 hover:bg-gray-50/70 transition"
                                 aria-label="Toggle password visibility">
                                 {{-- eye --}}
@@ -136,9 +146,9 @@
                         <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
                             <input type="checkbox" name="remember" value="1"
                                 class="rounded-md border-gray-300 text-red-700 focus:ring-red-500">
-                            Remember me
+                            {{ __('admin.remember_me') }}
                         </label>
-                        <span class="text-xs text-gray-400">Secured access</span>
+                        <span class="text-xs text-gray-400">{{ __('admin.secured_access') }}</span>
                     </div>
 
                     {{-- Submit --}}
@@ -150,7 +160,7 @@
                    hover:bg-red-900 hover:shadow-red-900/30
                    focus:outline-none focus:ring-4 focus:ring-red-200
                    transition">
-                        Login
+                        {{ __('admin.login') }}
                     </button>
                 </form>
             </div>
@@ -176,7 +186,7 @@
 
         {{-- Footer --}}
         <p class="text-center text-xs text-gray-500 mt-6">
-            © {{ date('Y') }} Rateit Platform
+            (c) {{ date('Y') }} EVYX
         </p>
     </div>
 </div>

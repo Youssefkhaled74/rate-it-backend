@@ -19,7 +19,7 @@ class VouchersController extends Controller
         $to = $request->get('to');
 
         $query = Voucher::query()
-            ->with(['user:id,name,phone', 'brand:id,name_en,name_ar', 'usedBranch:id,name', 'verifiedByVendor:id,name'])
+            ->with(['user:id,name,phone', 'brand:id,name_en,name_ar', 'usedBranch:id,name,name_en,name_ar', 'verifiedByVendor:id,name'])
             ->when($q !== '', function ($qq) use ($q) {
                 $qq->where('code', 'like', "%{$q}%")
                    ->orWhereHas('user', function ($u) use ($q) {
@@ -67,7 +67,7 @@ class VouchersController extends Controller
         $to = $request->get('to');
 
         $query = Voucher::query()
-            ->with(['user:id,name,phone', 'brand:id,name_en,name_ar', 'usedBranch:id,name'])
+            ->with(['user:id,name,phone', 'brand:id,name_en,name_ar', 'usedBranch:id,name,name_en,name_ar'])
             ->when($q !== '', function ($qq) use ($q) {
                 $qq->where('code', 'like', "%{$q}%")
                    ->orWhereHas('user', function ($u) use ($q) {

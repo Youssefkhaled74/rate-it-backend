@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Register admin guard alias for admin routes
         $middleware->alias([
             'admin.guard' => \App\Http\Middleware\UseAdminGuard::class,
+            'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

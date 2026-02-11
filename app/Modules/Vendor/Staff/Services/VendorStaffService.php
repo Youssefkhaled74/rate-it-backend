@@ -23,7 +23,7 @@ class VendorStaffService
 
         $query = VendorUser::where('brand_id', $brandId)
             ->where('role', 'BRANCH_STAFF')
-            ->with(['branch:id,name']);
+            ->with(['branch:id,name,name_en,name_ar']);
 
         // Filter by branch
         if (! empty($filters['branch_id'])) {

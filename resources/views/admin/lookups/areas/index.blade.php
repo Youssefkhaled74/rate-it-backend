@@ -25,11 +25,67 @@
             class="w-full rounded-2xl border border-gray-200 bg-white/80 pl-11 pr-4 py-3 text-sm outline-none rtl-search-input
                    focus:border-red-300 focus:ring-4 focus:ring-red-100 transition"
           >
+          @if($status)
+            <input type="hidden" name="status" value="{{ $status }}">
+          @endif
+          @if($cityId)
+            <input type="hidden" name="city_id" value="{{ $cityId }}">
+          @endif
+        </form>
+      </div>
+      <div class="w-full max-w-xs">
+        <form method="get">
+          <select
+            name="city_id"
+            class="w-full rounded-2xl border border-gray-200 bg-white/80 px-4 py-3 text-sm outline-none
+                   focus:border-red-300 focus:ring-4 focus:ring-red-100 transition"
+            onchange="this.form.submit()"
+          >
+            <option value="">{{ __('admin.all') }} {{ __('admin.cities') }}</option>
+            @foreach($cities as $city)
+              <option value="{{ $city->id }}" {{ (string) $cityId === (string) $city->id ? 'selected' : '' }}>
+                {{ $city->name_en }}
+              </option>
+            @endforeach
+          </select>
+          @if($q)
+            <input type="hidden" name="q" value="{{ $q }}">
+          @endif
+          @if($status)
+            <input type="hidden" name="status" value="{{ $status }}">
+          @endif
         </form>
       </div>
 
+      <a href="{{ route('admin.lookups.areas.template', ['lang' => request('lang')]) }}"
+         class="inline-flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-gray-200 bg-white px-4 text-sm font-semibold text-gray-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-gray-50 hover:shadow">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <path d="M7 10l5 5 5-5"/>
+          <path d="M12 15V3"/>
+        </svg>
+        <span>Download Template</span>
+      </a>
+
+      <form method="POST" action="{{ route('admin.lookups.areas.import', ['lang' => request('lang')]) }}" enctype="multipart/form-data" class="inline-flex">
+        @csrf
+        <input type="file" id="areas-import-file" name="file" accept=".xlsx,.xls,.csv" class="hidden" onchange="this.form.submit()">
+        <button type="button" onclick="document.getElementById('areas-import-file').click()"
+                class="inline-flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-gray-200 bg-white px-4 text-sm font-semibold text-gray-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-gray-50 hover:shadow">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <path d="M17 8l-5-5-5 5"/>
+            <path d="M12 3v12"/>
+          </svg>
+          <span>Import Excel</span>
+        </button>
+      </form>
+
       <a href="{{ route('admin.lookups.areas.create', ['lang' => request('lang')]) }}"
-         class="inline-flex items-center justify-center rounded-2xl bg-red-900 text-white px-5 py-3 text-sm font-semibold shadow-soft hover:bg-red-950 transition">
+         class="inline-flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-red-900 px-5 text-sm font-semibold text-white shadow-soft transition hover:-translate-y-0.5 hover:bg-red-950">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
         {{ __('admin.add_area') }}
       </a>
     </div>
@@ -51,25 +107,46 @@
   </div>
 
   <div class="flex items-center gap-3">
-    <a href="{{ route('admin.lookups.areas.index', ['lang' => request('lang')]) }}"
+    <a href="{{ route('admin.lookups.areas.index', ['lang' => request('lang'), 'city_id' => $cityId ?: null]) }}"
        class="px-4 py-2 rounded-xl text-sm font-semibold {{ $status ? 'bg-white text-gray-600 border border-gray-100' : 'bg-red-900 text-white' }}">
       {{ __('admin.all') }}
     </a>
-    <a href="{{ route('admin.lookups.areas.index', ['status' => 'active', 'lang' => request('lang')]) }}"
+    <a href="{{ route('admin.lookups.areas.index', ['status' => 'active', 'lang' => request('lang'), 'city_id' => $cityId ?: null]) }}"
        class="px-4 py-2 rounded-xl text-sm font-semibold {{ $status === 'active' ? 'bg-red-900 text-white' : 'bg-white text-gray-600 border border-gray-100' }}">
       {{ __('admin.active') }}
     </a>
-    <a href="{{ route('admin.lookups.areas.index', ['status' => 'inactive', 'lang' => request('lang')]) }}"
+    <a href="{{ route('admin.lookups.areas.index', ['status' => 'inactive', 'lang' => request('lang'), 'city_id' => $cityId ?: null]) }}"
        class="px-4 py-2 rounded-xl text-sm font-semibold {{ $status === 'inactive' ? 'bg-red-900 text-white' : 'bg-white text-gray-600 border border-gray-100' }}">
       {{ __('admin.inactive') }}
     </a>
+    @if($selectedCity)
+      <span class="px-3 py-2 rounded-xl text-xs font-semibold bg-red-50 text-red-800 border border-red-100">
+        {{ __('admin.city') }}: {{ $selectedCity->name_en }}
+      </span>
+    @endif
   </div>
 
   <div class="bg-white rounded-3xl shadow-soft p-6">
+    <form id="bulk-delete-areas-form" method="POST" action="{{ route('admin.lookups.areas.bulk-destroy', ['lang' => request('lang')]) }}" class="mb-4 flex items-center justify-between gap-3">
+      @csrf
+      @method('DELETE')
+      <div class="text-sm text-gray-600">
+        <span id="areas-selected-count">0</span> selected
+      </div>
+      <button id="areas-bulk-delete-btn" type="submit" disabled
+              onclick="return confirm('Delete selected areas?')"
+              class="px-4 py-2 rounded-xl bg-red-900 text-white text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed">
+        {{ __('admin.delete') }}
+      </button>
+    </form>
+
     <div class="overflow-x-auto rounded-2xl border border-gray-100">
       <table class="min-w-full text-sm">
         <thead class="bg-gray-50/70">
           <tr class="text-left text-gray-500">
+            <th class="py-4 px-5 font-medium w-10">
+              <input id="areas-select-all" type="checkbox" class="rounded border-gray-300">
+            </th>
             <th class="py-4 px-5 font-medium">{{ __('admin.city') }}</th>
             <th class="py-4 px-5 font-medium">{{ __('admin.name_en') }}</th>
             <th class="py-4 px-5 font-medium">{{ __('admin.name_ar') }}</th>
@@ -80,6 +157,9 @@
         <tbody class="divide-y divide-gray-100 bg-white">
           @forelse($items as $item)
             <tr class="hover:bg-gray-50/60 transition">
+              <td class="py-4 px-5">
+                <input form="bulk-delete-areas-form" name="ids[]" value="{{ $item->id }}" type="checkbox" class="areas-row-checkbox rounded border-gray-300">
+              </td>
               <td class="py-4 px-5 text-gray-900 font-semibold">{{ $item->city?->name_en ?? '-' }}</td>
               <td class="py-4 px-5 text-gray-700">{{ $item->name_en }}</td>
               <td class="py-4 px-5 text-gray-700">{{ $item->name_ar ?? '-' }}</td>
@@ -113,7 +193,7 @@
             </tr>
           @empty
             <tr>
-              <td colspan="5" class="py-12 text-center text-gray-500">{{ __('admin.no_data') }}</td>
+              <td colspan="6" class="py-12 text-center text-gray-500">{{ __('admin.no_data') }}</td>
             </tr>
           @endforelse
         </tbody>
@@ -125,4 +205,32 @@
     </div>
   </div>
 </div>
+
+<script>
+  (function () {
+    const selectAll = document.getElementById('areas-select-all');
+    const checkboxes = Array.from(document.querySelectorAll('.areas-row-checkbox'));
+    const countEl = document.getElementById('areas-selected-count');
+    const btn = document.getElementById('areas-bulk-delete-btn');
+
+    function sync() {
+      const checked = checkboxes.filter(cb => cb.checked).length;
+      countEl.textContent = checked;
+      btn.disabled = checked === 0;
+      if (selectAll) {
+        selectAll.checked = checked > 0 && checked === checkboxes.length;
+        selectAll.indeterminate = checked > 0 && checked < checkboxes.length;
+      }
+    }
+
+    if (selectAll) {
+      selectAll.addEventListener('change', function () {
+        checkboxes.forEach(cb => { cb.checked = selectAll.checked; });
+        sync();
+      });
+    }
+    checkboxes.forEach(cb => cb.addEventListener('change', sync));
+    sync();
+  })();
+</script>
 @endsection

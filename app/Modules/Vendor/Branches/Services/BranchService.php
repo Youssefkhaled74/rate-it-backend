@@ -32,7 +32,7 @@ class BranchService
             $query->where('id', $vendor->branch_id);
         }
 
-        return $query->with('place')->orderBy('name')->get();
+        return $query->with('place')->orderBy('name_en')->orderBy('name')->get();
     }
 
     /**
@@ -95,7 +95,9 @@ class BranchService
         // Create branch
         $branch = Branch::create([
             'place_id' => $data['place_id'],
-            'name' => $data['name'],
+            'name' => $data['name'] ?? ($data['name_en'] ?? $data['name_ar'] ?? null),
+            'name_en' => $data['name_en'] ?? ($data['name'] ?? $data['name_ar'] ?? null),
+            'name_ar' => $data['name_ar'] ?? null,
             'phone' => $data['phone'],
             'email' => $data['email'] ?? null,
             'address' => $data['address'],
@@ -125,7 +127,9 @@ class BranchService
 
         // Update branch
         $branch->update(array_filter([
-            'name' => $data['name'] ?? null,
+            'name' => $data['name'] ?? ($data['name_en'] ?? $data['name_ar'] ?? null),
+            'name_en' => $data['name_en'] ?? ($data['name'] ?? $data['name_ar'] ?? null),
+            'name_ar' => $data['name_ar'] ?? null,
             'phone' => $data['phone'] ?? null,
             'email' => $data['email'] ?? null,
             'address' => $data['address'] ?? null,

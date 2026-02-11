@@ -100,7 +100,7 @@ class AdminDashboardService
                 'user:id,name,phone',
                 // select only id and available display columns for place
                 'place:' . implode(',', $withPlace),
-                'branch:id,name',
+                'branch:id,name,name_en,name_ar',
             ])->withCount(['photos']);
 
             $query->orderBy('created_at', 'desc');

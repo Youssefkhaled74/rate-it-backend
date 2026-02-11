@@ -34,22 +34,119 @@
     </div>
   </div>
   {{-- Quick Stats --}}
-  <div class="mt-5 grid grid-cols-1 md:grid-cols-4 gap-4">
-    <div class="rounded-[22px] bg-white border border-gray-100 p-5 shadow-soft flex items-center justify-between">
-      <div class="text-sm text-gray-600">{{ __('admin.total_users') }}</div>
-      <div class="text-2xl font-semibold text-gray-900">{{ $stats['total_users'] ?? 0 }}</div>
+  <div class="mt-5 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+    <div class="rounded-[22px] bg-white border border-gray-100 p-5 shadow-soft">
+      <div class="text-xs text-gray-500">{{ __('admin.total_users') }}</div>
+      <div class="mt-2 flex items-baseline justify-between">
+        <div class="text-2xl font-semibold text-gray-900">{{ $stats['total_users'] ?? 0 }}</div>
+        <div class="text-[11px] text-gray-400">{{ __('admin.new_7_days') }}: {{ $stats['new_7_days'] ?? 0 }}</div>
+      </div>
     </div>
-    <div class="rounded-[22px] bg-white border border-gray-100 p-5 shadow-soft flex items-center justify-between">
-      <div class="text-sm text-gray-600">{{ __('admin.total_brands') }}</div>
-      <div class="text-2xl font-semibold text-gray-900">{{ $stats['total_brands'] ?? 0 }}</div>
+    <div class="rounded-[22px] bg-white border border-gray-100 p-5 shadow-soft">
+      <div class="text-xs text-gray-500">{{ __('admin.total_brands') }}</div>
+      <div class="mt-2 flex items-baseline justify-between">
+        <div class="text-2xl font-semibold text-gray-900">{{ $stats['total_brands'] ?? 0 }}</div>
+        <div class="text-[11px] text-gray-400">{{ __('admin.pending_reply') }}: {{ $stats['pending_reply'] ?? 0 }}</div>
+      </div>
     </div>
-    <div class="rounded-[22px] bg-white border border-gray-100 p-5 shadow-soft flex items-center justify-between">
-      <div class="text-sm text-gray-600">{{ __('admin.average_rating') }}</div>
-      <div class="text-2xl font-semibold text-gray-900">{{ $stats['average_rating'] ?? '0.0' }}</div>
+    <div class="rounded-[22px] bg-white border border-gray-100 p-5 shadow-soft">
+      <div class="text-xs text-gray-500">{{ __('admin.total_reviews') }}</div>
+      <div class="mt-2 flex items-baseline justify-between">
+        <div class="text-2xl font-semibold text-gray-900">{{ $stats['total_reviews'] ?? 0 }}</div>
+        <div class="text-[11px] text-gray-400">30d</div>
+      </div>
     </div>
-    <div class="rounded-[22px] bg-white border border-gray-100 p-5 shadow-soft flex items-center justify-between">
-      <div class="text-sm text-gray-600">{{ __('admin.subscription_free_days') }}</div>
-      <div class="text-2xl font-semibold text-gray-900">{{ $freeTrialDays ?? 0 }}</div>
+    <div class="rounded-[22px] bg-white border border-gray-100 p-5 shadow-soft">
+      <div class="text-xs text-gray-500">{{ __('admin.average_rating') }}</div>
+      <div class="mt-2 flex items-baseline justify-between">
+        <div class="text-2xl font-semibold text-gray-900">{{ $stats['average_rating'] ?? '0.0' }}</div>
+        @if(!is_null($stats['average_delta_percent'] ?? null))
+          <div class="text-[11px] {{ ($stats['average_delta_percent'] ?? 0) >= 0 ? 'text-emerald-600' : 'text-red-600' }}">
+            {{ ($stats['average_delta_percent'] ?? 0) >= 0 ? '+' : '' }}{{ $stats['average_delta_percent'] ?? 0 }}%
+          </div>
+        @endif
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+    <div class="rounded-[22px] bg-white border border-gray-100 p-5 shadow-soft">
+      <div class="text-xs text-gray-500">{{ __('admin.total_reviews') }}</div>
+      <div class="mt-2 flex items-baseline justify-between">
+        <div class="text-2xl font-semibold text-gray-900">{{ $stats['total_reviews_all'] ?? 0 }}</div>
+        <div class="text-[11px] text-gray-400">{{ __('admin.all') }}</div>
+      </div>
+    </div>
+    <div class="rounded-[22px] bg-white border border-gray-100 p-5 shadow-soft">
+      <div class="text-xs text-gray-500">{{ __('admin.pending_reply') }}</div>
+      <div class="mt-2 flex items-baseline justify-between">
+        <div class="text-2xl font-semibold text-gray-900">{{ $stats['pending_reply'] ?? 0 }}</div>
+        <div class="text-[11px] text-gray-400">{{ __('admin.reviews') }}</div>
+      </div>
+    </div>
+    <div class="rounded-[22px] bg-white border border-gray-100 p-5 shadow-soft">
+      <div class="text-xs text-gray-500">{{ __('admin.new_7_days') }}</div>
+      <div class="mt-2 flex items-baseline justify-between">
+        <div class="text-2xl font-semibold text-gray-900">{{ $stats['new_7_days'] ?? 0 }}</div>
+        @if(!is_null($stats['total_delta_percent'] ?? null))
+          <div class="text-[11px] {{ ($stats['total_delta_percent'] ?? 0) >= 0 ? 'text-emerald-600' : 'text-red-600' }}">
+            {{ ($stats['total_delta_percent'] ?? 0) >= 0 ? '+' : '' }}{{ $stats['total_delta_percent'] ?? 0 }}%
+          </div>
+        @endif
+      </div>
+    </div>
+    <div class="rounded-[22px] bg-white border border-gray-100 p-5 shadow-soft">
+      <div class="text-xs text-gray-500">{{ __('admin.subscription_free_days') }}</div>
+      <div class="mt-2 flex items-baseline justify-between">
+        <div class="text-2xl font-semibold text-gray-900">{{ $freeTrialDays ?? 0 }}</div>
+        <div class="text-[11px] text-gray-400">{{ __('admin.days') }}</div>
+      </div>
+    </div>
+  </div>
+
+  {{-- Quick Access --}}
+  <div class="mt-5 bg-white border border-gray-100 rounded-[24px] p-5 shadow-soft">
+    <div class="flex items-center justify-between">
+      <div class="text-sm font-semibold text-gray-900">{{ __('admin.quick_access') }}</div>
+      <div class="text-xs text-gray-400">{{ __('admin.manage') }}</div>
+    </div>
+    <div class="mt-4 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
+      <a href="{{ route('admin.reviews.index') }}" class="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-gray-200 hover:bg-white transition">
+        {{ __('admin.reviews') }}
+      </a>
+      <a href="{{ route('admin.users.index') }}" class="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-gray-200 hover:bg-white transition">
+        {{ __('admin.users') }}
+      </a>
+      <a href="{{ route('admin.brands.index') }}" class="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-gray-200 hover:bg-white transition">
+        {{ __('admin.brands') }}
+      </a>
+      <a href="{{ route('admin.places.index') }}" class="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-gray-200 hover:bg-white transition">
+        {{ __('admin.places') }}
+      </a>
+      <a href="{{ route('admin.branches.index') }}" class="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-gray-200 hover:bg-white transition">
+        {{ __('admin.branches') }}
+      </a>
+      <a href="{{ route('admin.subscription-plans.index') }}" class="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-gray-200 hover:bg-white transition">
+        {{ __('admin.subscription_plans') }}
+      </a>
+      <a href="{{ route('admin.subscriptions.index') }}" class="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-gray-200 hover:bg-white transition">
+        {{ __('admin.subscriptions') }}
+      </a>
+      <a href="{{ route('admin.rewards.index') }}" class="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-gray-200 hover:bg-white transition">
+        {{ __('admin.rewards_system') }}
+      </a>
+      <a href="{{ route('admin.kpi-reports.index') }}" class="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-gray-200 hover:bg-white transition">
+        {{ __('admin.kpi_reports') }}
+      </a>
+      <a href="{{ route('admin.qr-management.index') }}" class="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-gray-200 hover:bg-white transition">
+        {{ __('admin.qr_management') }}
+      </a>
+      <a href="{{ route('admin.vouchers.index') }}" class="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-gray-200 hover:bg-white transition">
+        {{ __('admin.vouchers') }}
+      </a>
+      <a href="{{ route('admin.search-suggestions.index') }}" class="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-gray-200 hover:bg-white transition">
+        {{ __('admin.search_suggestions') }}
+      </a>
     </div>
   </div>
 
@@ -73,7 +170,10 @@
         $chartValues = $reviewsChart['values'] ?? [];
         $chartCols = max(1, count($chartLabels));
       @endphp
-      <div class="mt-4 rounded-2xl bg-white border border-gray-100 p-4">
+      <div class="mt-4 rounded-2xl bg-white border border-gray-100 p-4 relative">
+        <div id="reviewsNoData" class="hidden absolute inset-0 grid place-items-center text-sm text-gray-400">
+          {{ __('admin.no_data') }}
+        </div>
         <div id="reviewsChart" data-values='@json($chartValues)'>
           <svg class="w-full h-52" viewBox="0 0 640 200" preserveAspectRatio="none">
             <defs>
@@ -242,12 +342,14 @@
       const area = chartEl.querySelector('#reviewsArea');
       const line = chartEl.querySelector('#reviewsLine');
       const dots = chartEl.querySelector('#reviewsDots');
+      const noData = document.getElementById('reviewsNoData');
       if (!svg || !area || !line || !dots) return;
 
       const width = 640;
       const height = 200;
       const pad = 18;
 
+      values = values.map(v => Number(v) || 0);
       const max = Math.max.apply(null, values.concat([1]));
       const min = Math.min.apply(null, values);
       const range = Math.max(1, max - min);
@@ -287,6 +389,9 @@
         c.setAttribute('stroke-width', '2');
         dots.appendChild(c);
       });
+
+      const allZero = values.every(v => v === 0);
+      if (noData) noData.classList.toggle('hidden', !allZero);
 
       const labelGrid = document.querySelector('[data-chart-cols]');
       if (labelGrid) {

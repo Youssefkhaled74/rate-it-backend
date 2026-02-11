@@ -109,9 +109,16 @@ class HomeSearchService
 
     protected function searchBranches(string $q, int $limit): array
     {
-        $qb = Branch::query()->select(['id', 'place_id', 'name', 'address']);
-        $qb->where('name', 'like', "%{$q}%");
-        $qb->orderByRaw("CASE WHEN name LIKE ? THEN 0 ELSE 1 END", ["{$q}%"])->orderBy('name');
+        $locale = app()->getLocale() === 'ar' ? 'ar' : 'en';
+        $nameCol = 'name_' . $locale;
+
+        $qb = Branch::query()->select(['id', 'place_id', 'name', 'name_en', 'name_ar', 'address']);
+        $qb->where(function ($query) use ($q) {
+            $query->where('name', 'like', "%{$q}%")
+                ->orWhere('name_en', 'like', "%{$q}%")
+                ->orWhere('name_ar', 'like', "%{$q}%");
+        });
+        $qb->orderByRaw("CASE WHEN {$nameCol} LIKE ? THEN 0 ELSE 1 END", ["{$q}%"])->orderBy($nameCol);
         $rows = $qb->take($limit)->get();
 
         $out = [];
@@ -119,7 +126,7 @@ class HomeSearchService
             $out[] = [
                 'type' => 'branch',
                 'id' => $r->id,
-                'name' => $r->name,
+                'name' => $r->{$nameCol} ?? $r->name,
                 'logo_url' => null,
                 'meta' => [
                     'place_id' => $r->place_id,

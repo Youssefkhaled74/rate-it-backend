@@ -45,7 +45,7 @@ class DashboardReportsController extends Controller
         $recentReviews = Review::query()
             ->with([
                 'user:id,name',
-                'branch:id,name',
+                'branch:id,name,name_en,name_ar',
                 'place',
             ])
             ->whereBetween('created_at', [$start, $end])

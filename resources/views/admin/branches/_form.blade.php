@@ -1,5 +1,6 @@
 @php
   $isEdit = !empty($branch);
+  $isArabic = app()->getLocale() === 'ar' || request('lang') === 'ar';
   $workingHoursValue = $isEdit && !empty($branch->working_hours)
     ? json_encode($branch->working_hours, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
     : '';
@@ -8,29 +9,48 @@
 <div class="space-y-6">
 
   <x-admin.select
-    name="place_id"
-    label="Place"
-    placeholder="Choose place"
+    name="brand_id"
+    label="Brand"
+    placeholder="Choose brand"
     :required="true"
   >
-    @foreach($places as $place)
-      <option value="{{ $place->id }}" {{ (string) old('place_id', $branch->place_id ?? '') === (string) $place->id ? 'selected' : '' }}>
-        {{ $place->display_name }}
+    @foreach($brands as $brand)
+      @php
+        $brandLabel = $isArabic
+          ? ($brand->name_ar ?? $brand->name_en ?? 'Brand')
+          : ($brand->name_en ?? $brand->name_ar ?? 'Brand');
+      @endphp
+      <option value="{{ $brand->id }}" {{ (string) old('brand_id', $branch->brand_id ?? '') === (string) $brand->id ? 'selected' : '' }}>
+        {{ $brandLabel }}
       </option>
     @endforeach
   </x-admin.select>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
     <div>
-      <label class="text-sm font-medium text-gray-700">Branch Name (optional)</label>
+      <label class="text-sm font-medium text-gray-700">Branch Name (EN)</label>
       <input
-        name="name"
-        value="{{ old('name', $branch->name ?? '') }}"
-        placeholder="Branch name"
+        name="name_en"
+        value="{{ old('name_en', $branch?->getRawOriginal('name_en') ?? $branch?->getRawOriginal('name') ?? '') }}"
+        placeholder="Branch English name"
+        required
         class="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
                focus:border-red-300 focus:ring-4 focus:ring-red-100"
       >
     </div>
+    <div>
+      <label class="text-sm font-medium text-gray-700">Branch Name (AR)</label>
+      <input
+        name="name_ar"
+        value="{{ old('name_ar', $branch?->getRawOriginal('name_ar') ?? '') }}"
+        placeholder="اسم الفرع بالعربية"
+        class="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
+               focus:border-red-300 focus:ring-4 focus:ring-red-100"
+      >
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
     <div>
       <label class="text-sm font-medium text-gray-700">Review Cooldown (days)</label>
       <input
@@ -48,34 +68,42 @@
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
     <div>
       <label class="text-sm font-medium text-gray-700">Branch Logo</label>
-      <input
-        type="file"
-        name="logo"
-        accept="image/*"
-        class="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
-               focus:border-red-300 focus:ring-4 focus:ring-red-100"
-      >
-      @if(!empty($branch?->logo))
+      <div class="mt-2 rounded-2xl border border-dashed border-gray-300 bg-gray-50 p-3">
+        <input id="branch_logo_input" type="file" name="logo" accept="image/*" class="hidden">
+        <label for="branch_logo_input"
+               class="flex items-center justify-between gap-3 rounded-xl bg-white border border-gray-200 px-3 py-2 cursor-pointer transition hover:border-red-300 focus-within:ring-4 focus-within:ring-red-100">
+          <span class="text-sm font-semibold text-gray-700">Choose logo</span>
+          <span id="branch_logo_file_name" class="text-xs text-gray-500 truncate max-w-[180px] text-right">No file chosen</span>
+        </label>
         <div class="mt-3 flex items-center gap-3">
-          <img src="{{ asset($branch->logo) }}" alt="Logo" class="w-12 h-12 rounded-xl object-cover border border-gray-100">
-          <div class="text-xs text-gray-500">Current logo</div>
+          @if(!empty($branch?->logo))
+            <img id="branch_logo_preview" src="{{ asset($branch->logo) }}" alt="Logo" class="w-14 h-14 rounded-xl object-cover border border-gray-100 bg-white">
+            <div class="text-xs text-gray-500">Current logo</div>
+          @else
+            <img id="branch_logo_preview" src="" alt="Logo preview" class="hidden w-14 h-14 rounded-xl object-cover border border-gray-100 bg-white">
+            <div class="text-xs text-gray-500">Upload a square logo (PNG/JPG)</div>
+          @endif
         </div>
-      @endif
+      </div>
     </div>
     <div>
       <label class="text-sm font-medium text-gray-700">Cover Image</label>
-      <input
-        type="file"
-        name="cover_image"
-        accept="image/*"
-        class="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition
-               focus:border-red-300 focus:ring-4 focus:ring-red-100"
-      >
-      @if(!empty($branch?->cover_image))
+      <div class="mt-2 rounded-2xl border border-dashed border-gray-300 bg-gray-50 p-3">
+        <input id="branch_cover_input" type="file" name="cover_image" accept="image/*" class="hidden">
+        <label for="branch_cover_input"
+               class="flex items-center justify-between gap-3 rounded-xl bg-white border border-gray-200 px-3 py-2 cursor-pointer transition hover:border-red-300 focus-within:ring-4 focus-within:ring-red-100">
+          <span class="text-sm font-semibold text-gray-700">Choose cover</span>
+          <span id="branch_cover_file_name" class="text-xs text-gray-500 truncate max-w-[180px] text-right">No file chosen</span>
+        </label>
         <div class="mt-3">
-          <img src="{{ asset($branch->cover_image) }}" alt="Cover" class="w-full max-w-sm h-28 rounded-2xl object-cover border border-gray-100">
+          @if(!empty($branch?->cover_image))
+            <img id="branch_cover_preview" src="{{ asset($branch->cover_image) }}" alt="Cover" class="w-full max-w-sm h-28 rounded-2xl object-cover border border-gray-100 bg-white">
+          @else
+            <img id="branch_cover_preview" src="" alt="Cover preview" class="hidden w-full max-w-sm h-28 rounded-2xl object-cover border border-gray-100 bg-white">
+            <div class="text-xs text-gray-500">Recommended: 1200x600</div>
+          @endif
         </div>
-      @endif
+      </div>
     </div>
   </div>
 
@@ -86,8 +114,13 @@
       placeholder="Choose city"
     >
       @foreach($cities ?? [] as $city)
+        @php
+          $cityLabel = $isArabic
+            ? ($city->name_ar ?? $city->name_en)
+            : ($city->name_en ?? $city->name_ar);
+        @endphp
         <option value="{{ $city->id }}" {{ (string) old('city_id', $branch->city_id ?? '') === (string) $city->id ? 'selected' : '' }}>
-          {{ $city->name_en }}
+          {{ $cityLabel }}
         </option>
       @endforeach
     </x-admin.select>
@@ -97,8 +130,13 @@
       placeholder="Choose area"
     >
       @foreach($areas ?? [] as $area)
+        @php
+          $areaLabel = $isArabic
+            ? ($area->name_ar ?? $area->name_en)
+            : ($area->name_en ?? $area->name_ar);
+        @endphp
         <option value="{{ $area->id }}" {{ (string) old('area_id', $branch->area_id ?? '') === (string) $area->id ? 'selected' : '' }}>
-          {{ $area->name_en }}
+          {{ $areaLabel }}
         </option>
       @endforeach
     </x-admin.select>
@@ -264,6 +302,36 @@
 @push('scripts')
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
           integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script>
+    (function () {
+      function bindImageInput(inputId, fileNameId, previewId) {
+        const input = document.getElementById(inputId);
+        const fileName = document.getElementById(fileNameId);
+        const preview = document.getElementById(previewId);
+        if (!input || !fileName || !preview) return;
+
+        input.addEventListener('change', function () {
+          const file = input.files && input.files[0];
+          fileName.textContent = file ? file.name : 'No file chosen';
+
+          if (!file) {
+            return;
+          }
+
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            preview.src = e.target?.result || '';
+            preview.classList.remove('hidden');
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      bindImageInput('branch_logo_input', 'branch_logo_file_name', 'branch_logo_preview');
+      bindImageInput('branch_cover_input', 'branch_cover_file_name', 'branch_cover_preview');
+    })();
+  </script>
+
   <script>
     (function () {
       const latInput = document.getElementById('branch_lat');

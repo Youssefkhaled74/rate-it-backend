@@ -29,7 +29,7 @@
         <img class="qr" src="{{ $qrBase64 }}" alt="Branch QR">
       </div>
 
-      <div class="branch-name">{{ $branch->name ?: ($branch->place?->display_name ?? 'Branch') }}</div>
+      <div class="branch-name">{{ $branch->display_name ?: ($branch->name ?: 'Branch') }}</div>
       <div class="note">Scan to access branch review flow</div>
     </div>
   </body>

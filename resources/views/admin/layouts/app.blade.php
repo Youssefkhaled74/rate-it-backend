@@ -57,7 +57,7 @@
     [dir="rtl"] .admin-nav-item .admin-nav-text { text-align: right; }
     [dir="rtl"] .admin-logout { flex-direction: row-reverse; text-align: right; }
     [dir="rtl"] .admin-sidebar-inner { text-align: right; }
-    [dir="rtl"] .admin-nav-item { justify-content: flex-start; }
+    [dir="rtl"] .admin-nav-item { justify-content: flex-end; }
 
     /* Mobile sidebar */
     @media (max-width: 1024px) {

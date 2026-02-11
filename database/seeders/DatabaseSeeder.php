@@ -26,8 +26,7 @@ class DatabaseSeeder extends Seeder
             \Database\Seeders\OnboardingScreensSeeder::class,
             \Database\Seeders\GendersSeeder::class,
             \Database\Seeders\NationalitiesSeeder::class,
-            \Database\Seeders\CitiesSeeder::class,
-            \Database\Seeders\AreasSeeder::class,
+            \Database\Seeders\CitiesAreasFromJsonSeeder::class,
             \Database\Seeders\HomeBannersSeeder::class,
         ]);
 

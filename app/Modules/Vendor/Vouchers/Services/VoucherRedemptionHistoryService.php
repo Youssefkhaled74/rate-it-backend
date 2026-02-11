@@ -30,7 +30,7 @@ class VoucherRedemptionHistoryService
         
         // Start query: only vouchers from vendor's brand
         $query = Voucher::query()
-            ->with(['brand:id,name', 'usedBranch:id,name', 'verifiedByVendor:id,name'])
+            ->with(['brand:id,name,name_en,name_ar', 'usedBranch:id,name,name_en,name_ar', 'verifiedByVendor:id,name'])
             ->where('brand_id', $brandId);
 
         // Handle branch filtering based on role

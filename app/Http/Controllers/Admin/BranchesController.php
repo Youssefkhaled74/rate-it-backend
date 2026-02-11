@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
-use App\Models\Place;
 use App\Models\City;
 use App\Models\Area;
 use App\Models\Brand;
@@ -33,12 +32,12 @@ class BranchesController extends Controller
             ->when($q !== '', function ($query) use ($q) {
                 $query->where(function ($qq) use ($q) {
                     $qq->where('name', 'like', "%{$q}%")
+                       ->orWhere('name_en', 'like', "%{$q}%")
+                       ->orWhere('name_ar', 'like', "%{$q}%")
                        ->orWhere('address', 'like', "%{$q}%");
-                })->orWhereHas('place', function ($p) use ($q) {
-                    $p->where('name_en', 'like', "%{$q}%")
-                      ->orWhere('name_ar', 'like', "%{$q}%")
-                      ->orWhere('title_en', 'like', "%{$q}%")
-                      ->orWhere('title_ar', 'like', "%{$q}%");
+                })->orWhereHas('brand', function ($b) use ($q) {
+                    $b->where('name_en', 'like', "%{$q}%")
+                      ->orWhere('name_ar', 'like', "%{$q}%");
                 });
             })
             ->when(!empty($brandId), function ($query) use ($brandId) {
@@ -50,7 +49,7 @@ class BranchesController extends Controller
         $inactiveBranches = (clone $base)->where('is_active', 0)->count();
 
         $branches = (clone $base)
-            ->with(['place.brand'])
+            ->with(['brand'])
             ->when($status === 'active', fn ($q) => $q->where('is_active', 1))
             ->when($status === 'inactive', fn ($q) => $q->where('is_active', 0))
             ->orderBy('id', 'desc')
@@ -73,22 +72,21 @@ class BranchesController extends Controller
 
     public function create()
     {
-        $places = Place::query()->orderBy('name_en')->get();
+        $brands = Brand::query()->orderBy('name_en')->get();
         $cities = City::query()->orderBy('name_en')->get();
         $areas = Area::query()->orderBy('name_en')->get();
-        return view('admin.branches.create', compact('places','cities','areas'));
+        return view('admin.branches.create', compact('brands','cities','areas'));
     }
 
     public function store(Request $request)
     {
         $data = $request->validate([
-            'place_id' => ['required', 'exists:places,id'],
-            'name' => ['nullable', 'string', 'max:255'],
+            'brand_id' => ['required', 'exists:brands,id'],
+            'name_en' => ['required', 'string', 'max:255'],
+            'name_ar' => ['nullable', 'string', 'max:255'],
             'logo' => ['nullable', 'image', 'max:4096'],
             'cover_image' => ['nullable', 'image', 'max:6144'],
             'address' => ['required', 'string', 'max:1000'],
-            'city_id' => ['nullable','exists:cities,id'],
-            'area_id' => ['nullable','exists:areas,id'],
             'city_id' => ['nullable','exists:cities,id'],
             'area_id' => ['nullable','exists:areas,id'],
             'lat' => ['nullable', 'numeric'],
@@ -106,9 +104,9 @@ class BranchesController extends Controller
         }
 
         $data['is_active'] = (bool) $request->boolean('is_active', true);
+        $data['name'] = $data['name_en'] ?? ($data['name_ar'] ?? null);
         $data['qr_code_value'] = (string) Str::uuid();
         $data['qr_generated_at'] = now();
-        $data['brand_id'] = Place::query()->whereKey($data['place_id'])->value('brand_id');
         $data['logo'] = $this->saveImageToPublicAssets($request, 'logo', 'branches');
         $data['cover_image'] = $this->saveImageToPublicAssets($request, 'cover_image', 'branches/covers');
 
@@ -121,28 +119,27 @@ class BranchesController extends Controller
 
     public function show(Branch $branch)
     {
-        $branch->load(['place.brand']);
+        $branch->load(['brand']);
         return view('admin.branches.show', compact('branch'));
     }
 
     public function edit(Branch $branch)
     {
-        $places = Place::query()->orderBy('name_en')->get();
+        $brands = Brand::query()->orderBy('name_en')->get();
         $cities = City::query()->orderBy('name_en')->get();
         $areas = Area::query()->orderBy('name_en')->get();
-        return view('admin.branches.edit', compact('branch','places','cities','areas'));
+        return view('admin.branches.edit', compact('branch','brands','cities','areas'));
     }
 
     public function update(Request $request, Branch $branch)
     {
         $data = $request->validate([
-            'place_id' => ['required', 'exists:places,id'],
-            'name' => ['nullable', 'string', 'max:255'],
+            'brand_id' => ['required', 'exists:brands,id'],
+            'name_en' => ['required', 'string', 'max:255'],
+            'name_ar' => ['nullable', 'string', 'max:255'],
             'logo' => ['nullable', 'image', 'max:4096'],
             'cover_image' => ['nullable', 'image', 'max:6144'],
             'address' => ['required', 'string', 'max:1000'],
-            'city_id' => ['nullable','exists:cities,id'],
-            'area_id' => ['nullable','exists:areas,id'],
             'city_id' => ['nullable','exists:cities,id'],
             'area_id' => ['nullable','exists:areas,id'],
             'lat' => ['nullable', 'numeric'],
@@ -160,7 +157,7 @@ class BranchesController extends Controller
         }
 
         $data['is_active'] = (bool) $request->boolean('is_active', false);
-        $data['brand_id'] = Place::query()->whereKey($data['place_id'])->value('brand_id');
+        $data['name'] = $data['name_en'] ?? ($data['name_ar'] ?? null);
 
         $newLogo = $this->saveImageToPublicAssets($request, 'logo', 'branches');
         if ($newLogo) {
@@ -281,8 +278,7 @@ class BranchesController extends Controller
     {
         $candidates = [
             $branch->logo,
-            $branch->place?->logo,
-            $branch->place?->brand?->logo,
+            $branch->brand?->logo,
         ];
 
         foreach ($candidates as $path) {

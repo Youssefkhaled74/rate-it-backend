@@ -83,14 +83,19 @@
     {{-- Brand Cards --}}
     @foreach($brands as $b)
       @php
-        $cover = $b->cover_image ? asset($b->cover_image) : ($b->logo ? asset($b->logo) : asset('assets/images/category-placeholder.png'));
-        $logo = $b->logo ? asset($b->logo) : asset('assets/images/category-icon-placeholder.png');
+        $toMediaUrl = function (?string $path, string $fallback = '/assets/images/Vector.png') {
+          if (empty($path)) return $fallback;
+          if (\Illuminate\Support\Str::startsWith($path, ['http://', 'https://'])) return $path;
+          return '/' . ltrim($path, '/');
+        };
+        $cover = $toMediaUrl($b->cover_image ?: $b->logo);
+        $logo = $toMediaUrl($b->logo);
       @endphp
 
       <div class="rounded-[26px] bg-white border border-gray-100 shadow-soft overflow-hidden">
         <div class="relative h-32 bg-gray-100">
           <img src="{{ $cover }}" alt="{{ $b->name_en }}" class="w-full h-full object-cover"
-               onerror="this.onerror=null;this.src='{{ asset('assets/images/category-placeholder.png') }}';">
+               onerror="this.onerror=null;this.src='/assets/images/Vector.png';">
 
           <form method="POST" action="{{ route('admin.brands.toggle', $b) }}" class="absolute top-3 left-3 rtl-toggle">
             @csrf
@@ -130,7 +135,7 @@
               <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-full bg-gray-50 overflow-hidden border border-gray-100 grid place-items-center flex-shrink-0">
                   <img src="{{ $logo }}" class="w-9 h-9 object-cover" alt="logo"
-                       onerror="this.onerror=null;this.src='{{ asset('assets/images/category-icon-placeholder.png') }}';">
+                       onerror="this.onerror=null;this.src='/assets/images/Vector.png';">
                 </div>
                 <div class="min-w-0">
                   <div class="text-sm font-semibold text-gray-900 truncate">{{ $b->name_en }}</div>

@@ -28,6 +28,20 @@
         </form>
       </div>
 
+      <a href="{{ route('admin.lookups.genders.template', ['lang' => request('lang')]) }}"
+         class="inline-flex items-center justify-center rounded-2xl bg-white text-gray-700 px-4 py-3 text-sm font-semibold border border-gray-200 hover:bg-gray-50 transition">
+        Download Template
+      </a>
+
+      <form method="POST" action="{{ route('admin.lookups.genders.import', ['lang' => request('lang')]) }}" enctype="multipart/form-data" class="inline-flex">
+        @csrf
+        <input type="file" id="genders-import-file" name="file" accept=".xlsx,.xls,.csv" class="hidden" onchange="this.form.submit()">
+        <button type="button" onclick="document.getElementById('genders-import-file').click()"
+                class="inline-flex items-center justify-center rounded-2xl bg-white text-gray-700 px-4 py-3 text-sm font-semibold border border-gray-200 hover:bg-gray-50 transition">
+          Import Excel
+        </button>
+      </form>
+
       <a href="{{ route('admin.lookups.genders.create', ['lang' => request('lang')]) }}"
          class="inline-flex items-center justify-center rounded-2xl bg-red-900 text-white px-5 py-3 text-sm font-semibold shadow-soft hover:bg-red-950 transition">
         {{ __('admin.add_gender') }}
@@ -66,10 +80,26 @@
   </div>
 
   <div class="bg-white rounded-3xl shadow-soft p-6">
+    <form id="bulk-delete-genders-form" method="POST" action="{{ route('admin.lookups.genders.bulk-destroy', ['lang' => request('lang')]) }}" class="mb-4 flex items-center justify-between gap-3">
+      @csrf
+      @method('DELETE')
+      <div class="text-sm text-gray-600">
+        <span id="genders-selected-count">0</span> selected
+      </div>
+      <button id="genders-bulk-delete-btn" type="submit" disabled
+              onclick="return confirm('Delete selected genders?')"
+              class="px-4 py-2 rounded-xl bg-red-900 text-white text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed">
+        {{ __('admin.delete') }}
+      </button>
+    </form>
+
     <div class="overflow-x-auto rounded-2xl border border-gray-100">
       <table class="min-w-full text-sm">
         <thead class="bg-gray-50/70">
           <tr class="text-left text-gray-500">
+            <th class="py-4 px-5 font-medium w-10">
+              <input id="genders-select-all" type="checkbox" class="rounded border-gray-300">
+            </th>
             <th class="py-4 px-5 font-medium">{{ __('admin.code') }}</th>
             <th class="py-4 px-5 font-medium">{{ __('admin.name_en') }}</th>
             <th class="py-4 px-5 font-medium">{{ __('admin.name_ar') }}</th>
@@ -80,6 +110,9 @@
         <tbody class="divide-y divide-gray-100 bg-white">
           @forelse($items as $item)
             <tr class="hover:bg-gray-50/60 transition">
+              <td class="py-4 px-5">
+                <input form="bulk-delete-genders-form" name="ids[]" value="{{ $item->id }}" type="checkbox" class="genders-row-checkbox rounded border-gray-300">
+              </td>
               <td class="py-4 px-5 text-gray-900 font-semibold">{{ $item->code }}</td>
               <td class="py-4 px-5 text-gray-700">{{ $item->name_en }}</td>
               <td class="py-4 px-5 text-gray-700">{{ $item->name_ar ?? '-' }}</td>
@@ -113,7 +146,7 @@
             </tr>
           @empty
             <tr>
-              <td colspan="5" class="py-12 text-center text-gray-500">{{ __('admin.no_data') }}</td>
+              <td colspan="6" class="py-12 text-center text-gray-500">{{ __('admin.no_data') }}</td>
             </tr>
           @endforelse
         </tbody>
@@ -125,4 +158,32 @@
     </div>
   </div>
 </div>
+
+<script>
+  (function () {
+    const selectAll = document.getElementById('genders-select-all');
+    const checkboxes = Array.from(document.querySelectorAll('.genders-row-checkbox'));
+    const countEl = document.getElementById('genders-selected-count');
+    const btn = document.getElementById('genders-bulk-delete-btn');
+
+    function sync() {
+      const checked = checkboxes.filter(cb => cb.checked).length;
+      countEl.textContent = checked;
+      btn.disabled = checked === 0;
+      if (selectAll) {
+        selectAll.checked = checked > 0 && checked === checkboxes.length;
+        selectAll.indeterminate = checked > 0 && checked < checkboxes.length;
+      }
+    }
+
+    if (selectAll) {
+      selectAll.addEventListener('change', function () {
+        checkboxes.forEach(cb => { cb.checked = selectAll.checked; });
+        sync();
+      });
+    }
+    checkboxes.forEach(cb => cb.addEventListener('change', sync));
+    sync();
+  })();
+</script>
 @endsection

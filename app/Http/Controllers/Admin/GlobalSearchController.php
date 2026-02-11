@@ -113,19 +113,25 @@ class GlobalSearchController extends Controller
         }
 
         // Branches
+        $isArabic = app()->getLocale() === 'ar' || $request->get('lang') === 'ar';
         $branches = Branch::query()
-            ->select(['id', 'name', 'address'])
+            ->select(['id', 'name', 'name_en', 'name_ar', 'address'])
             ->when($q !== '', function ($query) use ($q) {
                 $query->where('name', 'like', "%{$q}%")
+                    ->orWhere('name_en', 'like', "%{$q}%")
+                    ->orWhere('name_ar', 'like', "%{$q}%")
                     ->orWhere('address', 'like', "%{$q}%");
             })
             ->limit($limit)
             ->get();
 
         foreach ($branches as $br) {
+            $branchLabel = $isArabic
+                ? ($br->name_ar ?: $br->name_en ?: $br->name ?: 'Branch')
+                : ($br->name_en ?: $br->name ?: $br->name_ar ?: 'Branch');
             $items[] = [
                 'type' => 'Branch',
-                'label' => $br->name ?: 'Branch',
+                'label' => $branchLabel,
                 'sub' => $br->address ?? '',
                 'url' => route('admin.branches.show', $br),
                 'image' => null,

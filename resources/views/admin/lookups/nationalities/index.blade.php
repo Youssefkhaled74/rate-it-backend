@@ -28,8 +28,35 @@
         </form>
       </div>
 
+      <a href="{{ route('admin.lookups.nationalities.template', ['lang' => request('lang')]) }}"
+         class="inline-flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-gray-200 bg-white px-4 text-sm font-semibold text-gray-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-gray-50 hover:shadow">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <path d="M7 10l5 5 5-5"/>
+          <path d="M12 15V3"/>
+        </svg>
+        <span>Download Template</span>
+      </a>
+
+      <form method="POST" action="{{ route('admin.lookups.nationalities.import', ['lang' => request('lang')]) }}" enctype="multipart/form-data" class="inline-flex">
+        @csrf
+        <input type="file" id="nationalities-import-file" name="file" accept=".xlsx,.xls,.csv" class="hidden" onchange="this.form.submit()">
+        <button type="button" onclick="document.getElementById('nationalities-import-file').click()"
+                class="inline-flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-gray-200 bg-white px-4 text-sm font-semibold text-gray-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-gray-50 hover:shadow">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <path d="M17 8l-5-5-5 5"/>
+            <path d="M12 3v12"/>
+          </svg>
+          <span>Import Excel</span>
+        </button>
+      </form>
+
       <a href="{{ route('admin.lookups.nationalities.create', ['lang' => request('lang')]) }}"
-         class="inline-flex items-center justify-center rounded-2xl bg-red-900 text-white px-5 py-3 text-sm font-semibold shadow-soft hover:bg-red-950 transition">
+         class="inline-flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-red-900 px-5 text-sm font-semibold text-white shadow-soft transition hover:-translate-y-0.5 hover:bg-red-950">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
         {{ __('admin.add_nationality') }}
       </a>
     </div>
@@ -66,10 +93,26 @@
   </div>
 
   <div class="bg-white rounded-3xl shadow-soft p-6">
+    <form id="bulk-delete-nationalities-form" method="POST" action="{{ route('admin.lookups.nationalities.bulk-destroy', ['lang' => request('lang')]) }}" class="mb-4 flex items-center justify-between gap-3">
+      @csrf
+      @method('DELETE')
+      <div class="text-sm text-gray-600">
+        <span id="nationalities-selected-count">0</span> selected
+      </div>
+      <button id="nationalities-bulk-delete-btn" type="submit" disabled
+              onclick="return confirm('Delete selected nationalities?')"
+              class="px-4 py-2 rounded-xl bg-red-900 text-white text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed">
+        {{ __('admin.delete') }}
+      </button>
+    </form>
+
     <div class="overflow-x-auto rounded-2xl border border-gray-100">
       <table class="min-w-full text-sm">
         <thead class="bg-gray-50/70">
           <tr class="text-left text-gray-500">
+            <th class="py-4 px-5 font-medium w-10">
+              <input id="nationalities-select-all" type="checkbox" class="rounded border-gray-300">
+            </th>
             <th class="py-4 px-5 font-medium">{{ __('admin.country_code') }}</th>
             <th class="py-4 px-5 font-medium">{{ __('admin.name_en') }}</th>
             <th class="py-4 px-5 font-medium">{{ __('admin.name_ar') }}</th>
@@ -80,6 +123,9 @@
         <tbody class="divide-y divide-gray-100 bg-white">
           @forelse($items as $item)
             <tr class="hover:bg-gray-50/60 transition">
+              <td class="py-4 px-5">
+                <input form="bulk-delete-nationalities-form" name="ids[]" value="{{ $item->id }}" type="checkbox" class="nationalities-row-checkbox rounded border-gray-300">
+              </td>
               <td class="py-4 px-5 text-gray-900 font-semibold">{{ $item->country_code ?? '-' }}</td>
               <td class="py-4 px-5 text-gray-700">{{ $item->name_en }}</td>
               <td class="py-4 px-5 text-gray-700">{{ $item->name_ar ?? '-' }}</td>
@@ -113,7 +159,7 @@
             </tr>
           @empty
             <tr>
-              <td colspan="5" class="py-12 text-center text-gray-500">{{ __('admin.no_data') }}</td>
+              <td colspan="6" class="py-12 text-center text-gray-500">{{ __('admin.no_data') }}</td>
             </tr>
           @endforelse
         </tbody>
@@ -125,4 +171,32 @@
     </div>
   </div>
 </div>
+
+<script>
+  (function () {
+    const selectAll = document.getElementById('nationalities-select-all');
+    const checkboxes = Array.from(document.querySelectorAll('.nationalities-row-checkbox'));
+    const countEl = document.getElementById('nationalities-selected-count');
+    const btn = document.getElementById('nationalities-bulk-delete-btn');
+
+    function sync() {
+      const checked = checkboxes.filter(cb => cb.checked).length;
+      countEl.textContent = checked;
+      btn.disabled = checked === 0;
+      if (selectAll) {
+        selectAll.checked = checked > 0 && checked === checkboxes.length;
+        selectAll.indeterminate = checked > 0 && checked < checkboxes.length;
+      }
+    }
+
+    if (selectAll) {
+      selectAll.addEventListener('change', function () {
+        checkboxes.forEach(cb => { cb.checked = selectAll.checked; });
+        sync();
+      });
+    }
+    checkboxes.forEach(cb => cb.addEventListener('change', sync));
+    sync();
+  })();
+</script>
 @endsection

@@ -13,6 +13,8 @@ class BranchDetailsResource extends JsonResource
             'id' => $this->id,
             'place_id' => $this->place_id,
             'name' => $this->name,
+            'name_en' => $this->name_en,
+            'name_ar' => $this->name_ar,
             'address' => $this->address,
             'lat' => $this->lat,
             'lng' => $this->lng,

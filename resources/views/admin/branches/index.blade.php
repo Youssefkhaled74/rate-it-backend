@@ -3,6 +3,9 @@
 @section('title','Branches')
 
 @section('content')
+@php
+  $isArabic = app()->getLocale() === 'ar' || request('lang') === 'ar';
+@endphp
 <div class="space-y-6">
 
   <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -43,8 +46,13 @@
           >
             <option value="">All Brands</option>
             @foreach($brands as $brand)
+              @php
+                $brandLabel = $isArabic
+                  ? ($brand->name_ar ?? $brand->name_en ?? 'Brand')
+                  : ($brand->name_en ?? $brand->name_ar ?? 'Brand');
+              @endphp
               <option value="{{ $brand->id }}" {{ (string) $brandId === (string) $brand->id ? 'selected' : '' }}>
-                {{ $brand->name_en ?? $brand->name_ar ?? 'Brand' }}
+                {{ $brandLabel }}
               </option>
             @endforeach
           </select>
@@ -106,8 +114,10 @@
 
     @foreach($branches as $br)
       @php
-        $placeName = $br->place?->display_name ?: 'Place';
-        $brandName = $br->brand?->name_en ?: ($br->place?->brand?->name_en ?: '-');
+        $placeName = $br->display_name ?: ($br->name ?: 'Branch');
+        $brandName = $isArabic
+          ? ($br->brand?->name_ar ?? $br->brand?->name_en ?? '-')
+          : ($br->brand?->name_en ?? $br->brand?->name_ar ?? '-');
         $coverUrl = $br->cover_url;
         $logoUrl = $br->logo_url;
       @endphp
