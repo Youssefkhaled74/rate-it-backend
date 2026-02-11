@@ -277,6 +277,7 @@ return [
     'level_updated' => 'Level updated successfully.',
     'level_deleted' => 'Level deleted successfully.',
     'no_levels' => 'No levels found.',
+    'no_levels_hint' => 'Create your first level to start rewarding users.',
     'confirm_delete_level' => 'Delete this level?',
     'confirm_delete_levels' => 'Delete selected levels?',
     'delete_selected' => 'Delete Selected',

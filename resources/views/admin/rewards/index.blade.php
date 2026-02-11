@@ -193,6 +193,7 @@
           <button id="levels_delete_selected" type="submit" disabled
                   class="px-4 py-2 rounded-full border border-red-200 text-red-600 text-xs font-semibold hover:bg-red-50 transition disabled:opacity-50 disabled:cursor-not-allowed">
             {{ __('admin.delete_selected') }}
+            <span id="levels_selected_count" class="ml-2 inline-flex items-center rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-semibold text-red-600">0</span>
           </button>
         </div>
       </form>
@@ -237,7 +238,14 @@
         @endforeach
       </div>
     @else
-      <div class="mt-5 text-sm text-gray-500">{{ __('admin.no_levels') }}</div>
+      <div class="mt-5 rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-6 text-center">
+        <div class="text-sm font-semibold text-gray-900">{{ __('admin.no_levels') }}</div>
+        <div class="mt-1 text-xs text-gray-500">{{ __('admin.no_levels_hint') }}</div>
+        <a href="#levels-form"
+           class="mt-4 inline-flex items-center justify-center rounded-full bg-red-800 text-white px-5 py-2 text-xs font-semibold hover:bg-red-900 transition">
+          {{ __('admin.add_level') }}
+        </a>
+      </div>
     @endif
   </div>
 @endsection
@@ -295,11 +303,13 @@
 
     const selectAll = document.getElementById('levels_select_all');
     const deleteBtn = document.getElementById('levels_delete_selected');
+    const selectedCount = document.getElementById('levels_selected_count');
     const checkboxes = Array.from(document.querySelectorAll('.level-checkbox'));
 
     function syncBulkState() {
       const checked = checkboxes.filter(cb => cb.checked);
       if (deleteBtn) deleteBtn.disabled = checked.length === 0;
+      if (selectedCount) selectedCount.textContent = checked.length;
       if (selectAll) selectAll.checked = checked.length > 0 && checked.length === checkboxes.length;
     }
 
