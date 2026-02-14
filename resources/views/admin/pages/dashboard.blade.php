@@ -58,13 +58,24 @@
     </div>
     <div class="rounded-[22px] bg-white border border-gray-100 p-5 shadow-soft">
       <div class="text-xs text-gray-500">{{ __('admin.average_rating') }}</div>
-      <div class="mt-2 flex items-baseline justify-between">
-        <div class="text-2xl font-semibold text-gray-900">{{ $stats['average_rating'] ?? '0.0' }}</div>
-        @if(!is_null($stats['average_delta_percent'] ?? null))
-          <div class="text-[11px] {{ ($stats['average_delta_percent'] ?? 0) >= 0 ? 'text-emerald-600' : 'text-red-600' }}">
-            {{ ($stats['average_delta_percent'] ?? 0) >= 0 ? '+' : '' }}{{ $stats['average_delta_percent'] ?? 0 }}%
-          </div>
-        @endif
+      <div class="mt-2 space-y-1">
+        <div class="flex items-baseline justify-between">
+          <div class="text-2xl font-semibold text-gray-900">{{ $stats['average_rating'] ?? '0.0' }}</div>
+          @if(!is_null($stats['average_delta_percent'] ?? null))
+            <div class="text-[11px] {{ ($stats['average_delta_percent'] ?? 0) >= 0 ? 'text-emerald-600' : 'text-red-600' }}">
+              {{ ($stats['average_delta_percent'] ?? 0) >= 0 ? '+' : '' }}{{ $stats['average_delta_percent'] ?? 0 }}%
+            </div>
+          @endif
+        </div>
+        <div class="text-xs text-gray-500">
+          Review score:
+          <span class="font-semibold text-gray-800">{{ $stats['average_review_score'] ?? '0.00' }}</span>
+          @if(!is_null($stats['average_review_score_delta_percent'] ?? null))
+            <span class="{{ ($stats['average_review_score_delta_percent'] ?? 0) >= 0 ? 'text-emerald-600' : 'text-red-600' }}">
+              ({{ ($stats['average_review_score_delta_percent'] ?? 0) >= 0 ? '+' : '' }}{{ $stats['average_review_score_delta_percent'] ?? 0 }}%)
+            </span>
+          @endif
+        </div>
       </div>
     </div>
   </div>
@@ -239,20 +250,22 @@
             <input type="date" name="to" value="{{ $to }}" class="text-xs border border-gray-200 rounded-full px-3 py-1 focus:outline-none focus:ring-2 focus:ring-red-200">
             <button type="submit" class="text-xs font-semibold text-gray-700 border border-gray-200 rounded-full px-3 py-1 hover:border-gray-300">Apply</button>
           </form>
-          <button type="button" id="exportCsvBtn" data-export-base="{{ route('admin.reports.dashboard.csv', ['period' => 'week']) }}" class="w-9 h-9 rounded-full border border-gray-200 grid place-items-center text-gray-600 hover:border-gray-300" title="Export Excel">
+          <button type="button" id="exportCsvBtn" data-export-base="{{ route('admin.reports.dashboard.csv', ['period' => 'week']) }}" class="h-9 rounded-full border border-gray-200 inline-flex items-center gap-1.5 px-3 text-gray-600 hover:border-gray-300" title="Export Excel">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
               <path d="M14 2v6h6"/>
               <path d="M9 12l6 6M15 12l-6 6"/>
             </svg>
+            <span class="text-xs font-semibold">Excel</span>
           </button>
-          <button type="button" id="exportPdfBtn" data-export-base="{{ route('admin.reports.dashboard.pdf', ['period' => 'week']) }}" class="w-9 h-9 rounded-full border border-red-200 grid place-items-center text-red-700 hover:border-red-300" title="Export PDF">
+          <button type="button" id="exportPdfBtn" data-export-base="{{ route('admin.reports.dashboard.pdf', ['period' => 'week']) }}" class="h-9 rounded-full border border-red-200 inline-flex items-center gap-1.5 px-3 text-red-700 hover:border-red-300" title="Export PDF">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
               <path d="M14 2v6h6"/>
               <path d="M8 13h4a2 2 0 0 1 0 4H8z"/>
               <path d="M14 17v-4h2a2 2 0 0 1 0 4h-2z"/>
             </svg>
+            <span class="text-xs font-semibold">PDF</span>
           </button>
         </div>
       </div>
@@ -263,6 +276,7 @@
               <th class="py-2">{{ __('admin.name') }}</th>
               <th class="py-2">{{ __('admin.reviews') }}</th>
               <th class="py-2">{{ __('admin.rating') }}</th>
+              <th class="py-2">Review Score</th>
               <th class="py-2 text-right">{{ __('admin.actions') }}</th>
             </tr>
           </thead>
@@ -271,14 +285,15 @@
               <tr>
                 <td class="py-3 font-medium text-gray-900">{{ $review['name'] ?? '-' }}</td>
                 <td class="py-3 text-gray-600">{{ \Illuminate\Support\Str::limit($review['text'] ?? '', 60) }}</td>
-                <td class="py-3 text-gray-700">{{ $review['rating'] ?? '-' }}</td>
+                <td class="py-3 text-gray-700">{{ $review['overall_rating'] ?? ($review['rating'] ?? '-') }}</td>
+                <td class="py-3 text-gray-700">{{ $review['review_score'] ?? '-' }}</td>
                 <td class="py-3 text-right">
                   <a href="{{ $review['url'] ?? '#' }}" class="text-xs font-semibold text-red-700">{{ __('admin.view') }}</a>
                 </td>
               </tr>
             @empty
               <tr>
-                <td colspan="4" class="py-6 text-center text-gray-500">{{ __('admin.no_recent_reviews') }}</td>
+                <td colspan="5" class="py-6 text-center text-gray-500">{{ __('admin.no_recent_reviews') }}</td>
               </tr>
             @endforelse
           </tbody>

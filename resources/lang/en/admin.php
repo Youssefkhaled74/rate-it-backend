@@ -2,7 +2,7 @@
 
 return [
     'dashboard' => 'Dashboard',
-    'dashboard_title' => 'Admin â€¢ Dashboard',
+    'dashboard_title' => 'Admin - Dashboard',
     'admin' => 'Admin',
     'welcome_back' => 'Welcome Back, :name!',
     'dashboard_subtitle' => "Here's what's happening with your platform today",

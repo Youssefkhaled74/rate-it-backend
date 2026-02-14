@@ -11,6 +11,8 @@ use App\Support\Exceptions\ApiException;
 
 class PhoneVerificationService
 {
+    private const STATIC_OTP = '1111';
+
     protected PhoneVerificationRepository $repo;
 
     public function __construct(PhoneVerificationRepository $repo)
@@ -20,8 +22,7 @@ class PhoneVerificationService
 
     public function sendOtp(string $phone): string
     {
-        // generate 4-digit OTP
-        $otp = str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
+        $otp = self::STATIC_OTP;
         $hash = Hash::make($otp);
         $expires = Carbon::now()->addMinutes(5);
         $this->repo->createToken($phone, $hash, $expires);

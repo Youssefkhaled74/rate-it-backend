@@ -36,7 +36,14 @@ class Handler extends ExceptionHandler
             return parent::render($request, $e);
         }
 
-        $lookups = $this->getUserLookupsPayload($request);
+        $lookups = null;
+        try {
+            $lookups = $this->getUserLookupsPayload($request);
+        } catch (Throwable $lookupException) {
+            // Lookup payload is optional; never let it break the primary API error/status response.
+            Log::warning('Failed to attach user lookups payload', ['exception' => $lookupException]);
+            $lookups = null;
+        }
 
         // ApiException handling: return unified JSON response without trace
         if ($e instanceof ApiException) {

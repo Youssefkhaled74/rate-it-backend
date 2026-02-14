@@ -30,9 +30,15 @@ class AdminDashboardService
 
             $avg = Review::whereBetween('created_at', [$periodStart, $periodEnd])->avg('overall_rating') ?: 0;
             $prevAvg = Review::whereBetween('created_at', [$prevStart, $prevEnd])->avg('overall_rating') ?: 0;
+            $avgReviewScore = Review::whereBetween('created_at', [$periodStart, $periodEnd])->avg('review_score') ?: 0;
+            $prevAvgReviewScore = Review::whereBetween('created_at', [$prevStart, $prevEnd])->avg('review_score') ?: 0;
 
             $avgRounded = round($avg, 1);
             $avgDelta = $prevAvg > 0 ? round((($avg - $prevAvg) / $prevAvg) * 100, 1) : null;
+            $avgReviewScoreRounded = round($avgReviewScore, 2);
+            $avgReviewScoreDelta = $prevAvgReviewScore > 0
+                ? round((($avgReviewScore - $prevAvgReviewScore) / $prevAvgReviewScore) * 100, 1)
+                : null;
 
             // Reviews last 30 days and percent change vs previous 30 days
             $totalAll = Review::count();
@@ -49,6 +55,8 @@ class AdminDashboardService
             return [
                 'average_rating' => $avgRounded,
                 'average_delta_percent' => $avgDelta,
+                'average_review_score' => $avgReviewScoreRounded,
+                'average_review_score_delta_percent' => $avgReviewScoreDelta,
                 'total_reviews' => $total30,
                 'total_reviews_all' => $totalAll,
                 'total_delta_percent' => $totalChange,
@@ -145,6 +153,8 @@ class AdminDashboardService
                     'text' => $text,
                     'status' => $status,
                     'rating' => $r->overall_rating,
+                    'overall_rating' => $r->overall_rating,
+                    'review_score' => $r->review_score,
                     'helpful_count' => $hasHelpfulCount ? (int) ($r->helpful_count ?? 0) : 0,
                     'photo_count' => $r->photos_count ?? 0,
                     'created_at' => $r->created_at,
@@ -179,7 +189,7 @@ class AdminDashboardService
     {
         return Cache::remember("admin_recent_branches_{$limit}", $this->cacheTtl, function () use ($limit) {
             $branches = Branch::query()
-                ->with(['place','brand'])
+                ->with(['brand'])
                 ->orderBy('id', 'desc')
                 ->limit($limit)
                 ->get();
@@ -187,8 +197,8 @@ class AdminDashboardService
             return $branches->map(function (Branch $b) {
                 return [
                     'id' => $b->id,
-                    'name' => $b->name ?: ($b->place?->display_name ?? 'Branch'),
-                    'brand' => $b->brand?->name_en ?: ($b->place?->brand?->name_en ?? ''),
+                    'name' => $b->name ?: ($b->display_name ?? 'Branch'),
+                    'brand' => $b->brand?->name_en ?? '',
                     'logo_url' => $b->logo_url,
                     'cover_url' => $b->cover_url,
                 ];

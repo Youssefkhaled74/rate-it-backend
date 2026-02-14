@@ -97,6 +97,20 @@ class AuthController extends BaseApiController
 
     public function me(Request $request)
     {
-        return $this->success(new UserResource($request->user()), 'auth.me');
+        $user = $request->user()->loadMissing([
+            'gender',
+            'nationality',
+            'city',
+            'area.city',
+            'notifications',
+            'reviews.place',
+            'reviews.branch',
+            'reviews.photos',
+            'reviews.answers.choice',
+            'reviews.answers.criteria',
+            'reviews.answers.photos',
+        ]);
+
+        return $this->success(new UserResource($user), 'auth.me');
     }
 }

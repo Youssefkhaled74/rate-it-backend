@@ -39,6 +39,7 @@ class DashboardReportsController extends Controller
 
         $totalReviews = (int) $reviewsQuery->count();
         $avgRating = (float) ($reviewsQuery->avg('overall_rating') ?? 0);
+        $avgReviewScore = (float) ($reviewsQuery->avg('review_score') ?? 0);
         $newUsers = (int) User::whereBetween('created_at', [$start, $end])->count();
         $pendingReply = (int) Review::whereNull('admin_reply_text')->whereNull('replied_at')->count();
 
@@ -59,6 +60,7 @@ class DashboardReportsController extends Controller
             'end' => $end,
             'total_reviews' => $totalReviews,
             'average_rating' => round($avgRating, 2),
+            'average_review_score' => round($avgReviewScore, 2),
             'new_users' => $newUsers,
             'pending_reply' => $pendingReply,
             'total_users' => (int) User::count(),
@@ -96,7 +98,8 @@ class DashboardReportsController extends Controller
             // KPIs
             fputcsv($out, ['KPI', 'Value']);
             fputcsv($out, ['Total Reviews', $data['total_reviews']]);
-            fputcsv($out, ['Average Rating', $data['average_rating']]);
+            fputcsv($out, ['Average Overall Rating', $data['average_rating']]);
+            fputcsv($out, ['Average Review Score', $data['average_review_score']]);
             fputcsv($out, ['New Users', $data['new_users']]);
             fputcsv($out, ['Pending Reply', $data['pending_reply']]);
             fputcsv($out, ['Total Users', $data['total_users']]);
@@ -105,7 +108,7 @@ class DashboardReportsController extends Controller
 
             // Recent reviews
             fputcsv($out, ['Recent Reviews']);
-            fputcsv($out, ['ID', 'User', 'Rating', 'Comment', 'Branch', 'Place', 'Created At']);
+            fputcsv($out, ['ID', 'User', 'Overall Rating', 'Review Score', 'Comment', 'Branch', 'Place', 'Created At']);
             foreach ($data['recent_reviews'] as $r) {
                 $placeName = $r->place?->display_name
                     ?? $r->place?->name
@@ -119,6 +122,7 @@ class DashboardReportsController extends Controller
                     $r->id,
                     $r->user?->name ?? '-',
                     $r->overall_rating ?? '-',
+                    $r->review_score ?? '-',
                     $r->comment ?? '-',
                     $r->branch?->name ?? '-',
                     $placeName,

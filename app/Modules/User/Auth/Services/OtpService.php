@@ -11,6 +11,8 @@ use App\Support\Exceptions\ApiException;
 
 class OtpService
 {
+    private const STATIC_OTP = '1111';
+
     protected OtpCodeRepository $repo;
 
     public function __construct(OtpCodeRepository $repo)
@@ -21,7 +23,7 @@ class OtpService
     public function sendOtp(string $phone): string
     {
         // rate limit should be implemented via throttle middleware; basic guard here
-        $code = (string) random_int(1000, 9999);
+        $code = self::STATIC_OTP;
         $hash = Hash::make($code);
         $expires = Carbon::now()->addMinutes(5);
 

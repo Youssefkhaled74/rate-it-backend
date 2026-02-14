@@ -21,7 +21,8 @@
 
     <h2>KPIs</h2>
     <div class="kpi"><span>Total Reviews</span> {{ $total_reviews }}</div>
-    <div class="kpi"><span>Average Rating</span> {{ $average_rating }}</div>
+    <div class="kpi"><span>Average Overall Rating</span> {{ $average_rating }}</div>
+    <div class="kpi"><span>Average Review Score</span> {{ $average_review_score }}</div>
     <div class="kpi"><span>New Users</span> {{ $new_users }}</div>
     <div class="kpi"><span>Pending Reply</span> {{ $pending_reply }}</div>
     <div class="kpi"><span>Total Users</span> {{ $total_users }}</div>
@@ -33,7 +34,8 @@
         <tr>
           <th>ID</th>
           <th>User</th>
-          <th>Rating</th>
+          <th>Overall Rating</th>
+          <th>Review Score</th>
           <th>Comment</th>
           <th>Branch</th>
           <th>Place</th>
@@ -46,6 +48,7 @@
             <td>{{ $r->id }}</td>
             <td>{{ $r->user?->name ?? '-' }}</td>
             <td>{{ $r->overall_rating ?? '-' }}</td>
+            <td>{{ $r->review_score ?? '-' }}</td>
             <td>{{ $r->comment ?? '-' }}</td>
             <td>{{ $r->branch?->name ?? '-' }}</td>
             <td>
@@ -61,7 +64,7 @@
           </tr>
         @empty
           <tr>
-            <td colspan="7">No reviews</td>
+            <td colspan="8">No reviews</td>
           </tr>
         @endforelse
       </tbody>

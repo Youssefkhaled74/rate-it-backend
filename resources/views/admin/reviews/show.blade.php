@@ -17,10 +17,14 @@
         <div class="text-xs text-gray-500">{{ __('admin.created_at') }}: {{ $review->created_at?->format('Y-m-d H:i') ?? '-' }}</div>
       </div>
 
-      <div class="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="mt-4 grid grid-cols-2 lg:grid-cols-5 gap-4">
         <div class="rounded-2xl bg-gray-50 border border-gray-100 p-4">
           <div class="text-xs text-gray-500">{{ __('admin.rating') }}</div>
           <div class="text-2xl font-semibold text-gray-900">{{ $review->overall_rating ?? '-' }}</div>
+        </div>
+        <div class="rounded-2xl bg-gray-50 border border-gray-100 p-4">
+          <div class="text-xs text-gray-500">Review Score</div>
+          <div class="text-2xl font-semibold text-gray-900">{{ $review->review_score ?? '-' }}</div>
         </div>
         <div class="rounded-2xl bg-gray-50 border border-gray-100 p-4">
           <div class="text-xs text-gray-500">{{ __('admin.status') }}</div>

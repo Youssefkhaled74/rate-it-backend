@@ -3,6 +3,8 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
+use App\Support\Exceptions\ApiException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -21,5 +23,22 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (ApiException $e, Request $request) {
+            $wantsJson = $request->expectsJson()
+                || $request->is('api/*')
+                || $request->is('*/api/*')
+                || $request->is('v1/*')
+                || str_starts_with($request->getPathInfo(), '/api');
+
+            if (! $wantsJson) {
+                return null;
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => __($e->getMessage()),
+                'data' => null,
+                'meta' => $e->getMeta(),
+            ], $e->getStatusCode());
+        });
     })->create();

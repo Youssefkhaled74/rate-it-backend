@@ -12,7 +12,7 @@ class ApiException extends Exception
 
     public function __construct(string $message = "", int $statusCode = 400, ?array $meta = null, ?Throwable $previous = null)
     {
-        parent::__construct($message, 0, $previous);
+        parent::__construct($message, $statusCode, $previous);
         $this->statusCode = $statusCode;
         $this->meta = $meta;
     }

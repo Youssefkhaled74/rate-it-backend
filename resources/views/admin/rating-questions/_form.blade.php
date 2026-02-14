@@ -1,5 +1,9 @@
 @php
   $isEdit = !empty($question);
+  $isArabicUi = app()->getLocale() === 'ar';
+  $currentQuestionSubcategoryId = (int) old('subcategory_id', $question->subcategory_id ?? 0);
+  $currentQuestionWeight = (float) old('weight', $question->weight ?? 0);
+  $formWeightStats = $weightStats ?? [];
   $type = old('type', $question->type ?? 'RATING');
   $choicesEn = old('choices_en', $isEdit && $question->type === 'MULTIPLE_CHOICE' ? $question->choices->pluck('choice_en')->filter()->values()->toArray() : []);
   $choicesAr = old('choices_ar', $isEdit && $question->type === 'MULTIPLE_CHOICE' ? $question->choices->pluck('choice_ar')->filter()->values()->toArray() : []);
@@ -88,6 +92,52 @@
                focus:border-red-300 focus:ring-4 focus:ring-red-100"
       >
       <div class="text-xs text-gray-500 mt-1">{{ __('admin.points_hint') }}</div>
+    </div>
+  </div>
+
+  <div id="weight_impact_card" class="rounded-2xl border border-blue-100 bg-blue-50/70 p-4">
+    <div class="flex items-start justify-between gap-3">
+      <div>
+        <div class="text-sm font-semibold text-blue-900">{{ $isArabicUi ? 'معاينة تأثير الوزن' : 'Weight Impact Preview' }}</div>
+        <div class="text-xs text-blue-700 mt-1">
+          {{ $isArabicUi ? 'يوضح هذا القسم كيف يؤثر وزن هذا السؤال على المساهمة النهائية في درجة التقييم داخل الفئة الفرعية المختارة.' : 'This shows how this question weight affects the final review score contribution inside the selected subcategory.' }}
+        </div>
+      </div>
+      <span class="inline-flex items-center rounded-full bg-white border border-blue-200 px-3 py-1 text-xs font-semibold text-blue-800">
+        {{ $isArabicUi ? 'مباشر' : 'Live' }}
+      </span>
+    </div>
+
+    <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+      <div class="rounded-xl bg-white border border-blue-100 px-3 py-2">
+        <div class="text-xs text-gray-500">{{ $isArabicUi ? 'إجمالي أوزان الفئة الفرعية الحالية' : 'Current subcategory total weight' }}</div>
+        <div class="font-semibold text-gray-900" id="impact_sum_weight">0.00</div>
+      </div>
+      <div class="rounded-xl bg-white border border-blue-100 px-3 py-2">
+        <div class="text-xs text-gray-500">{{ $isArabicUi ? 'عدد الأسئلة في الفئة الفرعية' : 'Questions in subcategory' }}</div>
+        <div class="font-semibold text-gray-900" id="impact_questions_count">0</div>
+      </div>
+      <div class="rounded-xl bg-white border border-blue-100 px-3 py-2">
+        <div class="text-xs text-gray-500">{{ $isArabicUi ? 'نسبة مساهمة السؤال بعد الحفظ' : 'Your contribution after save' }}</div>
+        <div class="font-semibold text-gray-900" id="impact_share_after">0%</div>
+      </div>
+      <div class="rounded-xl bg-white border border-blue-100 px-3 py-2">
+        <div class="text-xs text-gray-500">{{ $isArabicUi ? 'الوزن بعد التطبيع (من 5)' : 'Your normalized weight (out of 5)' }}</div>
+        <div class="font-semibold text-gray-900" id="impact_norm_after">0.00 / 5.00</div>
+      </div>
+      <div class="rounded-xl bg-white border border-blue-100 px-3 py-2 sm:col-span-2">
+        <div class="text-xs text-gray-500">{{ $isArabicUi ? 'نسبة السؤال الحالية الآن (قبل الحفظ)' : 'Current question share now (before save)' }}</div>
+        <div class="font-semibold text-gray-900" id="impact_share_before">N/A</div>
+      </div>
+    </div>
+
+    <div class="mt-4">
+      <div class="h-2 w-full rounded-full bg-white border border-blue-100 overflow-hidden">
+      <div id="impact_bar" class="h-full bg-blue-600 transition-all duration-300" style="width:0%"></div>
+      </div>
+      <div class="mt-1 text-[11px] text-blue-800">
+        {{ $isArabicUi ? 'الخط الأزرق = النسبة التقديرية لتأثير هذا السؤال في مزيج حساب التقييم داخل الفئة الفرعية.' : 'Blue bar = estimated share of this question in the subcategory scoring mix.' }}
+      </div>
     </div>
   </div>
 
@@ -328,6 +378,65 @@
         row.remove();
       });
     }
+
+    const statsBySub = {!! json_encode($formWeightStats, JSON_UNESCAPED_UNICODE) !!};
+    const unavailableShareText = {!! json_encode($isArabicUi ? 'غير متاح (سؤال جديد)' : 'N/A (new question)', JSON_UNESCAPED_UNICODE) !!};
+    const currentQuestion = {
+      isEdit: {{ $isEdit ? 'true' : 'false' }},
+      subcategoryId: {{ (int) ($question->subcategory_id ?? 0) }},
+      weight: {{ (float) ($question->weight ?? 0) }},
+    };
+
+    const subSelect = document.querySelector('select[name="subcategory_id"]');
+    const weightInput = document.querySelector('input[name="weight"]');
+    const elSum = document.getElementById('impact_sum_weight');
+    const elCount = document.getElementById('impact_questions_count');
+    const elShareAfter = document.getElementById('impact_share_after');
+    const elNormAfter = document.getElementById('impact_norm_after');
+    const elShareBefore = document.getElementById('impact_share_before');
+    const elBar = document.getElementById('impact_bar');
+
+    const toNum = (v) => {
+      const n = parseFloat(v);
+      return Number.isFinite(n) ? n : 0;
+    };
+    const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+
+    const renderImpact = () => {
+      if (!subSelect || !weightInput) return;
+      const sid = parseInt(subSelect.value || '0', 10);
+      const newWeight = Math.max(0, toNum(weightInput.value));
+
+      const stat = statsBySub[String(sid)] || statsBySub[sid] || { questions_count: 0, sum_weight: 0 };
+      const sumWeightRaw = toNum(stat.sum_weight);
+      const countRaw = parseInt(stat.questions_count || 0, 10) || 0;
+
+      let sumWithoutCurrent = sumWeightRaw;
+      let countWithoutCurrent = countRaw;
+      let shareBefore = null;
+
+      if (currentQuestion.isEdit && sid === currentQuestion.subcategoryId) {
+        const oldWeight = Math.max(0, toNum(currentQuestion.weight));
+        sumWithoutCurrent = Math.max(0, sumWeightRaw - oldWeight);
+        countWithoutCurrent = Math.max(0, countRaw - 1);
+        shareBefore = sumWeightRaw > 0 ? (oldWeight / sumWeightRaw) * 100 : 0;
+      }
+
+      const sumAfter = sumWithoutCurrent + newWeight;
+      const shareAfter = sumAfter > 0 ? (newWeight / sumAfter) * 100 : 0;
+      const normAfter = sumAfter > 0 ? (5 * newWeight / sumAfter) : 0;
+
+      elSum && (elSum.textContent = sumWeightRaw.toFixed(2));
+      elCount && (elCount.textContent = String(countRaw));
+      elShareAfter && (elShareAfter.textContent = shareAfter.toFixed(2) + '%');
+      elNormAfter && (elNormAfter.textContent = normAfter.toFixed(2) + ' / 5.00');
+      elShareBefore && (elShareBefore.textContent = shareBefore === null ? unavailableShareText : (shareBefore.toFixed(2) + '%'));
+      elBar && (elBar.style.width = clamp(shareAfter, 0, 100).toFixed(2) + '%');
+    };
+
+    subSelect?.addEventListener('change', renderImpact);
+    weightInput?.addEventListener('input', renderImpact);
+    renderImpact();
   })();
 </script>
 

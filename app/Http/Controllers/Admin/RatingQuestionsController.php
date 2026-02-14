@@ -52,7 +52,8 @@ class RatingQuestionsController extends Controller
     public function create()
     {
         $subcategories = Subcategory::with('category')->orderBy('name_en')->get();
-        return view('admin.rating-questions.create', compact('subcategories'));
+        $weightStats = $this->subcategoryWeightStats();
+        return view('admin.rating-questions.create', compact('subcategories', 'weightStats'));
     }
 
     public function store(Request $request)
@@ -131,7 +132,8 @@ class RatingQuestionsController extends Controller
     {
         $subcategories = Subcategory::with('category')->orderBy('name_en')->get();
         $question->load('choices');
-        return view('admin.rating-questions.edit', compact('question', 'subcategories'));
+        $weightStats = $this->subcategoryWeightStats();
+        return view('admin.rating-questions.edit', compact('question', 'subcategories', 'weightStats'));
     }
 
     public function update(Request $request, RatingCriteria $question)
@@ -275,5 +277,22 @@ class RatingQuestionsController extends Controller
             }
             $row->save();
         }
+    }
+
+    private function subcategoryWeightStats(): array
+    {
+        return RatingCriteria::query()
+            ->selectRaw('subcategory_id, COUNT(*) as questions_count, COALESCE(SUM(weight), 0) as sum_weight')
+            ->groupBy('subcategory_id')
+            ->get()
+            ->mapWithKeys(function ($row) {
+                return [
+                    (int) $row->subcategory_id => [
+                        'questions_count' => (int) $row->questions_count,
+                        'sum_weight' => (float) $row->sum_weight,
+                    ],
+                ];
+            })
+            ->toArray();
     }
 }
