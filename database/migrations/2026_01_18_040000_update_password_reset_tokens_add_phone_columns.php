@@ -9,6 +9,19 @@ class UpdatePasswordResetTokensAddPhoneColumns extends Migration
 {
     public function up()
     {
+        if (DB::getDriverName() === 'sqlite') {
+            Schema::dropIfExists('password_reset_tokens');
+            Schema::create('password_reset_tokens', function (Blueprint $table) {
+                $table->id();
+                $table->string('phone')->nullable()->index();
+                $table->string('token_hash')->nullable();
+                $table->timestamp('expires_at')->nullable()->index();
+                $table->timestamps();
+            });
+
+            return;
+        }
+
         if (! Schema::hasTable('password_reset_tokens')) {
             Schema::create('password_reset_tokens', function (Blueprint $table) {
                 $table->id();

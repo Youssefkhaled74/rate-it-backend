@@ -13,7 +13,25 @@ return new class extends Migration
             return;
         }
 
-        Schema::table('subcategories', function (Blueprint $table) {
+        $hasIndex = false;
+        if (DB::getDriverName() === 'sqlite') {
+            $rows = DB::select("PRAGMA index_list('subcategories')");
+            foreach ($rows as $row) {
+                if (($row->name ?? null) === 'subcategories_category_id_is_active_index') {
+                    $hasIndex = true;
+                    break;
+                }
+            }
+        } else {
+            $database = DB::getDatabaseName();
+            $row = DB::selectOne(
+                'SELECT COUNT(1) AS cnt FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND INDEX_NAME = ?',
+                [$database, 'subcategories', 'subcategories_category_id_is_active_index']
+            );
+            $hasIndex = (bool) ($row && ($row->cnt ?? 0) > 0);
+        }
+
+        Schema::table('subcategories', function (Blueprint $table) use ($hasIndex) {
             if (! Schema::hasColumn('subcategories', 'image')) {
                 $table->string('image')->nullable()->after('name_ar');
             }
@@ -22,14 +40,7 @@ return new class extends Migration
                 $table->boolean('is_active')->default(true)->after('image');
             }
 
-            // safe index for queries by category and active flag using INFORMATION_SCHEMA
-            $database = DB::getDatabaseName();
-            $row = DB::selectOne(
-                'SELECT COUNT(1) AS cnt FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND INDEX_NAME = ?',
-                [$database, 'subcategories', 'subcategories_category_id_is_active_index']
-            );
-
-            if (! ($row && ($row->cnt ?? 0) > 0)) {
+            if (! $hasIndex) {
                 $table->index(['category_id', 'is_active'], 'subcategories_category_id_is_active_index');
             }
         });
@@ -41,7 +52,25 @@ return new class extends Migration
             return;
         }
 
-        Schema::table('subcategories', function (Blueprint $table) {
+        $hasIndex = false;
+        if (DB::getDriverName() === 'sqlite') {
+            $rows = DB::select("PRAGMA index_list('subcategories')");
+            foreach ($rows as $row) {
+                if (($row->name ?? null) === 'subcategories_category_id_is_active_index') {
+                    $hasIndex = true;
+                    break;
+                }
+            }
+        } else {
+            $database = DB::getDatabaseName();
+            $row = DB::selectOne(
+                'SELECT COUNT(1) AS cnt FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND INDEX_NAME = ?',
+                [$database, 'subcategories', 'subcategories_category_id_is_active_index']
+            );
+            $hasIndex = (bool) ($row && ($row->cnt ?? 0) > 0);
+        }
+
+        Schema::table('subcategories', function (Blueprint $table) use ($hasIndex) {
             if (Schema::hasColumn('subcategories', 'image')) {
                 $table->dropColumn('image');
             }
@@ -50,13 +79,7 @@ return new class extends Migration
                 $table->dropColumn('is_active');
             }
 
-            $database = DB::getDatabaseName();
-            $row = DB::selectOne(
-                'SELECT COUNT(1) AS cnt FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND INDEX_NAME = ?',
-                [$database, 'subcategories', 'subcategories_category_id_is_active_index']
-            );
-
-            if ($row && ($row->cnt ?? 0) > 0) {
+            if ($hasIndex) {
                 try {
                     $table->dropIndex('subcategories_category_id_is_active_index');
                 } catch (\Throwable $e) {

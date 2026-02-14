@@ -18,6 +18,11 @@ return new class extends Migration
             } catch (\Throwable $e) {
                 // ignore missing foreign key name/state
             }
+            try {
+                $table->dropIndex(['place_id']);
+            } catch (\Throwable $e) {
+                // ignore missing index name/state
+            }
         });
 
         Schema::table('branches', function (Blueprint $table) {
@@ -36,4 +41,3 @@ return new class extends Migration
         });
     }
 };
-

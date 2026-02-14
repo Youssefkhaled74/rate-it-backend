@@ -15,12 +15,24 @@ return new class extends Migration
         });
 
         // Backfill brand_id from places
-        DB::statement('
-            UPDATE branches b
-            JOIN places p ON p.id = b.place_id
-            SET b.brand_id = p.brand_id
-            WHERE b.brand_id IS NULL
-        ');
+        if (DB::getDriverName() === 'sqlite') {
+            DB::statement('
+                UPDATE branches
+                SET brand_id = (
+                    SELECT p.brand_id
+                    FROM places p
+                    WHERE p.id = branches.place_id
+                )
+                WHERE brand_id IS NULL
+            ');
+        } else {
+            DB::statement('
+                UPDATE branches b
+                JOIN places p ON p.id = b.place_id
+                SET b.brand_id = p.brand_id
+                WHERE b.brand_id IS NULL
+            ');
+        }
     }
 
     public function down(): void
