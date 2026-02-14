@@ -16,6 +16,7 @@ class HomeCategoriesService
     {
         return Category::query()
             ->where('is_active', true)
+            ->orderBy('sort_order', 'asc')
             ->orderBy('id', 'asc')
             ->get();
     }

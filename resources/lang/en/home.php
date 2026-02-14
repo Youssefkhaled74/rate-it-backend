@@ -10,4 +10,7 @@ return [
     'search' => [
         'results' => 'Search results loaded successfully',
     ],
+    'page' => [
+        'show' => 'Home page loaded successfully',
+    ],
 ];
