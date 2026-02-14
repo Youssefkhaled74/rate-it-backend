@@ -6,6 +6,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use App\Modules\User\Lookups\Resources\GenderResource;
 use App\Modules\User\Lookups\Resources\NationalityResource;
 use App\Modules\User\Reviews\Resources\ReviewResource as UserReviewResource;
+use Illuminate\Support\Facades\Storage;
 
 class UserResource extends JsonResource
 {
@@ -16,6 +17,8 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'phone' => $this->phone,
             'email' => $this->email,
+            'avatar' => $this->avatar ?? null,
+            'avatar_url' => ($this->avatar ?? null) ? Storage::disk('public')->url($this->avatar) : null,
             'birth_date' => $this->birth_date ? $this->birth_date->toDateString() : null,
             'gender' => $this->when($this->gender, function () use ($request) {
                 return new GenderResource($this->gender);

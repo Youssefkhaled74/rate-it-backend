@@ -19,10 +19,11 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $selectedStatus = $request->query('status', 'all');
+        $selectedChartPeriod = $request->query('chart_period', 'week');
         $stats = $this->service->getStats();
         $recent = $this->service->getRecentReviews($selectedStatus, 10);
         $branches = $this->service->getRecentBranches(6);
-        $reviewsChart = $this->service->getReviewsChart(7);
+        $reviewsChart = $this->service->getReviewsChart($selectedChartPeriod, $request->query('lang', app()->getLocale()));
         $userGrowth = $this->service->getUserGrowthMonthly(12);
 
         $welcomeName = auth()->guard('admin_web')->user()?->name ?? 'Admin';
@@ -35,6 +36,7 @@ class DashboardController extends Controller
             'branches' => $branches,
             'welcomeName' => $welcomeName,
             'selectedStatus' => $selectedStatus,
+            'selectedChartPeriod' => $selectedChartPeriod,
             'reviewsChart' => $reviewsChart,
             'userGrowth' => $userGrowth,
             'freeTrialDays' => $freeTrialDays,

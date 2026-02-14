@@ -16,16 +16,13 @@ class QrManagementController extends Controller
         $status = $request->get('status', '');
 
         $query = Branch::query()
-            ->with(['place.brand'])
+            ->with(['brand:id,name_en,name_ar'])
             ->when($q !== '', function ($qq) use ($q) {
                 $qq->where('name', 'like', "%{$q}%")
+                   ->orWhere('name_en', 'like', "%{$q}%")
+                   ->orWhere('name_ar', 'like', "%{$q}%")
                    ->orWhere('address', 'like', "%{$q}%")
-                   ->orWhereHas('place', function ($p) use ($q) {
-                       $p->where('name_en', 'like', "%{$q}%")
-                         ->orWhere('name_ar', 'like', "%{$q}%")
-                         ->orWhere('name', 'like', "%{$q}%");
-                   })
-                   ->orWhereHas('place.brand', function ($b) use ($q) {
+                   ->orWhereHas('brand', function ($b) use ($q) {
                        $b->where('name_en', 'like', "%{$q}%")
                          ->orWhere('name_ar', 'like', "%{$q}%");
                    });
@@ -58,16 +55,13 @@ class QrManagementController extends Controller
         $status = $request->get('status', '');
 
         $query = Branch::query()
-            ->with(['place.brand'])
+            ->with(['brand:id,name_en,name_ar'])
             ->when($q !== '', function ($qq) use ($q) {
                 $qq->where('name', 'like', "%{$q}%")
+                   ->orWhere('name_en', 'like', "%{$q}%")
+                   ->orWhere('name_ar', 'like', "%{$q}%")
                    ->orWhere('address', 'like', "%{$q}%")
-                   ->orWhereHas('place', function ($p) use ($q) {
-                       $p->where('name_en', 'like', "%{$q}%")
-                         ->orWhere('name_ar', 'like', "%{$q}%")
-                         ->orWhere('name', 'like', "%{$q}%");
-                   })
-                   ->orWhereHas('place.brand', function ($b) use ($q) {
+                   ->orWhereHas('brand', function ($b) use ($q) {
                        $b->where('name_en', 'like', "%{$q}%")
                          ->orWhere('name_ar', 'like', "%{$q}%");
                    });
@@ -89,15 +83,15 @@ class QrManagementController extends Controller
 
         $callback = function () use ($query) {
             $out = fopen('php://output', 'w');
-            fputcsv($out, ['Branch', 'Place', 'Brand', 'City', 'Area', 'QR Code', 'Generated At', 'Active']);
+            fputcsv($out, ['Branch', 'Address', 'Brand', 'City', 'Area', 'QR Code', 'Generated At', 'Active']);
             $query->chunk(500, function ($rows) use ($out) {
                 foreach ($rows as $b) {
                     fputcsv($out, [
-                        $b->name ?? '-',
-                        $b->place?->display_name ?? $b->place?->name_en ?? $b->place?->name_ar ?? '-',
-                        $b->place?->brand?->name_en ?? $b->place?->brand?->name_ar ?? '-',
-                        $b->city ?? '-',
-                        $b->area ?? '-',
+                        $b->name_en ?? $b->name_ar ?? $b->name ?? '-',
+                        $b->address ?? '-',
+                        $b->brand?->name_en ?? $b->brand?->name_ar ?? '-',
+                        $b->city_id ?? '-',
+                        $b->area_id ?? '-',
                         $b->qr_code_value ?? '-',
                         optional($b->qr_generated_at)->format('Y-m-d H:i'),
                         $b->is_active ? 'yes' : 'no',

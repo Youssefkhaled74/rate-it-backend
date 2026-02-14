@@ -3,15 +3,33 @@
 namespace App\Modules\User\Home\Services;
 
 use App\Models\Brand;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
 class HomeTopBrandService
 {
-    public function paginateTopBrands(int $perPage = 10): LengthAwarePaginator
+    public function getTopFiveBrands(): \Illuminate\Support\Collection
+    {
+        return $this->baseRankedQuery()
+            ->orderByDesc('review_stats.avg_review_score')
+            ->orderByDesc('review_stats.overall_avg_rating')
+            ->orderByDesc('review_stats.reviews_count')
+            ->limit(5)
+            ->get();
+    }
+
+    public function paginateAllBrandsRandom(int $perPage = 10): LengthAwarePaginator
     {
         $perPage = max(1, min($perPage, 30));
 
+        return $this->baseRankedQuery()
+            ->inRandomOrder()
+            ->paginate($perPage);
+    }
+
+    private function baseRankedQuery(): Builder
+    {
         $reviewStats = DB::table('reviews')
             ->leftJoin('places', 'places.id', '=', 'reviews.place_id')
             ->leftJoin('branches', 'branches.id', '=', 'reviews.branch_id')
@@ -50,10 +68,6 @@ class HomeTopBrandService
                 'review_stats.reviews_count',
                 'subcategories.name_en as subcategory_name_en',
                 'subcategories.name_ar as subcategory_name_ar',
-            ])
-            ->orderByDesc('review_stats.avg_review_score')
-            ->orderByDesc('review_stats.overall_avg_rating')
-            ->orderByDesc('review_stats.reviews_count')
-            ->paginate($perPage);
+            ]);
     }
 }

@@ -9,6 +9,7 @@ use App\Models\Branch;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 
@@ -51,6 +52,45 @@ class AdminDashboardService
 
             // Pending reply: reviews without admin_reply_text AND without replied_at
             $pending = Review::whereNull('admin_reply_text')->whereNull('replied_at')->count();
+            $totalBranches = Branch::count();
+
+            $topBrandQuery = DB::table('reviews')
+                ->join('branches', 'branches.id', '=', 'reviews.branch_id')
+                ->join('brands', 'brands.id', '=', 'branches.brand_id')
+                ->where('reviews.status', 'ACTIVE')
+                ->whereNotNull('reviews.overall_rating');
+
+            if (Schema::hasColumn('reviews', 'is_hidden')) {
+                $topBrandQuery->where(function ($query) {
+                    $query->whereNull('reviews.is_hidden')
+                        ->orWhere('reviews.is_hidden', false);
+                });
+            }
+
+            $brandNameColumns = array_values(array_filter([
+                Schema::hasColumn('brands', 'name') ? 'name' : null,
+                Schema::hasColumn('brands', 'name_en') ? 'name_en' : null,
+                Schema::hasColumn('brands', 'name_ar') ? 'name_ar' : null,
+            ]));
+
+            $selectParts = ['brands.id as id'];
+            foreach ($brandNameColumns as $col) {
+                $selectParts[] = "brands.{$col} as {$col}";
+            }
+            $selectParts[] = 'AVG(reviews.overall_rating) as avg_rating';
+            $selectParts[] = 'COUNT(reviews.id) as reviews_count';
+
+            $groupBy = ['brands.id'];
+            foreach ($brandNameColumns as $col) {
+                $groupBy[] = "brands.{$col}";
+            }
+
+            $topBrand = $topBrandQuery
+                ->groupBy(...$groupBy)
+                ->selectRaw(implode(', ', $selectParts))
+                ->orderByDesc('avg_rating')
+                ->orderByDesc('reviews_count')
+                ->first();
 
             return [
                 'average_rating' => $avgRounded,
@@ -64,6 +104,12 @@ class AdminDashboardService
                 'pending_reply' => $pending,
                 'total_users' => User::count(),
                 'total_brands' => Brand::count(),
+                'total_branches' => $totalBranches,
+                'top_brand_name' => $topBrand ? (app()->getLocale() === 'ar'
+                    ? (($topBrand->name_ar ?? null) ?: (($topBrand->name_en ?? null) ?: ($topBrand->name ?? null)))
+                    : (($topBrand->name_en ?? null) ?: (($topBrand->name ?? null) ?: ($topBrand->name_ar ?? null)))) : null,
+                'top_brand_rating' => $topBrand ? round((float) $topBrand->avg_rating, 1) : null,
+                'top_brand_reviews_count' => $topBrand ? (int) $topBrand->reviews_count : 0,
             ];
         });
     }
@@ -207,13 +253,24 @@ class AdminDashboardService
     }
 
     /**
-     * Get reviews counts per day for the last N days (inclusive).
+     * Get reviews chart data by period: week|month|year.
      */
-    public function getReviewsChart(int $days = 7): array
+    public function getReviewsChart(string $period = 'week', ?string $locale = null): array
     {
-        $days = max(2, $days);
+        $period = in_array($period, ['week', 'month', 'year'], true) ? $period : 'week';
+        $locale = $locale ?: app()->getLocale();
+
+        return match ($period) {
+            'month' => $this->getMonthlyReviewsChart($locale),
+            'year' => $this->getYearlyReviewsChart($locale),
+            default => $this->getWeeklyReviewsChart($locale),
+        };
+    }
+
+    private function getWeeklyReviewsChart(string $locale): array
+    {
         $end = Carbon::today();
-        $start = $end->copy()->subDays($days - 1);
+        $start = $end->copy()->subDays(6);
 
         $rows = Review::query()
             ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
@@ -228,14 +285,79 @@ class AdminDashboardService
 
         foreach (CarbonPeriod::create($start, $end) as $date) {
             $key = $date->format('Y-m-d');
-            $labels[] = $date->format('l');
+            $labels[] = $date->copy()->locale($locale)->translatedFormat('l');
             $values[] = (int) (($rows[$key]->count ?? 0));
         }
 
-        return [
-            'labels' => $labels,
-            'values' => $values,
-        ];
+        return ['labels' => $labels, 'values' => $values];
+    }
+
+    private function getMonthlyReviewsChart(string $locale): array
+    {
+        $end = Carbon::today();
+        $start = $end->copy()->subDays(29);
+
+        $rows = Review::query()
+            ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+            ->whereBetween('created_at', [$start->copy()->startOfDay(), $end->copy()->endOfDay()])
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get()
+            ->keyBy('date');
+
+        $labels = [];
+        $values = [];
+
+        $cursor = $start->copy();
+        while ($cursor->lte($end)) {
+            $bucketStart = $cursor->copy();
+            $bucketEnd = $cursor->copy()->addDays(6);
+            if ($bucketEnd->gt($end)) {
+                $bucketEnd = $end->copy();
+            }
+
+            $sum = 0;
+            foreach (CarbonPeriod::create($bucketStart, $bucketEnd) as $day) {
+                $sum += (int) (($rows[$day->format('Y-m-d')]->count ?? 0));
+            }
+
+            $labels[] = $bucketStart->copy()->locale($locale)->translatedFormat('d M');
+            $values[] = $sum;
+            $cursor = $bucketEnd->copy()->addDay();
+        }
+
+        return ['labels' => $labels, 'values' => $values];
+    }
+
+    private function getYearlyReviewsChart(string $locale): array
+    {
+        $months = 12;
+        $end = Carbon::now()->startOfMonth();
+        $start = $end->copy()->subMonths($months - 1);
+
+        $driver = \Illuminate\Support\Facades\DB::getDriverName();
+        $monthExpr = $driver === 'sqlite'
+            ? "strftime('%Y-%m-01', created_at)"
+            : "DATE_FORMAT(created_at, '%Y-%m-01')";
+
+        $rows = Review::query()
+            ->selectRaw($monthExpr . ' as month, COUNT(*) as count')
+            ->whereBetween('created_at', [$start->copy()->startOfMonth(), $end->copy()->endOfMonth()])
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get()
+            ->keyBy('month');
+
+        $labels = [];
+        $values = [];
+
+        foreach (CarbonPeriod::create($start, '1 month', $end) as $date) {
+            $key = $date->format('Y-m-01');
+            $labels[] = $date->copy()->locale($locale)->translatedFormat('M');
+            $values[] = (int) (($rows[$key]->count ?? 0));
+        }
+
+        return ['labels' => $labels, 'values' => $values];
     }
 
     /**

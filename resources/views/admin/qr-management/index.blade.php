@@ -62,7 +62,7 @@
         <thead class="text-xs uppercase text-gray-400 border-b">
           <tr>
             <th class="text-left py-3 px-2">{{ __('admin.branch') }}</th>
-            <th class="text-left py-3 px-2">{{ __('admin.place') }}</th>
+            <th class="text-left py-3 px-2">{{ __('admin.address') }}</th>
             <th class="text-left py-3 px-2">{{ __('admin.brand') }}</th>
             <th class="text-left py-3 px-2">{{ __('admin.qr_code') }}</th>
             <th class="text-left py-3 px-2">{{ __('admin.qr_generated_at') }}</th>
@@ -72,9 +72,9 @@
         <tbody class="divide-y">
           @forelse($branches as $b)
             <tr>
-              <td class="py-3 px-2 text-gray-900 font-semibold">{{ $b->name ?? '-' }}</td>
-              <td class="py-3 px-2 text-gray-700">{{ $b->place?->display_name ?? $b->place?->name_en ?? $b->place?->name_ar ?? '-' }}</td>
-              <td class="py-3 px-2 text-gray-700">{{ $b->place?->brand?->name_en ?? $b->place?->brand?->name_ar ?? '-' }}</td>
+              <td class="py-3 px-2 text-gray-900 font-semibold">{{ $b->name_en ?? $b->name_ar ?? $b->name ?? '-' }}</td>
+              <td class="py-3 px-2 text-gray-700">{{ $b->address ?? '-' }}</td>
+              <td class="py-3 px-2 text-gray-700">{{ $b->brand?->name_en ?? $b->brand?->name_ar ?? '-' }}</td>
               <td class="py-3 px-2 text-gray-700">{{ $b->qr_code_value ?? '-' }}</td>
               <td class="py-3 px-2 text-gray-600">{{ $b->qr_generated_at?->format('Y-m-d H:i') ?? '-' }}</td>
               <td class="py-3 px-2">

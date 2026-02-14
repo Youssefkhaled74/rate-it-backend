@@ -17,19 +17,21 @@ class HomePageService
 
     public function getPageData(int $perPage = 10): array
     {
-        $topBrandsPaginator = $this->topBrandService->paginateTopBrands($perPage);
+        $topFiveBrands = $this->topBrandService->getTopFiveBrands();
+        $allBrandsPaginator = $this->topBrandService->paginateAllBrandsRandom($perPage);
 
         return [
             'categories' => CategoryResource::collection($this->categoriesService->list()),
             'banners' => HomeBannerResource::collection($this->bannerService->listForHome()),
-            'top_brands' => [
-                'items' => HomeTopBrandResource::collection($topBrandsPaginator->items()),
+            'top_five_brands' => HomeTopBrandResource::collection($topFiveBrands),
+            'all_brands' => [
+                'items' => HomeTopBrandResource::collection($allBrandsPaginator->items()),
                 'pagination' => [
-                    'page' => $topBrandsPaginator->currentPage(),
-                    'per_page' => $topBrandsPaginator->perPage(),
-                    'total' => $topBrandsPaginator->total(),
-                    'last_page' => $topBrandsPaginator->lastPage(),
-                    'has_next' => $topBrandsPaginator->hasMorePages(),
+                    'page' => $allBrandsPaginator->currentPage(),
+                    'per_page' => $allBrandsPaginator->perPage(),
+                    'total' => $allBrandsPaginator->total(),
+                    'last_page' => $allBrandsPaginator->lastPage(),
+                    'has_next' => $allBrandsPaginator->hasMorePages(),
                 ],
             ],
         ];

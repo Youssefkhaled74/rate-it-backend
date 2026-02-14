@@ -14,6 +14,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Honor proxy headers (e.g. ngrok / load balancer) so generated URLs keep https.
+        $middleware->trustProxies(at: '*');
+
         // Append global middleware
         $middleware->append(\App\Http\Middleware\SetLocaleMiddleware::class);
         // Register admin guard alias for admin routes

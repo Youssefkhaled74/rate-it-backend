@@ -137,6 +137,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // KPI Reports
     Route::middleware('auth:admin_web')->group(function () {
         Route::get('kpi-reports', [KpiReportsController::class, 'index'])->name('kpi-reports.index');
+        Route::get('kpi-reports/export.xlsx', [KpiReportsController::class, 'exportXlsx'])->name('kpi-reports.export.xlsx');
+        Route::get('kpi-reports/export.pdf', [KpiReportsController::class, 'exportPdf'])->name('kpi-reports.export.pdf');
     });
     // Subscriptions (Admin)
     Route::middleware('auth:admin_web')->group(function () {

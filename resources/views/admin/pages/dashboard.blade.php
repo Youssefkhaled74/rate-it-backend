@@ -89,22 +89,19 @@
       </div>
     </div>
     <div class="rounded-[22px] bg-white border border-gray-100 p-5 shadow-soft">
-      <div class="text-xs text-gray-500">{{ __('admin.pending_reply') }}</div>
+      <div class="text-xs text-gray-500">{{ __('admin.total_branches') }}</div>
       <div class="mt-2 flex items-baseline justify-between">
-        <div class="text-2xl font-semibold text-gray-900">{{ $stats['pending_reply'] ?? 0 }}</div>
-        <div class="text-[11px] text-gray-400">{{ __('admin.reviews') }}</div>
+        <div class="text-2xl font-semibold text-gray-900">{{ $stats['total_branches'] ?? 0 }}</div>
+        <div class="text-[11px] text-gray-400">{{ __('admin.branches') }}</div>
       </div>
     </div>
     <div class="rounded-[22px] bg-white border border-gray-100 p-5 shadow-soft">
-      <div class="text-xs text-gray-500">{{ __('admin.new_7_days') }}</div>
+      <div class="text-xs text-gray-500">{{ __('admin.top_rated_brands') }}</div>
       <div class="mt-2 flex items-baseline justify-between">
-        <div class="text-2xl font-semibold text-gray-900">{{ $stats['new_7_days'] ?? 0 }}</div>
-        @if(!is_null($stats['total_delta_percent'] ?? null))
-          <div class="text-[11px] {{ ($stats['total_delta_percent'] ?? 0) >= 0 ? 'text-emerald-600' : 'text-red-600' }}">
-            {{ ($stats['total_delta_percent'] ?? 0) >= 0 ? '+' : '' }}{{ $stats['total_delta_percent'] ?? 0 }}%
-          </div>
-        @endif
+        <div class="text-2xl font-semibold text-gray-900">{{ $stats['top_brand_rating'] ?? '0.0' }}</div>
+        <div class="text-[11px] text-gray-400">{{ __('admin.reviews') }}: {{ $stats['top_brand_reviews_count'] ?? 0 }}</div>
       </div>
+      <div class="text-[11px] text-gray-500 mt-1 truncate">{{ $stats['top_brand_name'] ?? __('admin.no_data') }}</div>
     </div>
     <div class="rounded-[22px] bg-white border border-gray-100 p-5 shadow-soft">
       <div class="text-xs text-gray-500">{{ __('admin.subscription_free_days') }}</div>
@@ -179,12 +176,28 @@
       <div class="flex items-center justify-between gap-3">
         <div class="text-sm font-semibold text-gray-900">{{ __('admin.reviews_over_time') }}</div>
         <form method="GET" class="flex items-center gap-2">
+          @if(request()->filled('from'))
+            <input type="hidden" name="from" value="{{ request('from') }}">
+          @endif
+          @if(request()->filled('to'))
+            <input type="hidden" name="to" value="{{ request('to') }}">
+          @endif
+          @if(request()->filled('lang'))
+            <input type="hidden" name="lang" value="{{ request('lang') }}">
+          @endif
           <span class="text-xs text-gray-400">{{ __('admin.filter') }}</span>
           <select name="status" class="text-xs border border-gray-200 rounded-full px-3 py-1 focus:outline-none focus:ring-2 focus:ring-red-200" onchange="this.form.submit()">
             <option value="all" {{ ($selectedStatus ?? 'all') === 'all' ? 'selected' : '' }}>{{ __('admin.all') }}</option>
             <option value="urgent" {{ ($selectedStatus ?? 'all') === 'urgent' ? 'selected' : '' }}>{{ __('admin.urgent') }}</option>
             <option value="high" {{ ($selectedStatus ?? 'all') === 'high' ? 'selected' : '' }}>{{ __('admin.high') }}</option>
             <option value="normal" {{ ($selectedStatus ?? 'all') === 'normal' ? 'selected' : '' }}>{{ __('admin.normal') }}</option>
+          </select>
+          <select name="chart_period" class="text-xs border border-gray-200 rounded-full px-3 py-1 focus:outline-none focus:ring-2 focus:ring-red-200" onchange="this.form.submit()">
+            <option value="week" {{ ($selectedChartPeriod ?? 'week') === 'week' ? 'selected' : '' }}>
+              {{ app()->getLocale() === 'ar' ? 'أسبوع' : 'Week' }}
+            </option>
+            <option value="month" {{ ($selectedChartPeriod ?? 'week') === 'month' ? 'selected' : '' }}>{{ __('admin.month') }}</option>
+            <option value="year" {{ ($selectedChartPeriod ?? 'week') === 'year' ? 'selected' : '' }}>{{ __('admin.year') }}</option>
           </select>
         </form>
       </div>
@@ -216,7 +229,7 @@
         <div id="reviewsTooltip" class="hidden pointer-events-none absolute z-20 px-3 py-2 rounded-xl border border-red-100 bg-white/95 shadow-lg backdrop-blur-sm min-w-[130px]">
           <div class="text-[11px] font-semibold text-red-700" data-role="label">-</div>
           <div class="text-xs text-gray-700 mt-0.5">
-            Reviews:
+            {{ __('admin.reviews') }}:
             <span class="font-semibold text-gray-900" data-role="value">0</span>
           </div>
         </div>

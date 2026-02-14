@@ -3,12 +3,12 @@
 namespace Tests\Feature\User\Home;
 
 use App\Models\Brand;
+use App\Models\Banner;
 use App\Models\Branch;
 use App\Models\Category;
 use App\Models\Place;
 use App\Models\Review;
 use App\Models\User;
-use App\Modules\User\Home\Models\HomeBanner;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Tests\TestCase;
@@ -17,7 +17,7 @@ class HomePageTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_home_endpoint_returns_categories_banners_and_paginated_top_brands(): void
+    public function test_home_endpoint_returns_categories_banners_top_five_brands_and_paginated_all_brands(): void
     {
         Category::create([
             'name_en' => 'Hospitals',
@@ -38,34 +38,6 @@ class HomePageTest extends TestCase
             'sort_order' => 3,
         ]);
 
-        HomeBanner::create([
-            'title_en' => 'Banner 1',
-            'title_ar' => 'Banner 1',
-            'body_en' => 'Body',
-            'body_ar' => 'Body',
-            'image' => 'assets/images/banner-1.png',
-            'is_active' => true,
-            'sort_order' => 1,
-        ]);
-        HomeBanner::create([
-            'title_en' => 'Banner 2',
-            'title_ar' => 'Banner 2',
-            'body_en' => 'Body',
-            'body_ar' => 'Body',
-            'image' => 'assets/images/banner-2.png',
-            'is_active' => true,
-            'sort_order' => 2,
-        ]);
-        HomeBanner::create([
-            'title_en' => 'Hidden Banner',
-            'title_ar' => 'Hidden Banner',
-            'body_en' => 'Body',
-            'body_ar' => 'Body',
-            'image' => 'assets/images/banner-3.png',
-            'is_active' => false,
-            'sort_order' => 3,
-        ]);
-
         $topBrand = Brand::factory()->create([
             'name' => 'Top Brand',
             'name_en' => 'Top Brand',
@@ -77,6 +49,28 @@ class HomePageTest extends TestCase
             'name_en' => 'Second Brand',
             'name_ar' => 'Second Brand',
             'is_active' => true,
+        ]);
+
+        Banner::create([
+            'offer_name' => 'Banner 1',
+            'brand_id' => $topBrand->id,
+            'image' => 'assets/images/banner-1.png',
+            'is_active' => true,
+            'start_date' => now()->subDay()->toDateString(),
+            'end_date' => now()->addDay()->toDateString(),
+        ]);
+        Banner::create([
+            'offer_name' => 'Banner 2',
+            'brand_id' => $topBrand->id,
+            'image' => 'assets/images/banner-2.png',
+            'is_active' => true,
+            'start_date' => now()->subDay()->toDateString(),
+            'end_date' => now()->addDay()->toDateString(),
+        ]);
+        Banner::create([
+            'offer_name' => 'Hidden Banner',
+            'image' => 'assets/images/banner-3.png',
+            'is_active' => false,
         ]);
 
         $topPlace = Place::factory()->create([
@@ -133,11 +127,16 @@ class HomePageTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonPath('success', true)
-            ->assertJsonPath('data.top_brands.pagination.total', 2)
-            ->assertJsonPath('data.top_brands.pagination.per_page', 1)
-            ->assertJsonPath('data.top_brands.items.0.name', 'Top Brand');
+            ->assertJsonPath('data.all_brands.pagination.total', 2)
+            ->assertJsonPath('data.all_brands.pagination.per_page', 1)
+            ->assertJsonPath('data.top_five_brands.0.name', 'Top Brand')
+            ->assertJsonPath('data.banners.0.action.type', 'brand')
+            ->assertJsonPath('data.banners.0.brand.id', $topBrand->id)
+            ->assertJsonPath('data.banners.0.brand.name', 'Top Brand');
 
         $this->assertCount(2, $response->json('data.categories'));
         $this->assertCount(2, $response->json('data.banners'));
+        $this->assertCount(2, $response->json('data.top_five_brands'));
+        $this->assertCount(1, $response->json('data.all_brands.items'));
     }
 }
