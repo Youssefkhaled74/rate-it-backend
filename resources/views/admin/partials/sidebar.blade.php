@@ -70,11 +70,11 @@
   <div class="admin-sidebar-fixed admin-sidebar admin-sidebar-inner h-[calc(100vh-2rem)] fixed top-5 left-5 bottom-5 text-white flex flex-col">
 
     {{-- Logo --}}
-    <div class="flex items-center admin-logo-row mb-8 {{ $isRtl ? 'flex-row-reverse text-right' : '' }}">
-      <div class="w-12 h-12 rounded-2xl bg-red-800 border border-white/10 grid place-items-center overflow-hidden shadow-lg shadow-black/10">
+    <div class="flex items-center admin-logo-row mb-8 {{ $isRtl ? 'text-right justify-end' : '' }}">
+      <div class="w-12 h-12 rounded-2xl bg-red-800 border border-white/10 grid place-items-center overflow-hidden shadow-lg shadow-black/10 {{ $isRtl ? 'order-2' : '' }}">
         <img src="{{ asset('assets/images/Vector.png') }}" alt="Rateit" class="w-9 h-9 object-contain">
       </div>
-      <div>
+      <div class="{{ $isRtl ? 'order-1' : '' }}">
         <div class="text-lg font-semibold leading-tight">Rateit</div>
         <div class="text-xs text-white/70">{{ __('admin.admin_panel') }}</div>
       </div>
@@ -87,10 +87,10 @@
           @php $active = $isActive($it['route']); @endphp
 
           <a href="{{ Route::has($it['route']) ? route($it['route'], ['lang' => $currentLang]) : '#' }}"
-             class="admin-nav-item group flex items-center gap-3 px-4 py-3 transition {{ $isRtl ? 'flex-row-reverse text-right justify-end' : '' }}
+             class="admin-nav-item group flex items-center gap-3 px-4 py-3 transition {{ $isRtl ? 'text-right justify-end' : '' }}
                     {{ $active ? 'is-active' : '' }}">
-            <span class="admin-nav-icon text-white/90">{!! $iconSvg($it['icon']) !!}</span>
-            <span class="admin-nav-text text-sm font-medium">{{ $it['label'] }}</span>
+            <span class="admin-nav-icon text-white/90 {{ $isRtl ? 'order-2' : '' }}">{!! $iconSvg($it['icon']) !!}</span>
+            <span class="admin-nav-text text-sm font-medium {{ $isRtl ? 'order-1' : '' }}">{{ $it['label'] }}</span>
           </a>
         @endforeach
       </nav>
@@ -101,8 +101,8 @@
       <form method="POST" action="{{ route('admin.logout') }}">
         @csrf
         <button type="submit"
-          class="admin-logout w-full flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-white/10 transition {{ $isRtl ? 'flex-row-reverse text-right justify-end' : 'text-left' }}">
-          <span class="text-white/90">
+          class="admin-logout w-full flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-white/10 transition {{ $isRtl ? 'text-right justify-end' : 'text-left' }}">
+          <span class="text-white/90 {{ $isRtl ? 'order-2' : '' }}">
             {{-- logout icon --}}
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
@@ -110,7 +110,7 @@
               <path d="M21 12H9"/>
             </svg>
           </span>
-          <span class="text-sm font-medium">{{ __('admin.logout') }}</span>
+          <span class="text-sm font-medium {{ $isRtl ? 'order-1' : '' }}">{{ __('admin.logout') }}</span>
         </button>
       </form>
     </div>

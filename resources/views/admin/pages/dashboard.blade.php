@@ -121,43 +121,55 @@
       <div class="text-sm font-semibold text-gray-900">{{ __('admin.quick_access') }}</div>
       <div class="text-xs text-gray-400">{{ __('admin.manage') }}</div>
     </div>
+    @php
+      $quickLinks = [
+          ['route' => 'admin.reviews.index', 'label' => __('admin.reviews'), 'icon' => 'reviews'],
+          ['route' => 'admin.users.index', 'label' => __('admin.users'), 'icon' => 'users'],
+          ['route' => 'admin.brands.index', 'label' => __('admin.brands'), 'icon' => 'brands'],
+          ['route' => 'admin.places.index', 'label' => __('admin.places'), 'icon' => 'places'],
+          ['route' => 'admin.branches.index', 'label' => __('admin.branches'), 'icon' => 'branches'],
+          ['route' => 'admin.subscription-plans.index', 'label' => __('admin.subscription_plans'), 'icon' => 'plans'],
+          ['route' => 'admin.subscriptions.index', 'label' => __('admin.subscriptions'), 'icon' => 'subscriptions'],
+          ['route' => 'admin.rewards.index', 'label' => __('admin.rewards_system'), 'icon' => 'rewards'],
+          ['route' => 'admin.kpi-reports.index', 'label' => __('admin.kpi_reports'), 'icon' => 'kpi'],
+          ['route' => 'admin.qr-management.index', 'label' => __('admin.qr_management'), 'icon' => 'qr'],
+          ['route' => 'admin.vouchers.index', 'label' => __('admin.vouchers'), 'icon' => 'vouchers'],
+          ['route' => 'admin.search-suggestions.index', 'label' => __('admin.search_suggestions'), 'icon' => 'search'],
+      ];
+    @endphp
     <div class="mt-4 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
-      <a href="{{ route('admin.reviews.index') }}" class="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-gray-200 hover:bg-white transition">
-        {{ __('admin.reviews') }}
-      </a>
-      <a href="{{ route('admin.users.index') }}" class="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-gray-200 hover:bg-white transition">
-        {{ __('admin.users') }}
-      </a>
-      <a href="{{ route('admin.brands.index') }}" class="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-gray-200 hover:bg-white transition">
-        {{ __('admin.brands') }}
-      </a>
-      <a href="{{ route('admin.places.index') }}" class="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-gray-200 hover:bg-white transition">
-        {{ __('admin.places') }}
-      </a>
-      <a href="{{ route('admin.branches.index') }}" class="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-gray-200 hover:bg-white transition">
-        {{ __('admin.branches') }}
-      </a>
-      <a href="{{ route('admin.subscription-plans.index') }}" class="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-gray-200 hover:bg-white transition">
-        {{ __('admin.subscription_plans') }}
-      </a>
-      <a href="{{ route('admin.subscriptions.index') }}" class="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-gray-200 hover:bg-white transition">
-        {{ __('admin.subscriptions') }}
-      </a>
-      <a href="{{ route('admin.rewards.index') }}" class="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-gray-200 hover:bg-white transition">
-        {{ __('admin.rewards_system') }}
-      </a>
-      <a href="{{ route('admin.kpi-reports.index') }}" class="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-gray-200 hover:bg-white transition">
-        {{ __('admin.kpi_reports') }}
-      </a>
-      <a href="{{ route('admin.qr-management.index') }}" class="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-gray-200 hover:bg-white transition">
-        {{ __('admin.qr_management') }}
-      </a>
-      <a href="{{ route('admin.vouchers.index') }}" class="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-gray-200 hover:bg-white transition">
-        {{ __('admin.vouchers') }}
-      </a>
-      <a href="{{ route('admin.search-suggestions.index') }}" class="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-gray-200 hover:bg-white transition">
-        {{ __('admin.search_suggestions') }}
-      </a>
+      @foreach($quickLinks as $link)
+        <a href="{{ route($link['route']) }}" class="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-red-200 hover:bg-white transition flex items-center gap-2">
+          <span class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-white border border-gray-200 text-red-700">
+            @if($link['icon'] === 'reviews')
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            @elseif($link['icon'] === 'users')
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="3"/><path d="M20 8v6"/><path d="M23 11h-6"/></svg>
+            @elseif($link['icon'] === 'brands')
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg>
+            @elseif($link['icon'] === 'places')
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18"/><path d="M5 21V7l7-4v18"/><path d="M19 21V11l-7-4"/></svg>
+            @elseif($link['icon'] === 'branches')
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18"/><path d="M4 21V8a2 2 0 0 1 2-2h4v15"/><path d="M14 21V4h4a2 2 0 0 1 2 2v15"/></svg>
+            @elseif($link['icon'] === 'plans')
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18"/><path d="M8 16h4"/></svg>
+            @elseif($link['icon'] === 'subscriptions')
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 8V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2"/><path d="M3 8h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M10 12h4"/></svg>
+            @elseif($link['icon'] === 'rewards')
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M8 14h8l-1 7-3-2-3 2z"/></svg>
+            @elseif($link['icon'] === 'kpi')
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><path d="m7 14 3-3 3 2 4-5"/></svg>
+            @elseif($link['icon'] === 'qr')
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="6" height="6"/><rect x="15" y="3" width="6" height="6"/><rect x="3" y="15" width="6" height="6"/><path d="M15 15h3v3h-3z"/><path d="M21 15v6h-6"/></svg>
+            @elseif($link['icon'] === 'vouchers')
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 10V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v3a2 2 0 0 0 0 4v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 0 0 0-4z"/><path d="M12 5v14"/></svg>
+            @else
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            @endif
+          </span>
+          <span class="leading-tight">{{ $link['label'] }}</span>
+        </a>
+      @endforeach
     </div>
   </div>
 
@@ -185,7 +197,7 @@
         <div id="reviewsNoData" class="hidden absolute inset-0 grid place-items-center text-sm text-gray-400">
           {{ __('admin.no_data') }}
         </div>
-        <div id="reviewsChart" data-values='@json($chartValues)'>
+        <div id="reviewsChart" data-values='@json($chartValues)' data-labels='@json($chartLabels)'>
           <svg class="w-full h-52" viewBox="0 0 640 200" preserveAspectRatio="none">
             <defs>
               <linearGradient id="reviewsAreaFill" x1="0" y1="0" x2="0" y2="1">
@@ -200,6 +212,13 @@
             <path id="reviewsLine" d="" fill="none" stroke="#b91c1c" stroke-width="3" stroke-linecap="round" filter="url(#reviewsGlow)"></path>
             <g id="reviewsDots"></g>
           </svg>
+        </div>
+        <div id="reviewsTooltip" class="hidden pointer-events-none absolute z-20 px-3 py-2 rounded-xl border border-red-100 bg-white/95 shadow-lg backdrop-blur-sm min-w-[130px]">
+          <div class="text-[11px] font-semibold text-red-700" data-role="label">-</div>
+          <div class="text-xs text-gray-700 mt-0.5">
+            Reviews:
+            <span class="font-semibold text-gray-900" data-role="value">0</span>
+          </div>
         </div>
         <div class="mt-2 text-[11px] text-gray-500 grid gap-1" data-chart-cols="{{ $chartCols }}">
           @foreach($chartLabels as $label)
@@ -346,10 +365,16 @@
       if (!chartEl) return;
 
       let values = [];
+      let labels = [];
       try {
         values = JSON.parse(chartEl.getAttribute('data-values') || '[]');
       } catch (e) {
         values = [];
+      }
+      try {
+        labels = JSON.parse(chartEl.getAttribute('data-labels') || '[]');
+      } catch (e) {
+        labels = [];
       }
       if (!Array.isArray(values) || values.length < 2) return;
 
@@ -357,6 +382,7 @@
       const area = chartEl.querySelector('#reviewsArea');
       const line = chartEl.querySelector('#reviewsLine');
       const dots = chartEl.querySelector('#reviewsDots');
+      const tooltip = document.getElementById('reviewsTooltip');
       const noData = document.getElementById('reviewsNoData');
       if (!svg || !area || !line || !dots) return;
 
@@ -394,16 +420,73 @@
       area.setAttribute('d', areaPath);
 
       dots.innerHTML = '';
-      points.forEach(function(p){
-        const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        c.setAttribute('cx', p[0].toFixed(2));
-        c.setAttribute('cy', p[1].toFixed(2));
-        c.setAttribute('r', '4');
-        c.setAttribute('fill', '#b91c1c');
-        c.setAttribute('stroke', '#fff');
-        c.setAttribute('stroke-width', '2');
-        dots.appendChild(c);
+      function hideTooltip() {
+        if (!tooltip) return;
+        tooltip.classList.add('hidden');
+      }
+      function showTooltip(index) {
+        if (!tooltip || !points[index]) return;
+        const p = points[index];
+        const svgRect = svg.getBoundingClientRect();
+        const boxRect = chartEl.getBoundingClientRect();
+        const scaleX = svgRect.width / width;
+        const scaleY = svgRect.height / height;
+        const left = (p[0] * scaleX) + (svgRect.left - boxRect.left);
+        const top = (p[1] * scaleY) + (svgRect.top - boxRect.top);
+
+        const labelEl = tooltip.querySelector('[data-role="label"]');
+        const valueEl = tooltip.querySelector('[data-role="value"]');
+        if (labelEl) labelEl.textContent = labels[index] || ('Point ' + (index + 1));
+        if (valueEl) valueEl.textContent = String(values[index] ?? 0);
+
+        tooltip.classList.remove('hidden');
+
+        const tw = tooltip.offsetWidth || 130;
+        const th = tooltip.offsetHeight || 48;
+        let x = left - (tw / 2);
+        let y = top - th - 14;
+
+        const minX = 8;
+        const maxX = Math.max(minX, boxRect.width - tw - 8);
+        x = Math.min(Math.max(x, minX), maxX);
+        if (y < 8) y = top + 12;
+
+        tooltip.style.left = x + 'px';
+        tooltip.style.top = y + 'px';
+      }
+
+      points.forEach(function(p, i){
+        const visible = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        visible.setAttribute('cx', p[0].toFixed(2));
+        visible.setAttribute('cy', p[1].toFixed(2));
+        visible.setAttribute('r', '4');
+        visible.setAttribute('fill', '#b91c1c');
+        visible.setAttribute('stroke', '#fff');
+        visible.setAttribute('stroke-width', '2');
+        visible.classList.add('js-point-dot');
+
+        const hit = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        hit.setAttribute('cx', p[0].toFixed(2));
+        hit.setAttribute('cy', p[1].toFixed(2));
+        hit.setAttribute('r', '11');
+        hit.setAttribute('fill', 'transparent');
+        hit.style.cursor = 'pointer';
+        hit.addEventListener('mouseenter', function() {
+          visible.setAttribute('r', '5.5');
+          visible.setAttribute('stroke-width', '2.5');
+          showTooltip(i);
+        });
+        hit.addEventListener('mouseleave', function() {
+          visible.setAttribute('r', '4');
+          visible.setAttribute('stroke-width', '2');
+          hideTooltip();
+        });
+
+        dots.appendChild(visible);
+        dots.appendChild(hit);
       });
+
+      chartEl.addEventListener('mouseleave', hideTooltip);
 
       const allZero = values.every(v => v === 0);
       if (noData) noData.classList.toggle('hidden', !allZero);
