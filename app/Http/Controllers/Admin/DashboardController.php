@@ -25,6 +25,7 @@ class DashboardController extends Controller
         $branches = $this->service->getRecentBranches(6);
         $reviewsChart = $this->service->getReviewsChart($selectedChartPeriod, $request->query('lang', app()->getLocale()));
         $userGrowth = $this->service->getUserGrowthMonthly(12);
+        $subscriptionOverview = $this->service->getSubscriptionOverview(6);
 
         $welcomeName = auth()->guard('admin_web')->user()?->name ?? 'Admin';
         $freeTrialDays = SubscriptionSetting::getFreeTrialDays();
@@ -39,6 +40,7 @@ class DashboardController extends Controller
             'selectedChartPeriod' => $selectedChartPeriod,
             'reviewsChart' => $reviewsChart,
             'userGrowth' => $userGrowth,
+            'subscriptionOverview' => $subscriptionOverview,
             'freeTrialDays' => $freeTrialDays,
         ]);
     }

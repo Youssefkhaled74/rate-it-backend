@@ -112,6 +112,107 @@
     </div>
   </div>
 
+  {{-- Subscriptions Control --}}
+  @php
+    $subStats = $subscriptionOverview['stats'] ?? [];
+    $recentSubs = $subscriptionOverview['recent'] ?? [];
+  @endphp
+  <div class="mt-5 bg-white border border-gray-100 rounded-[24px] p-5 shadow-soft">
+    <div class="flex items-center justify-between gap-3 flex-wrap">
+      <div>
+        <div class="text-sm font-semibold text-gray-900">{{ __('admin.subscriptions_control') }}</div>
+        <div class="text-xs text-gray-500 mt-1">{{ __('admin.subscriptions_control_hint') }}</div>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href="{{ route('admin.subscriptions.index') }}" class="inline-flex items-center rounded-full border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:border-gray-300">
+          {{ __('admin.view_subscriptions') }}
+        </a>
+        <a href="{{ route('admin.subscription-plans.index') }}" class="inline-flex items-center rounded-full border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:border-gray-300">
+          {{ __('admin.manage_plans') }}
+        </a>
+        <a href="{{ route('admin.settings.index') }}" class="inline-flex items-center rounded-full border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-700 hover:border-red-300">
+          {{ __('admin.subscription_settings') }}
+        </a>
+      </div>
+    </div>
+
+    <div class="mt-4 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
+      <div class="rounded-2xl bg-gray-50 border border-gray-100 px-4 py-3">
+        <div class="text-[11px] text-gray-500">{{ __('admin.total') }}</div>
+        <div class="text-xl font-semibold text-gray-900 mt-1">{{ $subStats['total'] ?? 0 }}</div>
+      </div>
+      <div class="rounded-2xl bg-gray-50 border border-gray-100 px-4 py-3">
+        <div class="text-[11px] text-gray-500">{{ __('admin.active') }}</div>
+        <div class="text-xl font-semibold text-emerald-700 mt-1">{{ $subStats['active'] ?? 0 }}</div>
+      </div>
+      <div class="rounded-2xl bg-gray-50 border border-gray-100 px-4 py-3">
+        <div class="text-[11px] text-gray-500">{{ __('admin.free') }}</div>
+        <div class="text-xl font-semibold text-blue-700 mt-1">{{ $subStats['free'] ?? 0 }}</div>
+      </div>
+      <div class="rounded-2xl bg-gray-50 border border-gray-100 px-4 py-3">
+        <div class="text-[11px] text-gray-500">{{ __('admin.expired') }}</div>
+        <div class="text-xl font-semibold text-amber-700 mt-1">{{ $subStats['expired'] ?? 0 }}</div>
+      </div>
+      <div class="rounded-2xl bg-gray-50 border border-gray-100 px-4 py-3">
+        <div class="text-[11px] text-gray-500">{{ __('admin.plans_total') }}</div>
+        <div class="text-xl font-semibold text-gray-900 mt-1">{{ $subStats['plans_total'] ?? 0 }}</div>
+      </div>
+      <div class="rounded-2xl bg-gray-50 border border-gray-100 px-4 py-3">
+        <div class="text-[11px] text-gray-500">{{ __('admin.plans_active') }}</div>
+        <div class="text-xl font-semibold text-gray-900 mt-1">{{ $subStats['plans_active'] ?? 0 }}</div>
+      </div>
+    </div>
+
+    <div class="mt-4 overflow-x-auto">
+      <table class="min-w-full text-sm">
+        <thead>
+          <tr class="text-left text-xs text-gray-500">
+            <th class="py-2">{{ __('admin.user') }}</th>
+            <th class="py-2">{{ __('admin.subscription_plan') }}</th>
+            <th class="py-2">{{ __('admin.status') }}</th>
+            <th class="py-2">{{ __('admin.started_at') }}</th>
+            <th class="py-2">{{ __('admin.free_until') }}</th>
+            <th class="py-2">{{ __('admin.paid_until') }}</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          @forelse($recentSubs as $sub)
+            <tr>
+              <td class="py-3">
+                <div class="font-medium text-gray-900">{{ $sub['user_name'] ?? '-' }}</div>
+                @if(!empty($sub['user_phone']))
+                  <div class="text-xs text-gray-500">{{ $sub['user_phone'] }}</div>
+                @endif
+              </td>
+              <td class="py-3 text-gray-700">{{ $sub['plan_name'] ?? '-' }}</td>
+              <td class="py-3">
+                @php
+                  $status = strtoupper((string)($sub['status'] ?? ''));
+                  $statusClass = match ($status) {
+                    'ACTIVE' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                    'FREE' => 'bg-blue-50 text-blue-700 border-blue-200',
+                    'EXPIRED' => 'bg-amber-50 text-amber-700 border-amber-200',
+                    default => 'bg-gray-50 text-gray-700 border-gray-200',
+                  };
+                @endphp
+                <span class="inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold {{ $statusClass }}">
+                  {{ $status ?: '-' }}
+                </span>
+              </td>
+              <td class="py-3 text-gray-700">{{ !empty($sub['created_at']) ? $sub['created_at']->format('Y-m-d') : '-' }}</td>
+              <td class="py-3 text-gray-700">{{ !empty($sub['free_until']) ? $sub['free_until']->format('Y-m-d') : '-' }}</td>
+              <td class="py-3 text-gray-700">{{ !empty($sub['paid_until']) ? $sub['paid_until']->format('Y-m-d') : '-' }}</td>
+            </tr>
+          @empty
+            <tr>
+              <td colspan="6" class="py-6 text-center text-gray-500">{{ __('admin.no_subscriptions') }}</td>
+            </tr>
+          @endforelse
+        </tbody>
+      </table>
+    </div>
+  </div>
+
   {{-- Quick Access --}}
   <div class="mt-5 bg-white border border-gray-100 rounded-[24px] p-5 shadow-soft">
     <div class="flex items-center justify-between">

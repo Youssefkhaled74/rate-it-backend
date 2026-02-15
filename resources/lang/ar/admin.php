@@ -410,6 +410,10 @@ return [
 
     'subscriptions' => 'الاشتراكات',
     'subscriptions_hint' => 'إدارة اشتراكات المستخدمين.',
+    'subscriptions_control' => 'التحكم في الاشتراكات',
+    'subscriptions_control_hint' => 'متابعة حالة الاشتراكات والوصول السريع إلى إجراءات الإدارة.',
+    'view_subscriptions' => 'عرض الاشتراكات',
+    'manage_plans' => 'إدارة الخطط',
     'subscription_plan' => 'خطة',
     'search_by_user' => 'ابحث بالمستخدم',
     'all_plans' => 'من الخطط',

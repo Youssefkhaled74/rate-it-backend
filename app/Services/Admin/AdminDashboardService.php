@@ -6,6 +6,8 @@ use App\Models\Review;
 use App\Models\User;
 use App\Models\Brand;
 use App\Models\Branch;
+use App\Models\Subscription;
+use App\Models\SubscriptionPlan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Schema;
@@ -391,6 +393,69 @@ class AdminDashboardService
             'labels' => $labels,
             'values' => $values,
         ];
+    }
+
+    /**
+     * Subscription overview for admin dashboard (quick monitoring + control).
+     */
+    public function getSubscriptionOverview(int $recentLimit = 6): array
+    {
+        $recentLimit = max(1, min(20, $recentLimit));
+
+        return Cache::remember("admin_dashboard_subscriptions_{$recentLimit}", $this->cacheTtl, function () use ($recentLimit) {
+            $stats = [
+                'total' => Subscription::count(),
+                'active' => Subscription::where('status', 'ACTIVE')->count(),
+                'free' => Subscription::where('status', 'FREE')->count(),
+                'expired' => Subscription::where('status', 'EXPIRED')->count(),
+                'plans_total' => SubscriptionPlan::count(),
+                'plans_active' => SubscriptionPlan::where('is_active', true)->count(),
+            ];
+
+            $recentSubs = Subscription::query()
+                ->select(['id', 'user_id', 'subscription_plan_id', 'status', 'created_at', 'free_until', 'paid_until'])
+                ->orderByDesc('created_at')
+                ->limit($recentLimit)
+                ->get();
+
+            $userIds = $recentSubs->pluck('user_id')->filter()->unique()->values();
+            $planIds = $recentSubs->pluck('subscription_plan_id')->filter()->unique()->values();
+
+            $users = User::query()
+                ->whereIn('id', $userIds)
+                ->get(['id', 'name', 'phone'])
+                ->keyBy('id');
+
+            $plans = SubscriptionPlan::query()
+                ->whereIn('id', $planIds)
+                ->get(['id', 'name_en', 'name_ar', 'code'])
+                ->keyBy('id');
+
+            $recent = $recentSubs->map(function (Subscription $sub) use ($users, $plans) {
+                $user = $users->get($sub->user_id);
+                $plan = $plans->get($sub->subscription_plan_id);
+
+                return [
+                    'id' => $sub->id,
+                    'status' => $sub->status,
+                    'user_name' => $user?->name ?? '-',
+                    'user_phone' => $user?->phone ?? null,
+                    'plan_name' => $plan
+                        ? (app()->getLocale() === 'ar'
+                            ? (($plan->name_ar ?: $plan->name_en) ?: $plan->code)
+                            : (($plan->name_en ?: $plan->name_ar) ?: $plan->code))
+                        : '-',
+                    'created_at' => $sub->created_at,
+                    'free_until' => $sub->free_until,
+                    'paid_until' => $sub->paid_until,
+                ];
+            })->toArray();
+
+            return [
+                'stats' => $stats,
+                'recent' => $recent,
+            ];
+        });
     }
 }
 
