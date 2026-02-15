@@ -26,15 +26,15 @@ class VendorReviewService
         $query = Review::query()
             ->with(['user', 'place', 'branch:id,name,name_en,name_ar'])
             ->withCount(['photos'])
-            ->whereHas('place', fn($q) => $q->where('brand_id', $brandId));
+            ->whereHas('branch', fn($q) => $q->where('brand_id', $brandId));
 
         // Filter by branch if specified
         if (! empty($filters['branch_id'])) {
             $branchId = (int) $filters['branch_id'];
             
             // Verify branch belongs to vendor's brand
-            $branch = \App\Models\Branch::with('place')->find($branchId);
-            if (! $branch || $branch->place->brand_id !== $brandId) {
+            $branch = \App\Models\Branch::find($branchId);
+            if (! $branch || (int) $branch->brand_id !== (int) $brandId) {
                 return Review::paginate(0); // Return empty paginator
             }
             
@@ -93,7 +93,7 @@ class VendorReviewService
             'answers.criteria',
             'answers.choice',
             'photos'
-        ])->whereHas('place', fn($q) => $q->where('brand_id', $brandId))->find($reviewId);
+        ])->whereHas('branch', fn($q) => $q->where('brand_id', $brandId))->find($reviewId);
 
         return $review;
     }

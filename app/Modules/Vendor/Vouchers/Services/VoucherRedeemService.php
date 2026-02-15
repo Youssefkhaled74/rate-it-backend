@@ -40,8 +40,8 @@ class VoucherRedeemService
 
         // Verify branch belongs to vendor's brand
         $brandId = $this->getVendorBrandId($vendor);
-        $branch = Branch::with('place')->find($branchId);
-        if (! $branch || $branch->place->brand_id !== $brandId) {
+        $branch = Branch::find($branchId);
+        if (! $branch || (int) $branch->brand_id !== (int) $brandId) {
             throw new ApiException(__('auth.forbidden'), 403);
         }
 

@@ -27,7 +27,7 @@ class VendorBranchPolicy
         if ($vendor->role === 'VENDOR_ADMIN') {
             // Check if branch belongs to their brand
             $branch = Branch::find($branchId);
-            return $branch && $branch->place && $branch->place->brand_id === $vendor->brand_id;
+            return $branch && (int) $branch->brand_id === (int) $vendor->brand_id;
         }
         
         return false;
@@ -43,7 +43,7 @@ class VendorBranchPolicy
         }
         
         $branch = Branch::find($branchId);
-        return $branch && $branch->place && $branch->place->brand_id === $vendor->brand_id;
+        return $branch && (int) $branch->brand_id === (int) $vendor->brand_id;
     }
 
     /**

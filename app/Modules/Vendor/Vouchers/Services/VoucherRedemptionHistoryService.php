@@ -42,8 +42,8 @@ class VoucherRedemptionHistoryService
             $branchId = (int) $filters['branch_id'];
             
             // Verify branch belongs to vendor's brand
-            $branch = Branch::with('place')->find($branchId);
-            if ($branch && $branch->place->brand_id === $brandId) {
+            $branch = Branch::find($branchId);
+            if ($branch && (int) $branch->brand_id === (int) $brandId) {
                 $query->where('used_branch_id', $branchId);
             } else {
                 // Invalid branch, return empty paginator

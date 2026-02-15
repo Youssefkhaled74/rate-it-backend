@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Voucher;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -14,7 +15,7 @@ class VoucherFactory extends Factory
     {
         return [
             // 'id' => (string) Str::uuid(), // Removed ID generation
-            'user_id' => null,
+            'user_id' => User::factory(),
             'brand_id' => null,
             'code' => strtoupper(Str::random(10)),
             'points_used' => $this->faker->numberBetween(50,500),

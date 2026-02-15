@@ -53,8 +53,20 @@ trait ApiResponseTrait
         return $this->success(null, $message, null, 200);
     }
 
-    public function paginated(LengthAwarePaginator $paginator, ?string $message = null): JsonResponse
+    public function paginated(
+        LengthAwarePaginator $paginator,
+        ?string $message = null,
+        ?string $resourceClass = null
+    ): JsonResponse
     {
+        $items = $paginator->items();
+
+        if ($resourceClass) {
+            $items = collect($items)
+                ->map(fn ($item) => new $resourceClass($item))
+                ->all();
+        }
+
         $meta = [
             'page' => $paginator->currentPage(),
             'limit' => $paginator->perPage(),
@@ -63,6 +75,6 @@ trait ApiResponseTrait
             'last_page' => $paginator->lastPage(),
         ];
 
-        return $this->success($paginator->items(), $message, $meta);
+        return $this->success($items, $message, $meta);
     }
 }

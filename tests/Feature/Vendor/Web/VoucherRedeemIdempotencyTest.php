@@ -1,12 +1,11 @@
-﻿<?php
+<?php
 
 namespace Tests\Feature\Vendor\Web;
 
 use App\Models\Brand;
-use App\Models\Place;
 use App\Models\Branch;
-use App\Models\Voucher;
 use App\Models\VendorUser;
+use App\Models\Voucher;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -14,13 +13,12 @@ class VoucherRedeemIdempotencyTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_redeeming_used_voucher_is_blocked()
+    public function test_redeeming_used_voucher_is_blocked(): void
     {
         $this->withoutMiddleware(\App\Http\Middleware\VerifyCsrfToken::class);
 
         $brand = Brand::factory()->create();
-        $place = Place::factory()->create(['brand_id' => $brand->id]);
-        $branch = Branch::factory()->create(['place_id' => $place->id]);
+        $branch = Branch::factory()->create(['brand_id' => $brand->id]);
 
         $staff = VendorUser::factory()->create([
             'brand_id' => null,
@@ -45,3 +43,4 @@ class VoucherRedeemIdempotencyTest extends TestCase
         ])->assertSessionHasErrors(['code_or_link']);
     }
 }
+

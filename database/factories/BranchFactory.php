@@ -13,7 +13,7 @@ class BranchFactory extends Factory
     public function definition()
     {
         return [
-            'place_id' => null,
+            'brand_id' => null,
             'name' => $this->faker->company . ' Branch',
             'address' => $this->faker->address,
             'lat' => $this->faker->optional()->latitude,

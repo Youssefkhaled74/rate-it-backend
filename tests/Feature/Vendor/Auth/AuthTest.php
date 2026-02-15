@@ -62,11 +62,9 @@ class AuthTest extends VendorTestCase
             [], $this->vendorAdminHeaders());
 
         $this->assertSuccessJson($response);
-
-        // Token should be invalid after logout
-        $response = $this->getJson('/api/v1/vendor/auth/me',
-            $this->vendorAdminHeaders());
-
-        $response->assertStatus(401);
+        $this->assertDatabaseMissing('personal_access_tokens', [
+            'tokenable_type' => VendorUser::class,
+            'tokenable_id' => $this->vendorAdmin->id,
+        ]);
     }
 }

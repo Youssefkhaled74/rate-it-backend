@@ -30,8 +30,8 @@ class VendorStaffService
             $branchId = (int) $filters['branch_id'];
             
             // Verify branch belongs to vendor's brand
-            $branch = Branch::with('place')->find($branchId);
-            if (! $branch || $branch->place->brand_id !== $brandId) {
+            $branch = Branch::find($branchId);
+            if (! $branch || (int) $branch->brand_id !== (int) $brandId) {
                 return VendorUser::paginate(0); // Empty paginator
             }
             
@@ -82,8 +82,8 @@ class VendorStaffService
         $branchId = (int) $data['branch_id'];
 
         // Verify branch belongs to vendor's brand
-        $branch = Branch::with('place')->find($branchId);
-        if (! $branch || $branch->place->brand_id !== $brandId) {
+        $branch = Branch::find($branchId);
+        if (! $branch || (int) $branch->brand_id !== (int) $brandId) {
             throw new \Exception('Branch does not belong to your brand');
         }
 
@@ -127,8 +127,8 @@ class VendorStaffService
             $brandId = $this->getVendorBrandId($vendor);
             $newBranchId = (int) $data['branch_id'];
 
-            $branch = Branch::with('place')->find($newBranchId);
-            if (! $branch || $branch->place->brand_id !== $brandId) {
+            $branch = Branch::find($newBranchId);
+            if (! $branch || (int) $branch->brand_id !== (int) $brandId) {
                 throw new \Exception('Branch does not belong to your brand');
             }
 

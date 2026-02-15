@@ -1,9 +1,8 @@
-﻿<?php
+<?php
 
 namespace Tests\Feature\Vendor\Web;
 
 use App\Models\Brand;
-use App\Models\Place;
 use App\Models\Branch;
 use App\Models\VendorUser;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -13,11 +12,10 @@ class VendorWebAccessTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_branch_staff_cannot_access_admin_pages()
+    public function test_branch_staff_cannot_access_admin_pages(): void
     {
         $brand = Brand::factory()->create();
-        $place = Place::factory()->create(['brand_id' => $brand->id]);
-        $branch = Branch::factory()->create(['place_id' => $place->id]);
+        $branch = Branch::factory()->create(['brand_id' => $brand->id]);
 
         $staff = VendorUser::factory()->create([
             'brand_id' => null,
@@ -34,11 +32,10 @@ class VendorWebAccessTest extends TestCase
         $this->get('/vendor/staff')->assertRedirect('/vendor');
     }
 
-    public function test_vendor_admin_can_access_admin_pages()
+    public function test_vendor_admin_can_access_admin_pages(): void
     {
         $brand = Brand::factory()->create();
-        $place = Place::factory()->create(['brand_id' => $brand->id]);
-        $branch = Branch::factory()->create(['place_id' => $place->id]);
+        $branch = Branch::factory()->create(['brand_id' => $brand->id]);
 
         $admin = VendorUser::factory()->create([
             'brand_id' => $brand->id,
@@ -55,3 +52,4 @@ class VendorWebAccessTest extends TestCase
         $this->get('/vendor/staff')->assertOk();
     }
 }
+

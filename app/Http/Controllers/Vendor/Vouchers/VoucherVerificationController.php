@@ -35,7 +35,7 @@ class VoucherVerificationController extends Controller
     public function verifyForm()
     {
         $vendor = Auth::guard('vendor_web')->user();
-        $vendor?->loadMissing('brand', 'branch.place');
+        $vendor?->loadMissing('brand', 'branch');
 
         $branches = $vendor->role === 'VENDOR_ADMIN' ? $this->branchService->listBranches($vendor) : collect();
 
@@ -50,7 +50,7 @@ class VoucherVerificationController extends Controller
     public function check(VoucherCheckRequest $request)
     {
         $vendor = Auth::guard('vendor_web')->user();
-        $vendor?->loadMissing('brand', 'branch.place');
+        $vendor?->loadMissing('brand', 'branch');
 
         try {
             $voucher = $this->checkService->check($vendor, $request->validated()['code_or_link']);
@@ -73,7 +73,7 @@ class VoucherVerificationController extends Controller
     public function redeem(VoucherRedeemRequest $request)
     {
         $vendor = Auth::guard('vendor_web')->user();
-        $vendor?->loadMissing('brand', 'branch.place');
+        $vendor?->loadMissing('brand', 'branch');
 
         $data = $request->validated();
 
@@ -92,7 +92,7 @@ class VoucherVerificationController extends Controller
     public function history(VoucherHistoryRequest $request)
     {
         $vendor = Auth::guard('vendor_web')->user();
-        $vendor?->loadMissing('brand', 'branch.place');
+        $vendor?->loadMissing('brand', 'branch');
 
         $filters = $request->validated();
         $history = $this->historyService->list($vendor, $filters);

@@ -12,11 +12,14 @@ class PlaceFactory extends Factory
 
     public function definition()
     {
+        $nameEn = $this->faker->company . ' ' . $this->faker->word;
+
         return [
             // 'id' => (string) Str::uuid(), // Removed id generation
             'brand_id' => null,
             'subcategory_id' => null,
-            'name_en' => $this->faker->company . ' ' . $this->faker->word,
+            'name' => $nameEn,
+            'name_en' => $nameEn,
             'name_ar' => $this->faker->optional()->company,
             'description_en' => $this->faker->optional()->sentence,
             'description_ar' => $this->faker->optional()->sentence,

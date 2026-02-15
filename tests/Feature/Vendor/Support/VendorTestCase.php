@@ -4,8 +4,8 @@ namespace Tests\Feature\Vendor\Support;
 
 use App\Models\VendorUser;
 use App\Models\Brand;
-use App\Models\Place;
 use App\Models\Branch;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -18,17 +18,17 @@ abstract class VendorTestCase extends TestCase
     protected ?VendorUser $vendorAdmin = null;
     protected ?VendorUser $vendorStaff = null;
     protected ?Brand $brand = null;
-    protected ?Place $place = null;
     protected ?Branch $branch = null;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        // Create test brand, place, branches
+        // Create test brand and branch
         $this->brand = Brand::factory()->create();
-        $this->place = Place::factory()->create(['brand_id' => $this->brand->id]);
-        $this->branch = Branch::factory()->create(['place_id' => $this->place->id]);
+        $this->branch = Branch::factory()->create([
+            'brand_id' => $this->brand->id,
+        ]);
 
         // Create vendor admin
         $this->vendorAdmin = VendorUser::factory()
@@ -42,11 +42,13 @@ abstract class VendorTestCase extends TestCase
         // Create vendor staff
         $this->vendorStaff = VendorUser::factory()
             ->create([
-                'brand_id' => null,
+                'brand_id' => $this->brand->id,
                 'branch_id' => $this->branch->id,
                 'role' => 'BRANCH_STAFF',
                 'password_hash' => bcrypt('secret'),
             ]);
+
+        $this->seedVendorRbacForTests();
 
         // Login as admin
         $this->loginAsVendor($this->vendorAdmin, 'secret');
@@ -97,5 +99,67 @@ abstract class VendorTestCase extends TestCase
     protected function assertSuccessJson($response)
     {
         $response->assertJson(['success' => true]);
+    }
+
+    protected function seedVendorRbacForTests(): void
+    {
+        $permissions = ['vendor.reviews.list', 'vendor.staff.manage'];
+
+        foreach ($permissions as $permissionName) {
+            DB::table('permissions')->updateOrInsert(
+                ['name' => $permissionName],
+                [
+                    'guard' => 'vendor',
+                    'description' => null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]
+            );
+        }
+
+        $adminRoleId = DB::table('roles')->insertGetId([
+            'name' => 'VENDOR_ADMIN_ROLE_TEST',
+            'guard' => 'vendor',
+            'description' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $staffRoleId = DB::table('roles')->insertGetId([
+            'name' => 'BRANCH_STAFF_ROLE_TEST',
+            'guard' => 'vendor',
+            'description' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $permissionIds = DB::table('permissions')
+            ->whereIn('name', $permissions)
+            ->pluck('id')
+            ->all();
+
+        foreach ($permissionIds as $permissionId) {
+            DB::table('role_has_permissions')->insert([
+                'role_id' => $adminRoleId,
+                'permission_id' => $permissionId,
+            ]);
+        }
+
+        DB::table('role_has_permissions')->insert([
+            'role_id' => $staffRoleId,
+            'permission_id' => DB::table('permissions')->where('name', 'vendor.reviews.list')->value('id'),
+        ]);
+
+        DB::table('model_has_roles')->insert([
+            'role_id' => $adminRoleId,
+            'model_type' => VendorUser::class,
+            'model_id' => $this->vendorAdmin->id,
+        ]);
+
+        DB::table('model_has_roles')->insert([
+            'role_id' => $staffRoleId,
+            'model_type' => VendorUser::class,
+            'model_id' => $this->vendorStaff->id,
+        ]);
     }
 }

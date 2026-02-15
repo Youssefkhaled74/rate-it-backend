@@ -2,235 +2,161 @@
 
 namespace Tests\Feature\Vendor\Dashboard;
 
-use Tests\Feature\Vendor\Support\VendorTestCase;
+use App\Models\Branch;
+use App\Models\Brand;
 use App\Models\Review;
 use App\Models\Voucher;
 use Carbon\Carbon;
+use Tests\Feature\Vendor\Support\VendorTestCase;
 
 class DashboardTest extends VendorTestCase
 {
-    /**
-     * Test: Admin can access dashboard
-     */
-    public function test_dashboard_admin_access()
+    public function test_dashboard_admin_access_and_contract(): void
     {
-        // Create some data to display
-        Review::factory(5)->create(['branch_id' => $this->branch->id]);
-        Voucher::factory(3)->create([
-            'brand_id' => $this->brand->id,
-            'status' => 'USED',
-            'used_at' => Carbon::now()->subDays(2),
-        ]);
+        $response = $this->getJson('/api/v1/vendor/dashboard/summary', $this->vendorAdminHeaders());
 
-        $response = $this->getJson(
-            '/api/v1/vendor/dashboard/summary',
-            $this->vendorAdminHeaders()
-        );
-
-        $response->assertStatus(200);
-        $response->assertJsonStructure([
+        $response->assertStatus(200)->assertJsonStructure([
             'success',
             'message',
             'data' => [
                 'total_branches',
-                'total_reviews_7d',
-                'total_reviews_30d',
-                'average_rating',
-                'top_branches' => [
-                    '*' => ['id', 'name_en', 'rating'],
+                'reviews_count' => ['last_7_days', 'last_30_days'],
+                'average_rating_brand',
+                'top_branches_by_rating' => [
+                    '*' => ['id', 'name', 'place_id', 'place_name', 'reviews_count', 'average_rating'],
                 ],
-                'vouchers_used_7d',
-                'vouchers_used_30d',
-            ]
+                'vouchers_used' => ['last_7_days', 'last_30_days'],
+            ],
         ]);
     }
 
-    /**
-     * Test: Dashboard returns correct KPI values
-     */
-    public function test_dashboard_kpi_values()
+    public function test_dashboard_staff_forbidden(): void
     {
-        // Create exactly known data
+        $this->loginAsVendor($this->vendorStaff, 'secret');
+
+        $response = $this->getJson('/api/v1/vendor/dashboard/summary', $this->vendorStaffHeaders());
+
+        $response->assertStatus(403);
+    }
+
+    public function test_dashboard_requires_auth(): void
+    {
+        $response = $this->getJson('/api/v1/vendor/dashboard/summary');
+        $response->assertStatus(401);
+    }
+
+    public function test_dashboard_kpis_are_calculated_correctly(): void
+    {
+        $secondBranch = Branch::factory()->create([
+            'brand_id' => $this->brand->id,
+            'name' => 'Second Branch',
+            'review_cooldown_days' => 0,
+        ]);
+
+        // 7d: 3 reviews on branch 1
         Review::factory(3)->create([
             'branch_id' => $this->branch->id,
-            'rating' => 5,
-            'created_at' => Carbon::now()->subDays(1),  // Within 7d
+            'overall_rating' => 5,
+            'created_at' => Carbon::now()->subDays(2),
         ]);
+
+        // 30d only: 2 reviews on branch 2
         Review::factory(2)->create([
-            'branch_id' => $this->branch->id,
-            'rating' => 4,
-            'created_at' => Carbon::now()->subDays(15),  // Within 30d but not 7d
+            'branch_id' => $secondBranch->id,
+            'overall_rating' => 3,
+            'created_at' => Carbon::now()->subDays(15),
         ]);
 
-        $response = $this->getJson(
-            '/api/v1/vendor/dashboard/summary',
-            $this->vendorAdminHeaders()
-        );
-
-        $response->assertStatus(200);
-        $this->assertEquals(1, $response->json('data.total_branches'));
-        $this->assertEquals(3, $response->json('data.total_reviews_7d'));
-        $this->assertEquals(5, $response->json('data.total_reviews_30d'));
-        $this->assertGreaterThan(0, $response->json('data.average_rating'));
-    }
-
-    /**
-     * Test: Dashboard includes top branches by rating
-     */
-    public function test_dashboard_top_branches()
-    {
-        $branch2 = $this->place->branches()->create([
-            'name_en' => 'Branch 2',
-            'name_ar' => 'فرع 2',
-            'address_en' => 'Address 2',
-            'address_ar' => 'العنوان 2',
-        ]);
-
-        // Branch 1: 5-star reviews
-        Review::factory(2)->create(['branch_id' => $this->branch->id, 'rating' => 5]);
-
-        // Branch 2: 3-star reviews
-        Review::factory(2)->create(['branch_id' => $branch2->id, 'rating' => 3]);
-
-        $response = $this->getJson(
-            '/api/v1/vendor/dashboard/summary',
-            $this->vendorAdminHeaders()
-        );
-
-        $response->assertStatus(200);
-        
-        $topBranches = $response->json('data.top_branches');
-        $this->assertCount(2, $topBranches);
-        
-        // First should have highest rating
-        $this->assertEquals($this->branch->id, $topBranches[0]['id']);
-        $this->assertGreaterThan($topBranches[1]['rating'], $topBranches[0]['rating']);
-    }
-
-    /**
-     * Test: Dashboard shows vouchers used in past 7 and 30 days
-     */
-    public function test_dashboard_vouchers_by_period()
-    {
-        // Used 2 days ago (within 7d)
+        // vouchers in last 7d = 2
         Voucher::factory(2)->create([
             'brand_id' => $this->brand->id,
             'status' => 'USED',
-            'used_at' => Carbon::now()->subDays(2),
+            'used_at' => Carbon::now()->subDays(3),
         ]);
 
-        // Used 10 days ago (within 30d but not 7d)
+        // vouchers in 30d only = +3
         Voucher::factory(3)->create([
             'brand_id' => $this->brand->id,
             'status' => 'USED',
             'used_at' => Carbon::now()->subDays(10),
         ]);
 
-        // Used 40 days ago (outside 30d)
-        Voucher::factory(1)->create([
+        // outside 30d
+        Voucher::factory()->create([
             'brand_id' => $this->brand->id,
             'status' => 'USED',
             'used_at' => Carbon::now()->subDays(40),
         ]);
 
-        $response = $this->getJson(
-            '/api/v1/vendor/dashboard/summary',
-            $this->vendorAdminHeaders()
-        );
-
+        $response = $this->getJson('/api/v1/vendor/dashboard/summary', $this->vendorAdminHeaders());
         $response->assertStatus(200);
-        $this->assertEquals(2, $response->json('data.vouchers_used_7d'));
-        $this->assertEquals(5, $response->json('data.vouchers_used_30d'));
+
+        $response->assertJsonPath('data.total_branches', 2);
+        $response->assertJsonPath('data.reviews_count.last_7_days', 3);
+        $response->assertJsonPath('data.reviews_count.last_30_days', 5);
+        $response->assertJsonPath('data.vouchers_used.last_7_days', 2);
+        $response->assertJsonPath('data.vouchers_used.last_30_days', 5);
+
+        // average rating across 5 reviews: (3*5 + 2*3)/5 = 4.2
+        $this->assertSame(4.2, (float) $response->json('data.average_rating_brand'));
     }
 
-    /**
-     * Test: Dashboard only shows data for vendor's brand
-     */
-    public function test_dashboard_brand_scope()
+    public function test_dashboard_top_branches_include_reviews_count_and_sorting(): void
     {
-        // Create data in other brand
-        $otherBrand = \App\Models\Brand::factory()->create();
-        $otherPlace = \App\Models\Place::factory()->create(['brand_id' => $otherBrand->id]);
-        $otherBranch = \App\Models\Branch::factory()->create(['place_id' => $otherPlace->id]);
+        $high = Branch::factory()->create([
+            'brand_id' => $this->brand->id,
+            'name' => 'High Branch',
+            'review_cooldown_days' => 0,
+        ]);
+        $low = Branch::factory()->create([
+            'brand_id' => $this->brand->id,
+            'name' => 'Low Branch',
+            'review_cooldown_days' => 0,
+        ]);
 
-        Review::factory(10)->create(['branch_id' => $otherBranch->id]);
-        Voucher::factory(10)->create(['brand_id' => $otherBrand->id]);
+        Review::factory(2)->create([
+            'branch_id' => $high->id,
+            'overall_rating' => 5,
+        ]);
+        Review::factory(2)->create([
+            'branch_id' => $low->id,
+            'overall_rating' => 2,
+        ]);
 
-        // Vendor sees only their brand's data
-        $response = $this->getJson(
-            '/api/v1/vendor/dashboard/summary',
-            $this->vendorAdminHeaders()
-        );
-
+        $response = $this->getJson('/api/v1/vendor/dashboard/summary', $this->vendorAdminHeaders());
         $response->assertStatus(200);
-        $this->assertEquals(0, $response->json('data.total_reviews_7d'));
-        $this->assertEquals(0, $response->json('data.vouchers_used_7d'));
+
+        $top = $response->json('data.top_branches_by_rating');
+        $this->assertNotEmpty($top);
+        $this->assertSame($high->id, $top[0]['id']);
+        $this->assertSame(2, (int) $top[0]['reviews_count']);
+        $this->assertGreaterThan($top[1]['average_rating'], $top[0]['average_rating']);
     }
 
-    /**
-     * Test: Staff cannot access dashboard (forbidden)
-     */
-    public function test_dashboard_staff_forbidden()
+    public function test_dashboard_brand_scoping_regression(): void
     {
-        $response = $this->getJson(
-            '/api/v1/vendor/dashboard/summary',
-            $this->vendorStaffHeaders()
-        );
+        $otherBrand = Brand::factory()->create();
+        $otherBranch = Branch::factory()->create([
+            'brand_id' => $otherBrand->id,
+            'name' => 'Other Brand Branch',
+            'review_cooldown_days' => 0,
+        ]);
 
-        $response->assertStatus(403);
-    }
+        Review::factory(7)->create([
+            'branch_id' => $otherBranch->id,
+            'overall_rating' => 1,
+            'created_at' => Carbon::now()->subDays(2),
+        ]);
+        Voucher::factory(4)->create([
+            'brand_id' => $otherBrand->id,
+            'status' => 'USED',
+            'used_at' => Carbon::now()->subDays(2),
+        ]);
 
-    /**
-     * Test: Dashboard requires authentication
-     */
-    public function test_dashboard_requires_auth()
-    {
-        $response = $this->getJson('/api/v1/vendor/dashboard/summary');
-
-        $response->assertStatus(401);
-    }
-
-    /**
-     * Test: Dashboard with no data returns zero values
-     */
-    public function test_dashboard_empty_data()
-    {
-        // Don't create any reviews or vouchers
-        
-        $response = $this->getJson(
-            '/api/v1/vendor/dashboard/summary',
-            $this->vendorAdminHeaders()
-        );
-
+        $response = $this->getJson('/api/v1/vendor/dashboard/summary', $this->vendorAdminHeaders());
         $response->assertStatus(200);
-        $this->assertEquals(1, $response->json('data.total_branches'));
-        $this->assertEquals(0, $response->json('data.total_reviews_7d'));
-        $this->assertEquals(0, $response->json('data.total_reviews_30d'));
-        $this->assertEquals(0, $response->json('data.average_rating'));
-        $this->assertEmpty($response->json('data.top_branches'));
-        $this->assertEquals(0, $response->json('data.vouchers_used_7d'));
-        $this->assertEquals(0, $response->json('data.vouchers_used_30d'));
-    }
 
-    /**
-     * Test: Average rating is calculated correctly
-     */
-    public function test_dashboard_average_rating_calculation()
-    {
-        // Create reviews with known ratings
-        Review::factory()->create(['branch_id' => $this->branch->id, 'rating' => 5]);
-        Review::factory()->create(['branch_id' => $this->branch->id, 'rating' => 3]);
-        Review::factory()->create(['branch_id' => $this->branch->id, 'rating' => 4]);
-
-        $response = $this->getJson(
-            '/api/v1/vendor/dashboard/summary',
-            $this->vendorAdminHeaders()
-        );
-
-        $response->assertStatus(200);
-        
-        // Average of 5, 3, 4 = 4
-        $avgRating = $response->json('data.average_rating');
-        $this->assertEquals(4, round($avgRating));
+        $response->assertJsonPath('data.reviews_count.last_7_days', 0);
+        $response->assertJsonPath('data.vouchers_used.last_7_days', 0);
     }
 }

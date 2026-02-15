@@ -20,7 +20,7 @@ class BranchSettingsController extends Controller
     public function index()
     {
         $vendor = Auth::guard('vendor_web')->user();
-        $vendor?->loadMissing('brand', 'branch.place');
+        $vendor?->loadMissing('brand', 'branch');
 
         $branches = $this->service->listBranches($vendor);
 
@@ -33,7 +33,7 @@ class BranchSettingsController extends Controller
     public function updateCooldown(int $id, BranchCooldownRequest $request)
     {
         $vendor = Auth::guard('vendor_web')->user();
-        $vendor?->loadMissing('brand', 'branch.place');
+        $vendor?->loadMissing('brand', 'branch');
 
         $data = $request->validated();
 

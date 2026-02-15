@@ -57,7 +57,7 @@ class VendorDashboardService
     protected function getTotalBranches(int $brandId): int
     {
         return Branch::query()
-            ->whereHas('place', fn($q) => $q->where('brand_id', $brandId))
+            ->where('brand_id', $brandId)
             ->count();
     }
 
@@ -69,7 +69,7 @@ class VendorDashboardService
     protected function getReviewsCount(int $brandId, Carbon $since): int
     {
         return Review::query()
-            ->whereHas('place', fn($q) => $q->where('brand_id', $brandId))
+            ->whereHas('branch', fn($q) => $q->where('brand_id', $brandId))
             ->where('created_at', '>=', $since)
             ->whereNull('deleted_at')
             ->count();
@@ -83,7 +83,7 @@ class VendorDashboardService
     protected function getAverageRating(int $brandId): float
     {
         $avg = Review::query()
-            ->whereHas('place', fn($q) => $q->where('brand_id', $brandId))
+            ->whereHas('branch', fn($q) => $q->where('brand_id', $brandId))
             ->whereNull('deleted_at')
             ->avg('overall_rating');
         
@@ -98,13 +98,15 @@ class VendorDashboardService
     protected function getTopBranchesByRating(int $brandId, int $limit): array
     {
         return Branch::query()
-            ->with(['place', 'reviews' => function($q) {
-                $q->select('id', 'branch_id', 'overall_rating')
-                    ->whereNull('deleted_at');
-            }])
-            ->whereHas('place', fn($q) => $q->where('brand_id', $brandId))
+            ->with(['brand:id,name_en,name_ar'])
+            ->where('brand_id', $brandId)
             ->whereHas('reviews', fn($q) => $q->whereNull('deleted_at'))
-            ->withAvg('reviews', 'overall_rating')
+            ->withCount(['reviews' => function ($q) {
+                $q->whereNull('deleted_at');
+            }])
+            ->withAvg(['reviews' => function ($q) {
+                $q->whereNull('deleted_at');
+            }], 'overall_rating')
             ->orderByDesc('reviews_avg_overall_rating')
             ->limit($limit)
             ->get()
@@ -112,8 +114,8 @@ class VendorDashboardService
                 return [
                     'id' => $branch->id,
                     'name' => $branch->name,
-                    'place_id' => $branch->place_id,
-                    'place_name' => $branch->place?->display_name ?? null,
+                    'place_id' => null,
+                    'place_name' => $branch->brand?->display_name ?? null,
                     'reviews_count' => $branch->reviews_count ?? 0,
                     'average_rating' => $branch->reviews_avg_overall_rating 
                         ? round((float) $branch->reviews_avg_overall_rating, 2) 

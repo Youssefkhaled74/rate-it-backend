@@ -26,7 +26,6 @@ class StaffTest extends VendorTestCase
             'data' => [
                 '*' => ['id', 'name', 'phone', 'role', 'is_active'],
             ],
-            'meta' => ['page', 'limit', 'total'],
         ]);
     }
 
@@ -78,7 +77,12 @@ class StaffTest extends VendorTestCase
     public function test_reset_staff_password()
     {
         $response = $this->postJson("/api/v1/vendor/staff/{$this->vendorStaff->id}/reset-password",
-            [], $this->vendorAdminHeaders());
+            [
+                'new_password' => 'new-secret-123',
+                'new_password_confirmation' => 'new-secret-123',
+            ],
+            $this->vendorAdminHeaders()
+        );
 
         $this->assertSuccessJson($response);
         

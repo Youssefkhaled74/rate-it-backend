@@ -12,8 +12,11 @@ class BrandFactory extends Factory
 
     public function definition()
     {
+        $nameEn = $this->faker->company;
+
         return [
-            'name_en' => $this->faker->company,
+            'name' => $nameEn,
+            'name_en' => $nameEn,
             'name_ar' => $this->faker->word,
             'logo_url' => null,
             'logo' => 'assets/images/category-icon-placeholder.png',

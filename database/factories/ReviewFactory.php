@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Review;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -14,7 +15,7 @@ class ReviewFactory extends Factory
     {
         return [
             // 'id' => (string) Str::uuid(),
-            'user_id' => null,
+            'user_id' => User::factory(),
             'place_id' => null,
             'branch_id' => null,
             'overall_rating' => $this->faker->randomFloat(1,1,5),

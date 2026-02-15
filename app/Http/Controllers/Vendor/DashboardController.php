@@ -27,7 +27,7 @@ class DashboardController extends Controller
     public function index(VendorDashboardService $service)
     {
         $vendor = Auth::guard('vendor_web')->user();
-        $vendor?->loadMissing('brand', 'branch.place');
+        $vendor?->loadMissing('brand', 'branch');
 
         $summary = $service->getSummary($vendor);
 

@@ -34,7 +34,7 @@ class VendorDataService
         $brandId = $this->getVendorBrandId($vendor);
         
         return Review::where('status', 'ACTIVE')
-            ->whereHas('branch.place', function ($q) use ($brandId) {
+            ->whereHas('branch', function ($q) use ($brandId) {
                 $q->where('brand_id', $brandId);
             })
             ->orderBy('created_at', 'desc')
@@ -67,9 +67,7 @@ class VendorDataService
     {
         $brandId = $this->getVendorBrandId($vendor);
 
-        $query = Branch::whereHas('place', function ($q) use ($brandId) {
-            $q->where('brand_id', $brandId);
-        });
+        $query = Branch::query()->where('brand_id', $brandId);
 
         // BRANCH_STAFF can only see their own branch
         if ($this->isBranchStaff($vendor)) {
@@ -178,16 +176,14 @@ class VendorDataService
         $brandId = $vendor->brand_id;
 
         return [
-            'total_reviews' => Review::whereHas('branch.place', function ($q) use ($brandId) {
+            'total_reviews' => Review::whereHas('branch', function ($q) use ($brandId) {
                 $q->where('brand_id', $brandId);
             })->count(),
             'total_vouchers_issued' => Voucher::where('brand_id', $brandId)->count(),
             'vouchers_verified' => Voucher::where('brand_id', $brandId)
                 ->where('status', 'USED')
                 ->count(),
-            'branches' => Branch::whereHas('place', function ($q) use ($brandId) {
-                $q->where('brand_id', $brandId);
-            })->count(),
+            'branches' => Branch::where('brand_id', $brandId)->count(),
         ];
     }
 }

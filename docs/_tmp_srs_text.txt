@@ -1,0 +1,543 @@
+﻿
+
+
+Software Requirements Specification (SRS)
+
+Rate It Platform
+
+Mobile Application + Web Admin Panel + Web Vendor Panel
+
+Version: Final – Ready for client Sign-off
+
+
+
+
+1. Introduction
+
+1.1 Purpose
+
+تهدف هذه الوثيقة إلى توثيق المتطلبات الوظيفية وغير الوظيفية لمنصة Rate It، وهي منصة رقمية تتيح للمستخدمين تقييم الأماكن بعد زيارتها فعليًا باستخدام QR Code، مع توفير نظام نقاط ولاء يمكن تحويلها إلى Vouchers، ولوحات تحكم مستقلة لكل من Admin و Vendors (Brands & Branches).
+
+
+
+
+1.2 Scope
+
+تشمل المنصة:
+
+Mobile App للمستخدم النهائي (Guest / Registered User)
+
+Web Admin Panel لإدارة النظام بالكامل
+
+Web Vendor Panel لإدارة البراندات والفروع والتحقق من الفواتشر
+
+نظام تقييم يعتمد على QR Code
+
+نظام اشتراك بعد فترة Free
+
+نظام نقاط ولاء + تحويل النقاط إلى Vouchers
+
+نظام إشعارات Push
+
+نظام تقارير متقدم
+
+أي بوابات دفع
+Out of Scope:
+
+أي تحويل أموال داخل النظام
+
+أي ردود من البراندات على التقييمات
+
+
+
+
+
+
+2. User Roles
+
+2.1 Guest User (Mobile)
+
+View فقط
+
+يمكنه مشاهدة الأماكن والتقييمات النصية
+
+لا يمكنه كتابة تقييم
+
+2.2 Registered User (Mobile)
+
+تسجيل حساب
+
+كتابة تقييمات بعد مسح QR
+
+كسب نقاط
+
+تحويل النقاط إلى Vouchers
+
+متابعة التقييمات والنقاط والفواتشر
+
+2.3 Admin (Web Admin Panel)
+
+إدارة النظام بالكامل
+
+إضافة وإدارة:
+
+Categories / Sub Categories
+
+Places / Brands / Branches
+
+توليد QR Codes
+
+إدارة الاشتراكات
+
+إدارة نظام النقاط (Rules Engine)
+
+حذف التقييمات المخالفة
+
+الاطلاع على جميع التقارير
+
+2.4 Vendor Panel (Web)
+Vendor = Brand
+
+2.4.1 Vendor Admin (Brand Level)
+
+يرى كل فروع البراند
+
+يرى كل التقييمات + الصور
+
+يرى بيانات المستخدم (Nickname + Phone)
+
+يحدد المدة بين التقييمات لكل فرع
+
+Export للتقييمات
+
+إدارة Branch Users
+
+2.4.2 Branch Staff (Branch Level)
+
+مرتبط بفرع واحد 
+
+صلاحياته:
+
+التحقق من Vouchers فقط
+
+لا يرى تقارير عامة
+
+لا يعدل إعدادات
+
+
+
+
+3. Business Rules
+
+3.1 Subscription
+
+أول 6 شهور Free من تاريخ التسجيل
+
+بعد انتهاء الـ 6 شهور:
+
+المستخدم يستطيع التصفح فقط
+
+يرى تقييماته القديمة
+
+لا يستطيع إضافة تقييم جديد إلا باشتراك
+
+الاشتراك مطلوب للتقييم فقط
+
+لا يوجد Grace Period ( فتره سماح ) 
+
+
+
+
+4. QR Code Rules
+
+QR Code Unique لكل Branch
+
+يتم توليده مرة واحدة عند إنشاء الفرع
+
+QR ثابت (Static)
+
+لا يمكن التقييم بدون مسح QR
+
+مسح QR يتطلب Login
+
+QR يفتح App Store / Play Store في حالة عدم وجود التطبيق
+
+بعد المسح يتم فتح شاشة التقييم مباشرة
+
+
+
+
+5. Review & Rating System
+
+5.1 Review Creation
+
+قبل التقييم يظهر pop up message  فيها التعليمات الخاصة بالريفيو وزار ok ويقدر يشوف ال policy 
+
+التقييم العام (Overall Rating) إجباري
+
+أسئلة التقييم تُحدد لكل Subcategory من Admin Panel
+
+أنواع الأسئلة:
+
+Rating
+
+Yes / No
+
+Multiple Choice
+
+التعليق النصي اختياري
+
+الصور اختيارية (حتى 3 – Nice to have)
+
+بعد التقيم يظهر عدد النقاك التي تم اضافتها وشكر وتقسيمة النقط اللي خدها
+
+5.2 Review Limits
+
+المستخدم يقيّم نفس الفرع علي حسب المده التي يحددها admin panel
+
+يوجد حد أدنى للمدة بين التقييمين
+
+المدة يحددها Vendor Admin
+
+المدة تُحسب من تاريخ التقييم
+
+5.3 Review Editing
+
+لا يمكن للمستخدم الحذف ولكن يمكنه تعديل التقييم بعد الإرسال
+
+Admin Panel  فقط يستطيع حذف تقييم أو صور مخالفة
+
+بعد حذف الريفيو يتم حذف النقاط
+
+5.4 Rating Calculation
+
+تقييم المستخدم = مجموع تقييمات الأسئلة المجاوب عليها ÷ عددها
+
+تقييم الفرع/البراند = مجموع تقييمات المستخدمين ÷ عددهم
+
+
+
+
+6. Places & Branches Model
+
+النظام يدعم:
+
+Brand + Branches
+
+أو مكان مستقل بدون Brand
+
+الفرع يحتوي:
+
+Address
+
+Working Hours
+
+لا يوجد Phone أو What’s App للفرع
+
+إضافة الأماكن والفروع:  Admin panel فقط
+
+
+
+
+7. Loyalty Points System
+
+7.1 Points Rules
+
+النقاط تُمنح فقط عند التقييم
+
+عدد النقاط ثابت لكل تقييم
+
+صلاحية النقاط تُحدد لكل البراندز والاماكن من Admin Panel
+
+User Level يعتمد على عدد التقييمات
+
+نظام الـ Levels يُدار من Admin Panel
+
+
+
+
+8. Voucher & Redemption Module (Final)
+
+8.1 Voucher Creation (End User)
+
+المستخدم يختار Brand
+
+النظام يحسب القيمة باستخدام Rules Engine
+
+المستخدم يدخل عدد النقاط
+
+النقاط تُخصم فورًا
+
+النظام يصدر Voucher Link
+
+الفاوتشر:
+
+صالح لمدة يوم واحد فقط من تاريخ تحويل النقاط للفاوتشر 
+
+غير قابل للاسترجاع
+
+8.2 Voucher Scope
+
+الفاوتشر مرتبط بالـ Brand
+
+يمكن استخدامه في أي فرع من فروع نفس البراند
+
+8.3 Voucher Verification (Vendor Panel)
+
+Branch Staff يفتح شاشة Verify Voucher
+
+يدخل الكود أو يفتح اللينك
+
+النظام يعرض:
+
+Valid / Used  Expired / 
+
+عند Confirm Redeem:
+
+الحالة تتحول إلى Used
+
+يتم تسجيل:
+
+Branch ID
+
+Verified By
+
+Used At
+
+
+
+
+9. Search & Discovery
+
+ Search شامل:
+
+Place Name
+
+Brand Name
+
+Category / Sub  Category
+
+City / Area
+
+Search Suggestions
+
+  Featured Places يحددها Admin Manual
+
+
+
+
+10. Notifications (Push Only)
+
+Welcome Notification
+
+New Review Points
+
+Level Achievements
+
+Points Expiry Reminder
+
+Voucher Redemption Notification
+
+New Brand Added
+
+Subscription Expiry:
+
+قبل أسبوع
+
+قبل 3 أيام
+
+قبل يوم
+
+Subscription Renewal
+
+
+
+
+11. Invite Friends
+
+ Share Link فقط
+
+بدون مكافآت
+
+الهدف توسيع الانتشار
+
+
+
+
+12. Profile & Settings
+
+عرض وتعديل البيانات
+
+عرض التقييمات
+
+عرض النقاط والفواتشر
+
+Language / Dark Mode
+
+Notifications Settings
+
+Terms & Conditions
+
+Help & Support
+
+Logout
+
+لا يمكن حذف الحساب 
+
+
+
+
+13. Admin Panel Requirements
+
+13.1 Master Data
+
+Categories / Sub Categories
+
+Places / Brands / Branches
+
+ Direct Publish (بدون Approval) 
+
+13.2 QR Management
+
+توليد QR Codes
+
+إعادة طباعة/إدارة QR
+
+13.3 Loyalty Rules Engine
+
+تحويل النقاط لقيمة
+
+إدارة Levels
+
+إدارة Expiry
+
+13.4 Content Management
+
+3 Onboarding Screens (Text Only)
+
+Banner Offers (Image Only)
+
+13.5 Reports (Admin)
+
+Users Growth
+
+Reviews Volume
+
+Top & Low Rated Branches
+
+Subscription KPIs
+
+Points KPIs
+
+QR Scan Activity
+
+
+
+
+14. Vendor Panel Requirements
+
+14.1 Vendor Admin
+
+  Dashboard   للبراند
+
+تقييمات وصور
+
+بيانات المستخدم
+
+تحديد مدة بين التقييمات
+
+Export (CSV / Excel)
+
+إدارة Branch Users
+
+14.2 Branch Staff
+
+Voucher Verification فقط
+
+سجل استخدام الفواتشر
+
+
+
+
+15. Security & Privacy
+
+HTTPS
+
+Password Encryption
+
+Images Encrypted 
+
+Phone Number لا يظهر إلا داخل Vendor Panel
+
+ OTP بطول 4 أرقام (إعداداته من مزود الخدمة)
+
+لا يوجد Lockout أو Rate Limit داخلي
+
+
+
+
+16. Data Entities (High Level)
+
+User
+
+Place / Brand / Branch
+
+Review
+
+Rating Criteria
+
+Points Transaction
+
+Voucher
+
+Vendor User
+
+Subscription
+
+Notification Log
+
+
+Audit Log
+
+متطلبات التسجيل 
+
+
+الاسم الاول والاخير
+
+
+رقم التلفون
+
+
+الايميل ( اختياري)
+
+
+الجنس
+
+
+الجنسية
+
+
+تاريخ الميلاد
+
+
+المحافظة
+
+
+المنطقة
+
+
+Client Requirements
+
+-Payment gateway 
+
+-OTP Service 
+
+-Google Maps API 
+
+
+
+
+
+مدير المشروع                  مسؤل البرمجة                        مدير الحساب                            العميل     
+
+

@@ -26,7 +26,7 @@ class ReviewController extends Controller
         if (! $vendor) {
             abort(403);
         }
-        $vendor->loadMissing('brand', 'branch.place');
+        $vendor->loadMissing('brand', 'branch');
 
         $filters = $request->validated();
         $reviews = $this->service->list($vendor, $filters);
@@ -46,7 +46,7 @@ class ReviewController extends Controller
         if (! $vendor) {
             abort(403);
         }
-        $vendor->loadMissing('brand', 'branch.place');
+        $vendor->loadMissing('brand', 'branch');
 
         $review = $this->service->find($vendor, $id);
         if (! $review) {
@@ -65,7 +65,7 @@ class ReviewController extends Controller
         if (! $vendor) {
             abort(403);
         }
-        $vendor->loadMissing('brand', 'branch.place');
+        $vendor->loadMissing('brand', 'branch');
 
         $filters = $request->validated();
         $filters['per_page'] = 10000; // export cap
@@ -112,7 +112,7 @@ class ReviewController extends Controller
         if (! $vendor) {
             abort(403);
         }
-        $vendor->loadMissing('brand', 'branch.place');
+        $vendor->loadMissing('brand', 'branch');
 
         $filters = $request->validated();
         $filters['per_page'] = 10000;

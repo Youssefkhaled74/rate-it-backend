@@ -26,7 +26,7 @@ class BranchUserController extends Controller
         if (! $vendor) {
             abort(403);
         }
-        $vendor->loadMissing('brand', 'branch.place');
+        $vendor->loadMissing('brand', 'branch');
 
         $filters = request()->only(['branch_id', 'q', 'is_active']);
         $staff = $this->service->list($vendor, $filters);
@@ -46,7 +46,7 @@ class BranchUserController extends Controller
         if (! $vendor) {
             abort(403);
         }
-        $vendor->loadMissing('brand', 'branch.place');
+        $vendor->loadMissing('brand', 'branch');
         $branches = $this->branchService->listBranches($vendor);
 
         return view('vendor.branch_users.create', [
@@ -61,7 +61,7 @@ class BranchUserController extends Controller
         if (! $vendor) {
             abort(403);
         }
-        $vendor->loadMissing('brand', 'branch.place');
+        $vendor->loadMissing('brand', 'branch');
 
         $staff = $this->service->create($vendor, $request->validated());
 
@@ -77,7 +77,7 @@ class BranchUserController extends Controller
         if (! $vendor) {
             abort(403);
         }
-        $vendor->loadMissing('brand', 'branch.place');
+        $vendor->loadMissing('brand', 'branch');
 
         $staff = $this->service->find($vendor, $id);
         if (! $staff) {
@@ -99,7 +99,7 @@ class BranchUserController extends Controller
         if (! $vendor) {
             abort(403);
         }
-        $vendor->loadMissing('brand', 'branch.place');
+        $vendor->loadMissing('brand', 'branch');
 
         $staff = $this->service->update($vendor, $id, $request->validated());
         if (! $staff) {
@@ -115,7 +115,7 @@ class BranchUserController extends Controller
         if (! $vendor) {
             abort(403);
         }
-        $vendor->loadMissing('brand', 'branch.place');
+        $vendor->loadMissing('brand', 'branch');
 
         $deleted = $this->service->delete($vendor, $id);
         if (! $deleted) {

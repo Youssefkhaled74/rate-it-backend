@@ -57,9 +57,9 @@ trait VendorScoping
             return $vendor->brand_id;
         }
         
-        // BRANCH_STAFF: get brand from branch
+        // BRANCH_STAFF: resolve brand directly from branch.brand_id
         if ($vendor->branch_id && $vendor->branch) {
-            return $vendor->branch->place->brand_id ?? null;
+            return $vendor->branch->brand_id ?? null;
         }
         
         return null;
@@ -110,7 +110,7 @@ trait VendorScoping
             $branch = \App\Models\Branch::find($resourceBranchId);
             if (!$branch) return false;
             
-            return $branch->place->brand_id === $vendor->brand_id;
+            return (int) $branch->brand_id === (int) $vendor->brand_id;
         }
         
         return false;

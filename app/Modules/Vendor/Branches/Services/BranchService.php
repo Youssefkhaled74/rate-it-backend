@@ -23,16 +23,14 @@ class BranchService
     {
         $brandId = $this->getVendorBrandId($vendor);
 
-        $query = Branch::whereHas('place', function ($q) use ($brandId) {
-            $q->where('brand_id', $brandId);
-        });
+        $query = Branch::query()->where('brand_id', $brandId);
 
         // BRANCH_STAFF can only see their own branch
         if ($this->isBranchStaff($vendor)) {
             $query->where('id', $vendor->branch_id);
         }
 
-        return $query->with('place')->orderBy('name_en')->orderBy('name')->get();
+        return $query->with('brand')->orderBy('name_en')->orderBy('name')->get();
     }
 
     /**
@@ -44,7 +42,7 @@ class BranchService
     {
         VendorBranchPolicy::authorize($vendor, 'view', $branchId);
 
-        $branch = Branch::with('place')->findOrFail($branchId);
+        $branch = Branch::with('brand')->findOrFail($branchId);
         return $branch;
     }
 
@@ -63,7 +61,7 @@ class BranchService
         $branch = Branch::findOrFail($branchId);
 
         // Verify branch belongs to vendor's brand
-        if (!$this->vendorCanAccessBrand($vendor, $branch->place->brand_id)) {
+        if (!$this->vendorCanAccessBrand($vendor, (int) $branch->brand_id)) {
             throw new ApiException(__('auth.forbidden'), 403);
         }
 
@@ -88,13 +86,14 @@ class BranchService
 
         // Verify place belongs to vendor's brand
         $place = \App\Models\Place::findOrFail($data['place_id']);
-        if (!$this->vendorCanAccessBrand($vendor, $place->brand_id)) {
+        if (!$this->vendorCanAccessBrand($vendor, (int) $place->brand_id)) {
             throw new ApiException(__('auth.forbidden'), 403);
         }
 
         // Create branch
         $branch = Branch::create([
             'place_id' => $data['place_id'],
+            'brand_id' => $place->brand_id,
             'name' => $data['name'] ?? ($data['name_en'] ?? $data['name_ar'] ?? null),
             'name_en' => $data['name_en'] ?? ($data['name'] ?? $data['name_ar'] ?? null),
             'name_ar' => $data['name_ar'] ?? null,
@@ -104,7 +103,7 @@ class BranchService
             'working_hours' => $data['working_hours'] ?? [],
         ]);
 
-        return $branch->load('place');
+        return $branch->load('brand');
     }
 
     /**
@@ -121,7 +120,7 @@ class BranchService
         $branch = Branch::findOrFail($branchId);
 
         // Verify branch belongs to vendor's brand
-        if (!$this->vendorCanAccessBrand($vendor, $branch->place->brand_id)) {
+        if (!$this->vendorCanAccessBrand($vendor, (int) $branch->brand_id)) {
             throw new ApiException(__('auth.forbidden'), 403);
         }
 
@@ -136,7 +135,7 @@ class BranchService
             'working_hours' => $data['working_hours'] ?? null,
         ], fn($value) => $value !== null));
 
-        return $branch->load('place');
+        return $branch->load('brand');
     }
 
     /**
@@ -153,7 +152,7 @@ class BranchService
         $branch = Branch::findOrFail($branchId);
 
         // Verify branch belongs to vendor's brand
-        if (!$this->vendorCanAccessBrand($vendor, $branch->place->brand_id)) {
+        if (!$this->vendorCanAccessBrand($vendor, (int) $branch->brand_id)) {
             throw new ApiException(__('auth.forbidden'), 403);
         }
 
